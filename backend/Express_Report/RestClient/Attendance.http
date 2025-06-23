@@ -1,0 +1,35 @@
+### GET - Fetch All Attendance Records
+GET http://localhost:8083/attendance/get-all-attendance
+
+### GET - Fetch Attendance by mod_id, class_name, poc_id
+GET http://localhost:8083/attendance/get-by-mod-id-and-class-name?mod_id=M2&class_name=Class B
+### POST - Create a New Attendance Record
+POST http://localhost:8083/attendance/post-attendance
+Content-Type: application/json
+
+{
+  "mod_name": "AI clasics",
+  "class_name": "AI-2025",
+  "poc_name": "Dr. Vishal",
+  "date": "2025-04-08",
+  "present_count": 28,
+  "total_students": 30
+}
+
+### PUT - Update an Existing Attendance Record
+PUT http://localhost:8083/attendance/update-attendance
+Content-Type: application/json
+
+{
+
+  "_id": "67e10a03f38c2da192de84b2",
+  "mod_id": "M3",
+  "class_name": "Class C",
+  "poc_id": "12345",
+  "date": "2025-08-14",
+  "present_count": 29,
+  "total_students": 35
+}
+
+###  DELETE - Remove an Attendance Record (Replace {id} with actual record ID)
+DELETE http://localhost:8083/api/attendance/delete-by-id

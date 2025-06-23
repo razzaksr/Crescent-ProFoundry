@@ -1,0 +1,31 @@
+### Create Module
+POST http://localhost:8085/modules/add_module
+Content-Type: application/json
+
+{
+  "mod_name": "MERN Stack Development",
+  "mod_tech": "MERN",
+  "mod_duration": "6 months"
+}
+
+### Get All Modules
+GET http://localhost:8085/modules/get_all_module
+
+### Get Module by ID
+GET http://localhost:8085/modules/get_module_by_id/863662d6-7565-4ba7-aaa5-5ecc9d6cae9e
+### Update Module
+PUT http://localhost:8085/modules/update_module
+Content-Type: application/json
+
+{
+  "mod_id": "f4e59446-5b4b-4504-8932-f10f07794a90",
+  "mod_name": "Advanced Full Stack",
+  "mod_tech": "MERN + React Native",
+  "mod_duration": "8 months"
+}
+
+###  Delete Module
+DELETE http://localhost:8085/modules/delete_module/f4e59446-5b4b-4504-8932-f10f07794a90
+
+### Get Module Name by ID
+GET http://localhost:8085/modules/get_module_name_by_id/f4e59446-5b4b-4504-8932-f10f07794a90

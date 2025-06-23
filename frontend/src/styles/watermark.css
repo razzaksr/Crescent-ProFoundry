@@ -1,0 +1,64 @@
+.watermark-box {
+    position: relative;
+    background-color: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    padding: 24px; /* increased for spacing */
+    margin-bottom: 24px;
+    font-family: "AntiOCRFont", sans-serif;
+    font-size: 1.5rem; /* increased text size */
+    line-height: 2.2rem; /* more readable */
+  }
+  
+  .watermark-box::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 300%;
+    height: 300%;
+    background-image: repeating-linear-gradient(
+      -30deg,
+      rgba(0, 0, 0, 0.1) 0,
+      rgba(0, 0, 0, 0.1) 1px,
+      transparent 1px,
+      transparent 32px
+    ),
+    repeating-linear-gradient(
+      -30deg,
+      transparent,
+      transparent 32px,
+      rgba(0, 0, 0, 0.348) 32px,
+      rgba(0, 0, 0, 0.429) 33px
+    );
+    background-size: auto;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+  }
+  
+  .watermark-box::after {
+    content: "Zealous Tech Corp • Zealous Tech Corp • Zealous Tech Corp • Zealous Tech Corp • Zealous Tech Corp • ";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 900%;
+    height: 900%;
+    color: rgba(0, 0, 0, 0.06);
+    font-size: 600px;
+    line-height: 420px;
+    white-space: pre;
+    transform: rotate(-30deg);
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .watermark-content {
+    position: relative;
+    z-index: 1;
+  }
+  

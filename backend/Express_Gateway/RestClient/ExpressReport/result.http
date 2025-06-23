@@ -1,0 +1,44 @@
+### Fetch All Results
+GET  http://localhost:8086/results_gateway/results/get-result
+Content-Type: application/json
+
+### Add a New Result
+POST  http://localhost:8086/results_gateway/results/post-result
+Content-Type: application/json
+
+{ "result_id":"abcd",
+  "result_user_id": "user982",
+  "result_test_id": "test956",
+  "result_score": 97,
+  "result_poc_id": "poc785"
+}
+
+### Update a Result
+PUT http://localhost:8086/results_gateway/results/update-result
+Content-Type: application/json
+
+{
+  "result_id":"abcd",
+  "result_user_id": "user982",
+  "result_test_id": "test956",
+  "result_score": 77,
+  "result_poc_id": "poc785"
+}
+
+
+### Delete a Result
+DELETE http://localhost:8086/results_gateway/results/delete-by-result-id/abcd
+Content-Type: application/json
+
+### Fetch Result BY user ID
+GET http://localhost:8086/results_gateway/results/get_results_by_user_id/528f7cb8-0bfe-4366-a98d-831719ec53e6
+
+### Fetch Result BY user ID and test ID
+GET http://localhost:8086/results_gateway/results/get_result_by_user_id_test_id?result_user_id=528f7cb8-0bfe-4366-a98d-831719ec53e6&result_test_id=b2b727d1-f034-4636-9a28-b6cd84d07043
+Content-Type: application/json
+
+### GET PERCENTAGE OF TEST
+GET http://localhost:8086/results_gateway/results/aggregate_scores/9ccefe74-f80c-4427-804e-827a61d7619a/528f7cb8-0bfe-4366-a98d-831719ec53e6
+
+###  get result by user id
+GET http://98.81.207.64:8086/results_gateway/results/get-result-by-user/528f7cb8-0bfe-4366-a98d-831719ec53e6

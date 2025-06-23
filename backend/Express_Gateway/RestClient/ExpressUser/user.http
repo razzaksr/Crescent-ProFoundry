@@ -1,0 +1,104 @@
+### Create User
+POST http://localhost:8086/user_gateway/user/add_user
+Content-Type: application/json
+
+{
+  "full_name": "student_1",
+  "department": "Computer Science Engineering",
+  "college": "Muthayammal Engineering College",
+  "rollno": "22CS001",
+  "email": "student1@gmail.com",
+  "mobile_no": "+919876513210"
+}
+
+### Create User in Bulk
+POST http://localhost:8086/user_gateway/user/bulk_add_users
+Content-Type: application/json
+
+[
+{
+  "full_name": "student_2",
+  "department": "Computer Science Engineering",
+  "college": "Muthayammal Engineering College",
+  "rollno": "22CS002",
+  "email": "student2@gmail.com",
+  "mobile_no": "+919876512222"
+},
+{
+  "full_name": "student_3",
+  "department": "Computer Science Engineering",
+  "college": "Muthayammal Engineering College",
+  "rollno": "22CS003",
+  "email": "student3@gmail.com",
+  "mobile_no": "+919876513333"
+},
+{
+  "full_name": "student_4",
+  "department": "Computer Science Engineering",
+  "college": "Muthayammal Engineering College",
+  "rollno": "22CS004",
+  "email": "student4@gmail.com",
+  "mobile_no": "+919876514444"
+},
+{
+  "full_name": "student_5",
+  "department": "Computer Science Engineering",
+  "college": "Muthayammal Engineering College",
+  "rollno": "22CS005",
+  "email": "student5@gmail.com",
+  "mobile_no": "+919876515555"
+}
+]
+
+### Create Admin
+POST http://localhost:8086/user_gateway/user/add_user
+Content-Type: application/json
+
+{
+  "full_name": "Zealoudds Tech Corp",
+  "email": "reachus@zealoustechcorp.com",
+  "password": "Zactacademy@2013",
+  "admin": true
+}
+### Login User
+POST http://localhost:8086/user_gateway/user/login
+Content-Type: application/json
+
+{
+  "email": "dharun@gmail.com",
+  "password": "0000"
+}
+
+
+### Get All Users
+GET http://localhost:8086/user_gateway/user/read_all_users
+
+### Get User by ID
+GET http://localhost:8086/user_gateway/user/get_user_by_id/717150b2-2a19-45e8-9c24-69d93b4751c2
+
+
+### Update User
+PUT http://localhost:8086/user_gateway/user/update_user/b7062a63-5ed2-4ae6-b499-0bdcdda0d7fa
+Content-Type: application/json
+
+{
+  "full_name": "Updated John Doe",
+  "email": "updated@example.com",
+  "password": "newpassword123"
+}
+
+### Update User Last Login
+PUT http://localhost:8086/user_gateway/user/update_last_login/b7062a63-5ed2-4ae6-b499-0bdcdda0d7fa
+Content-Type: application/json
+
+{
+  "user_last_login": "2025-03-16T12:30:00Z"
+}
+
+### Delete User
+DELETE http://localhost:8086/user_gateway/user/delete_user/b7062a63-5ed2-4ae6-b499-0bdcdda0d7fa
+
+
+###############
+GET http://localhost:8086/health
+

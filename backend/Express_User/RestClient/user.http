@@ -1,0 +1,139 @@
+### Create User
+POST http://localhost:8081/user/add_user
+Content-Type: application/json
+
+{
+  "full_name": "Kaviya S",
+  "department": "INFORMATION TECHNOLOGY ",
+  "college": "MUTHAYAMMAL ENGINEERING COLLEGE",
+  "rollno": "22IT036",
+  "email": "kaviyaselvam801@gmail.com",
+  "password": "kavi2962"
+}
+
+### Create Admin
+POST http://localhost:8081/user/add_user
+Content-Type: application/json
+
+{
+  "full_name": "selva",
+  "email": "selva12@gmail.com",
+  "password": "0000",
+  "admin": true
+}
+
+### Login User
+POST http://localhost:8081/user/login
+Content-Type: application/json
+
+{
+  "email": "dp@gmail.com",
+  "password": "000"
+}
+
+### Get All Users
+GET http://localhost:8081/user/read_all_users
+
+### Get User by ID
+GET http://localhost:8081/user/get_user_by_id/45003e3b-9ada-40a7-8e8e-4a10252cd6b1
+### Get User only user ID
+GET http://localhost:8081/user/user-ids
+
+### GET USER ID BY ROLL NO
+GET http://localhost:8081/user/get_user_id_by_rollno/23IT017
+
+
+### Get Bulk User by Roll No 
+POST http://localhost:8081/user/users/bulk 
+Content-Type: application/json
+
+{
+  "rollnos": [
+    "22IT010",
+    "22IT036",
+    "22IT035",
+    "22IT045",
+    "22IT003",
+    "22IT017",
+    "22IT019",
+    "22IT028",
+    "22IT001",
+    "22IT018",
+    "23IT508",
+    "22IT052",
+    "22IT055",
+    "22IT073",
+    "22IT087",
+    "22IT038",
+    "22IT054",
+    "22IT063",
+    "22IT072",
+    "22IT075",
+    "22IT065",
+    "22IT086",
+    "22IT079",
+    "22IT053",
+    "22IT025",
+    "22IT057",
+    "22IT032",
+    "22IT060",
+    "22IT009",
+    "22IT071",
+    "22IT074",
+    "22IT051",
+    "20IT507",
+    "22IT076",
+    "22IT050",
+    "22IT043",
+    "22IT066",
+    "22IT081",
+    "22IT077",
+    "22IT002",
+    "22IT044",
+    "22IT083",
+    "22IT022",
+    "22IT041",
+    "22IT056",
+    "22IT007",
+    "22IT046",
+    "22IT047",
+    "22IT040",
+    "22IT006",
+    "22IT030",
+    "22IT039",
+    "22IT088",
+    "22IT078",
+    "22IT005",
+    "22IT049"
+  ]
+}
+### Update User
+PUT http://localhost:8081/user/update_user/b9a1c3c6-b074-49ef-86e6-b73de4305f1c
+Content-Type: application/json
+
+{
+  "full_name": "vetree",
+  "email": "vetree@example.com",
+  "password": "1234"
+}
+
+### Update User Last Login
+PUT http://localhost:8081/user/update_last_login/b7062a63-5ed2-4ae6-b499-0bdcdda0d7fa
+Content-Type: application/json
+
+{
+  "user_last_login": "2025-03-16T12:30:00Z"
+}
+
+### Update User Status
+PUT http://localhost:8081/user/update_user_status/2a1a2103-a192-4811-9f42-12e65a6c6e3a
+Content-Type: application/json
+
+{
+  "status": true
+}
+
+
+### Delete User
+DELETE http://localhost:8081/user/delete_user/b9a1c3c6-b074-49ef-86e6-b73de4305f1c
+

@@ -1,0 +1,58 @@
+POST http://localhost:8083/certificates/post-certificates
+Content-Type: application/json
+
+{
+  "certificate_id": "",
+  "certificate_user_id": "xx",
+  "certificate_mod_id": "yyy",
+  "certificate_poc_id": "",
+  "certificate_generated_date": ""
+}
+
+###
+
+###
+
+GET http://localhost:8083/certificates/certificate-with-result/d3617fee-b7b0-41e9-88a5-bf35baee41e6
+                                                               
+
+###
+
+### get all certificate with result details
+
+GET http://localhost:8083/certificates/all-certificates-with-results
+###
+
+
+### get certificate_mod_id with mod_id
+
+GET http://localhost:8083/certificates/certificate_mod_id_with_module_id/9e840808-63a2-4a55-9758-a9e3ed160227
+Content-Type: application/json
+
+### get all certificates with module details
+GET http://localhost:8083/certificates/all_certificates_with_module
+###
+
+### get all certificates with user details
+GET http://localhost:8083/certificates/all-certificates-with-users
+
+###
+
+### get certificate_user_id with user_id
+GET http://localhost:8083/certificates/certificate_id_with_user_id/d1a754a4-81b8-4a31-8091-22d1b8ad8f32
+###
+PUT http://localhost:8083/certificates/update-certificates
+Content-Type: application/json
+
+{
+  "certificate_id": "ai001",
+  "certificate_user_id": "USR102",
+  "certificate_mod_id": "MOD0102",
+  "certificate_poc_id": "POC0021",
+  "certificate_generated_date": "2025-03-12",
+  "certificate_url": "/certificates/certificate_user_123.pdf"
+}
+
+
+###
+DELETE http://localhost:8083/certificates/delete-by-cert-user-id/xx

@@ -1,0 +1,32 @@
+POST http://localhost:4000/certificates_gateway/certificates/post-certificates
+Content-Type: application/json
+
+{
+  "certificate_id": "ai001",
+  "certificate_user_id": "USR102",
+  "certificate_mod_id": "MOD0102",
+  "certificate_poc_id": "POC0021",
+  "certificate_generated_date": "2025-03-17"
+}
+
+###
+GET http://localhost:4000/certificates_gateway/certificates/all-certificates
+###
+
+
+###
+PUT http://localhost:4000/certificates_gateway/certificates/update-certificates
+Content-Type: application/json
+
+{
+  "certificate_id": "ai001",
+  "certificate_user_id": "USR102",
+  "certificate_mod_id": "MOD0102",
+  "certificate_poc_id": "POC0021",
+  "certificate_generated_date": "2025-03-12",
+  "certificate_url": "/certificates/certificate_user_123.pdf"
+}
+
+
+###
+DELETE http://localhost:4000/certificates_gateway/certificates/delete-by-cert-user-id/USR102

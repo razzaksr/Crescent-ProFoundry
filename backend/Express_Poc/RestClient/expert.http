@@ -1,0 +1,56 @@
+### CREATE EXPERT
+POST http://localhost:8084/expert/add_expert
+Content-Type: application/json
+
+{
+    "mod_expert_name": "John Doe",
+    "mod_expert_mobile": "9876543210",
+    "mod_expert_role": "Senior Developer",
+    "mod_expert_profile": "https://example.com/profile.jpg"
+}
+
+### GET EXPERT
+GET http://localhost:8084/expert/read_all_experts
+
+### GET EXPERT by mod_expert_id
+GET http://localhost:8084/expert/get_expert/b090b958-c180-42aa-b611-8de2356b7ace
+
+### Update Expert by mod_expert_id
+PUT http://localhost:8084/expert/update_expert
+Content-Type: application/json
+
+{
+    "mod_expert_id": "02c7a67e-6ff8-472a-b956-81caebb3ba8b",
+    "mod_expert_name": "Jane Doe",
+    "mod_expert_mobile": "9123456789",
+    "mod_expert_role": "Lead Engineer",
+    "mod_expert_profile": "https://example.com/new-profile.jpg",
+    "poc_id": [],
+    "mod_id": ["mod789"]
+}
+
+### Update poc_id separately by mod_expert_id 
+PUT http://localhost:8084/expert/update_poc
+Content-Type: application/json
+
+{
+    "mod_expert_id": "b090b958-c180-42aa-b611-8de2356b7ace",
+    "poc_id": ["poc123", "poc456"]
+}
+
+### Update mod_id separately by mod_expert_id 
+PUT http://localhost:8084/expert/update_mod
+Content-Type: application/json
+
+{
+    "mod_expert_id": "b090b958-c180-42aa-b611-8de2356b7ace",
+    "mod_id": ["6503caf1-fb75-4640-99f2-d6a529b71205"]
+}
+
+
+### Delete an Expert by mod_expert_id
+DELETE http://localhost:8084/expert/delete_expert/b090b958-c180-42aa-b611-8de2356b7ace
+
+### GET EXPERT NAME BY MOD_ID
+GET http://localhost:8084/expert/get_expert_name/6503caf1-fb75-4640-99f2-d6a529b71205
+

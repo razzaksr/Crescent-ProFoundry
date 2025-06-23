@@ -1,0 +1,141 @@
+### Create MCQ
+POST http://localhost:8082/mcq/add_mcq
+Content-Type: application/json
+
+[
+    {
+      "mcq_question": "What is the output of print(2 ** 3)?",
+      "mcq_options": ["6", "8", "9", "12"],
+      "mcq_answer": "8",
+      "mcq_tag": ["Python", "Basics", "Operators"]
+    },
+    {
+      "mcq_question": "Which of the following is a correct way to create a list in Python?",
+      "mcq_options": ["list = {1, 2, 3}", "list = [1, 2, 3]", "list = (1, 2, 3)", "list = <1, 2, 3>"],
+      "mcq_answer": "list = [1, 2, 3]",
+      "mcq_tag": ["Python", "Data Structures", "Lists"]
+    },
+    {
+      "mcq_question": "What does the len() function do?",
+      "mcq_options": ["Returns the length of an object", "Converts a string to lowercase", "Appends an element to a list", "Removes an element from a list"],
+      "mcq_answer": "Returns the length of an object",
+      "mcq_tag": ["Python", "Functions", "Basics"]
+    },
+    {
+      "mcq_question": "What is the correct syntax for a Python dictionary?",
+      "mcq_options": ["{1, 2, 3}", "[1, 2, 3]", "{'key': 'value'}", "(1, 2, 3)"],
+      "mcq_answer": "{'key': 'value'}",
+      "mcq_tag": ["Python", "Data Structures", "Dictionaries"]
+    },
+    {
+      "mcq_question": "Which keyword is used to define a function in Python?",
+      "mcq_options": ["func", "define", "def", "function"],
+      "mcq_answer": "def",
+      "mcq_tag": ["Python", "Functions", "Basics"]
+    },
+    {
+      "mcq_question": "What is the output of print('Hello'[1])?",
+      "mcq_options": ["H", "e", "l", "o"],
+      "mcq_answer": "e",
+      "mcq_tag": ["Python", "Strings", "Indexing"]
+    },
+    {
+      "mcq_question": "Which of these is NOT a Python data type?",
+      "mcq_options": ["int", "float", "string", "array"],
+      "mcq_answer": "array",
+      "mcq_tag": ["Python", "Data Types", "Basics"]
+    },
+    {
+      "mcq_question": "What does the 'in' operator do?",
+      "mcq_options": ["Checks if a value is in a sequence", "Performs division", "Adds two values", "Compares two variables"],
+      "mcq_answer": "Checks if a value is in a sequence",
+      "mcCapitallq_tag": ["Python", "Operators", "Logic"]
+    },
+    {
+      "mcq_question": "How do you start a comment in Python?",
+      "mcq_options": ["//", "/*", "#", "--"],
+      "mcq_answer": "#",
+      "mcq_tag": ["Python", "Syntax", "Basics"]
+    },
+    {
+      "mcq_question": "What is the output of print(type(42))?",
+      "mcq_options": ["<class 'int'>", "<class 'float'>", "<class 'str'>", "<class 'bool'>"],
+      "mcq_answer": "<class 'int'>",
+      "mcq_tag": ["Python", "Data Types", "Functions"]
+    }
+  ]
+### Get All MCQs
+GET http://localhost:8082/mcq/get_all_mcqs
+
+### Get a Single MCQ by ID
+GET http://localhost:8082/mcq/get_mcq/dcedaa95-7985-476e-9252-8a043efc343a
+
+### Update MCQ
+PUT http://localhost:8082/mcq/update_mcq
+Content-Type: application/json
+
+{
+    "mcq_id": "dcedaa95-7985-476e-9252-8a043efc343a",
+    "mcq_question": "What is JavaScript?",
+    "mcq_options": ["Runtime", "Library", "Framework", "Language"],
+    "mcq_answer": "Language",
+    "mcq_tag": ["Programming", "Frontend"]
+}
+
+### Delete MCQ
+DELETE http://localhost:8082/mcq/delete_mcq/dcedaa95-7985-476e-9252-8a043efc343a
+
+### Submit Result to External Service via Consul
+POST http://localhost:8082/mcq/submit_result
+Content-Type: application/json
+
+{
+  "result_user_id": "",
+  "result_test_id": "",
+  "result_score": 85,
+  "result_poc_id": "",
+  "result_id": ""
+}
+
+
+
+### Submit Test Result
+POST http://localhost:8082/mcq/submit_result
+Content-Type: application/json
+
+{
+  "result_user_id": "user2321",
+  "result_test_id": "test434",
+  "result_score": 85,
+  "result_total_score": 100,
+  "result_poc_id": "poc674"
+}
+
+
+#### GET MCQ ID ONLY
+GET http://localhost:8082/mcq/mcq/ids
+
+#### GET MCQ ID ONLY by tags
+GET http://localhost:8082/mcq/get_mcqs_by_tags/C
+
+
+### Send Test Data to post_data_analytics
+POST http://localhost:8082/mcq/post_data_analytics
+Content-Type: application/json
+
+
+{
+  "module_name": "Node.js",
+  "module_id": "123",
+  "module_poc_name": " Doe",
+  "module_poc_id": "22_007",
+  "user_id": "rkadmmcsl",
+  "result_test_id": "test_001",
+  "date": "2025-03-07",
+  "result_mcq_score": 33,
+  "result_coding_score": 20,
+  "total_mark": 100
+}
+
+
+

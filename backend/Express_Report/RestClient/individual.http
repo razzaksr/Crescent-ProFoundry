@@ -1,0 +1,38 @@
+POST http://localhost:8083/individual/post-individual
+Content-Type: application/json
+
+{
+  "module_name": "Node.js Basics",
+  "module_id": "mod_1201",
+  "module_poc_name": "John Doe",
+  "module_poc_id": "poc2_007",
+  "user_id": "user_122345",
+  "result_test_id": "test_001",
+  "date": "2025-04-05",
+  "result_mcq_score": 30,
+  "result_coding_score": 20,
+  "total_mark": 100
+}
+
+###
+GET http://localhost:8083/individual/get-all-individual
+
+###
+PUT http://localhost:8083/individual/update-individual
+Content-Type: application/json
+
+{
+     
+    "report_id": "RPT0012",
+    "report_module": "AI Fundamentals",
+    "report_poc": "Dr. John Doe",
+    "student_id": "STU18",
+    "student_name": "Aice joe",
+    "day": 4,
+    "mcq_score": 9,
+    "coding_score": 9
+}
+###
+### delete by student id and date ###
+###
+DELETE http://localhost:8083/individual/delete-individual-by-stuid-day/STU13/3

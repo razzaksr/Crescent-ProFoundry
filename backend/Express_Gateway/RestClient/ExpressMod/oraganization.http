@@ -1,0 +1,37 @@
+### Create Organization
+POST http://localhost:8086/organization_gateway/organization/create_org
+Content-Type: application/json
+
+{
+  "org_name": "Muthayammal",
+  "org_address": "Rasipuram",
+  "org_email": "mec@gmail.com",
+  "org_contact": "9876543210",
+  "org_associated_date": "2025-03-16"
+}
+
+### Get All Organizations
+GET http://localhost:8086/organization_gateway/organization/get_all_org
+
+### Get Organization by ID
+GET http://localhost:8086/organization_gateway/organization/get_org_by_id/72ca3922-dea0-4e31-8c1d-406ae2bebd1f
+
+### Update Organization
+PUT http://localhost:8086/organization_gateway/organization/update_org_by_id/
+Content-Type: application/json
+
+{
+  "org_id": "72ca3922-dea0-4e31-8c1d-406ae2bebd1f",
+  "org_name": " Muthayammal Enginnering College",
+  "org_address": "Rasipuram",
+  "org_email": "mec1@gmail.com",
+  "org_contact": "9876543211",
+  "org_associated_date": "2025-03-16",
+  "mod_id": "863662d6-7565-4ba7-aaa5-5ecc9d6cae9e"
+}
+
+### Delete Organization
+DELETE http://localhost:8086/organization_gateway/organization/delete_org_by_id/8a0ba8d7-375d-4182-a5ef-ca607014778a
+
+### GET Organization Name by MOD_ID
+GET http://localhost:8086/organization_gateway/organization/get_org_name_by_id/863662d6-7565-4ba7-aaa5-5ecc9d6cae9e

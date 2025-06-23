@@ -1,0 +1,53 @@
+### CREATE EXPERT
+POST http://localhost:8086/expert_gateway/expert/add_expert
+Content-Type: application/json
+
+{
+    "mod_expert_name": "VISVAK",
+    "mod_expert_mobile": "7889898895",
+    "mod_expert_role": "MERN Developer",
+    "mod_expert_profile": "https://example.com/profile.jpg"
+}
+
+### GET EXPERT
+GET http://localhost:8086/expert_gateway/expert/read_all_experts
+
+### GET EXPERT by mod_expert_id
+GET http://localhost:8086/expert_gateway/expert/get_expert/02c7a67e-6ff8-472a-b956-81caebb3ba8b
+
+###Update Expert by mod_expert_id
+PUT http://localhost:8086/expert_gateway/expert/update_expert
+Content-Type: application/json
+
+{
+    "mod_expert_id": "ab6f9187-8b0c-400d-bfe5-72dc0679f444",
+    "poc_id": ["9ccefe74-f80c-4427-804e-827a61d7619a","f996f10f-e271-4dd8-85e3-ae76a3e16640"],
+    "mod_id": ["863662d6-7565-4ba7-aaa5-5ecc9d6cae9e"]
+}
+
+
+### Update poc_id separately by mod_expert_id 
+PUT http://localhost:8086/expert_gateway/expert/update_poc
+Content-Type: application/json
+
+{
+    "mod_expert_id": "02c7a67e-6ff8-472a-b956-81caebb3ba8b",
+    "poc_id": ["poc123", "poc456"]
+}
+
+### Update mod_id separately by mod_expert_id 
+PUT http://localhost:8086/expert_gateway/expert/update_mod
+Content-Type: application/json
+
+{
+    "mod_expert_id": "02c7a67e-6ff8-472a-b956-81caebb3ba8b",
+    "mod_id": ["6503caf1-fb75-4640-99f2-d6a529b71205"]
+}
+
+### Delete an Expert by mod_expert_id
+DELETE http://localhost:8086/expert_gateway/expert/delete_expert/02c7a67e-6ff8-472a-b956-81caebb3ba8b
+### GET EXPERT NAME BY MOD_ID
+GET http://localhost:8086/expert_gateway/expert/get_expert_name/6503caf1-fb75-4640-99f2-d6a529b71205
+
+
+

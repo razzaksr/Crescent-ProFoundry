@@ -1,0 +1,51 @@
+### Create a coding_gateway/Coding data
+POST http://localhost:8086/coding_gateway/coding/add_code
+Content-Type: application/json
+
+{
+  "code_problem_statement": "Write a functionvdv to find the factorial of a number.",
+  "code_test_cases": ["testCaseObjectId1", "testCaseObjectId2"],
+  "code_tags": ["math", "recursion", "factorial"]
+}
+
+### Get All Codes
+GET http://localhost:8086/coding_gateway/coding/get_allCodes
+
+
+### Get code details by id
+GET   ea1d62fa-cb64-483e-8d39-01e71628ae99
+
+
+### Update the Code
+PUT http://localhost:8086/coding_gateway/coding/update_code
+Content-Type: application/json
+
+{
+  "code_id": "9ee19f23-e30b-434d-a541-af9e5c51eac3",
+  "code_test_cases": ["2c05193b-6ce4-483c-81b6-44b86e23c277"],
+}
+
+### Delete a code
+DELETE http://localhost:8086/coding_gateway/coding/delete_code/47f8f519-d7ca-4bbc-ac06-191b5611e445
+
+###############
+POST http://localhost:8086/coding_gateway/coding/compiler
+Content-Type: application/json
+
+{
+  "language": "java",
+  "code": "import java.util.Scanner;\n\npublic class Factorial {\n    public static int factorial(int n) {\n        if (n == 0 || n == 1)\n            return 1;\n        return n * factorial(n - 1);\n    }\n\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int input = sc.nextInt();\n        System.out.println(factorial(input));\n        sc.close();\n    }\n}",
+  "testCases": [
+  { "input": "0", "expectedOutput": "1" },
+  { "input": "1", "expectedOutput": "1" },
+  { "input": "2", "expectedOutput": "2" },
+  { "input": "3", "expectedOutput": "6" },
+  { "input": "5", "expectedOutput": "120" },
+  { "input": "6", "expectedOutput": "720" },
+  { "input": "7", "expectedOutput": "5040" },
+  { "input": "8", "expectedOutput": "40320" },
+  { "input": "10", "expectedOutput": "3628800" },
+  { "input": "12", "expectedOutput": "479001600" }
+]
+
+}

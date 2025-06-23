@@ -1,0 +1,41 @@
+# Add a new student performance record (POST)
+POST http://localhost:8083/overall/post-overall
+Content-Type: application/json
+
+{
+    "report_id": "RPT123",
+    "report_mod": "Module 4",
+    "report_poc": "Professor x",
+    "student_name": "azw ",
+    "student_id": "STU005",
+    "total_marks": 800,
+    "scored_marks": 720
+}
+
+### Get all performance records (GET)
+GET http://localhost:8083/overall/get-all-overall
+Content-Type: application/json
+
+### Get a single student's performance (GET)
+GET http://localhost:8083/overall/STU001
+Content-Type: application/json
+
+### Update a student's performance (PUT)
+PUT http://localhost:8083/overall//update-overall
+Content-Type: application/json
+
+{
+   
+    "report_id": "RPT123",
+    "report_mod": "Module 2",
+    "report_poc": "Professor y",
+    "studentName": "hardik ",
+    "studentId": "STU004",
+    "totalMarks": 800,
+    "scoredMarks": 720
+}
+
+
+### Delete a student's performance record (DELETE)
+DELETE http://localhost:8083/overall/delete-overall-by-stu-id/STU005
+Content-Type: application/json

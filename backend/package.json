@@ -1,0 +1,18 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently --names \"Express_Gateway,Express_Mod,Express_Poc,Express_Report,Express_Test,Express_User\" --prefix \"[{name}]\" \"npm --prefix Express_Gateway start\" \"npm --prefix Express_Mod start\" \"npm --prefix Express_Poc start\" \"npm --prefix Express_Report start\" \"npm --prefix Express_Test start\" \"npm --prefix Express_User start\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "dependencies": {
+    "moment": "^2.30.1"
+  }
+}

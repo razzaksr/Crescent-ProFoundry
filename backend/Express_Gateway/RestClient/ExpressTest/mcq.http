@@ -1,0 +1,122 @@
+### Create MCQ
+POST http://localhost:8086/mcq_gateway/mcq/add_mcq
+Content-Type: application/json
+
+[
+    {
+      "mcq_question": "What is the output of printf(\"%d\", 5 / 2); in C?",
+      "mcq_options": ["2", "2.5", "3", "0"],
+      "mcq_answer": "2",
+      "mcq_tag": ["C", "Basics", "Operators"]
+    },
+    {
+      "mcq_question": "Which of the following is the correct way to declare a pointer in C?",
+      "mcq_options": ["int ptr;", "int *ptr;", "ptr int;", "*int ptr;"],
+      "mcq_answer": "int *ptr;",
+      "mcq_tag": ["C", "Pointers", "Basics"]
+    },
+    {
+      "mcq_question": "What is the purpose of the 'void' keyword in a function declaration?",
+      "mcq_options": ["Indicates no return value", "Indicates no parameters", "Both A and B", "None of the above"],
+      "mcq_answer": "Both A and B",
+      "mcq_tag": ["C", "Functions", "Basics"]
+    },
+    {
+      "mcq_question": "What does the 'sizeof' operator return?",
+      "mcq_options": ["Size of a variable in bytes", "Value of a variable", "Address of a variable", "Type of a variable"],
+      "mcq_answer": "Size of a variable in bytes",
+      "mcq_tag": ["C", "Operators", "Basics"]
+    },
+    {
+      "mcq_question": "Which loop is guaranteed to execute at least once in C?",
+      "mcq_options": ["for", "while", "do-while", "None of the above"],
+      "mcq_answer": "do-while",
+      "mcq_tag": ["C", "Loops", "Control Flow"]
+    },
+    {
+      "mcq_question": "What is the correct syntax for a single-line comment in C?",
+      "mcq_options": ["#", "//", "/* */", "<!-- -->"],
+      "mcq_answer": "//",
+      "mcq_tag": ["C", "Syntax", "Basics"]
+    },
+    {
+      "mcq_question": "What is the output of printf(\"%c\", 65); in C?",
+      "mcq_options": ["A", "65", "a", "Error"],
+      "mcq_answer": "A",
+      "mcq_tag": ["C", "Input/Output", "ASCII"]
+    },
+    {
+      "mcq_question": "Which of the following is NOT a valid storage class in C?",
+      "mcq_options": ["auto", "register", "static", "dynamic"],
+      "mcq_answer": "dynamic",
+      "mcq_tag": ["C", "Storage Classes", "Basics"]
+    },
+    {
+      "mcq_question": "What does the 'break' statement do in a loop?",
+      "mcq_options": ["Exits the loop", "Skips the current iteration", "Restarts the loop", "None of the above"],
+      "mcq_answer": "Exits the loop",
+      "mcq_tag": ["C", "Control Flow", "Loops"]
+    },
+    {
+      "mcq_question": "How is an array declared in C?",
+      "mcq_options": ["int arr[];", "int arr;", "int *arr;", "arr int[];"],
+      "mcq_answer": "int arr[];",
+      "mcq_tag": ["C", "Arrays", "Data Structures"]
+    }
+  ]
+
+### Get All MCQs
+GET http://localhost:8086/mcq_gateway/mcq/get_all_mcqs
+
+### Get  MCQ  by id
+GET http://localhost:8086/mcq_gateway/mcq/get_mcq/0453498a-cae3-4646-984a-098a9a0746de
+
+### Update MCQ  
+PUT http://localhost:8086/mcq_gateway/mcq/update_mcq
+Content-Type: application/json
+
+{
+    "mcq_id": "dcedaa95-7985-476e-9252-8a043efc343a",
+    "mcq_question": "What is JavaScript?",
+    "mcq_options": ["Runtime", "Library", "Framework", "Language"],
+    "mcq_answer": "Language",
+    "mcq_tag": ["Programming", "Frontend"]
+}
+
+### Delete MCQ
+DELETE http://localhost:8086/mcq_gateway/mcq/delete_mcq/dcedaa95-7985-476e-9252-8a043efc343a
+
+
+### Submit Result to External Service via Consul
+POST http://localhost:8086/mcq_gateway/mcq/submit_result
+Content-Type: application/json
+
+{
+  "result_user_id": "usersscscc2321",
+  "result_test_id": "test434",
+  "result_score": 85,
+  "result_total_score": 100,
+  "result_poc_id": "poc674"
+}
+
+
+#### GET MCQ ID ONLY
+GET http://localhost:8086/mcq_gateway/mcq/mcq/ids
+
+### Send Test Data to post_data_analytics
+POST http://localhost:8086/mcq_gateway/mcq/post_data_analytics
+Content-Type: application/json
+
+
+{
+  "module_name": "Node.js",
+  "module_id": "123",
+  "module_poc_name": " Doe",
+  "module_poc_id": "22_007",
+  "user_id": "rkadmmcsl",
+  "result_test_id": "test_001",
+  "date": "2025-04-07",
+  "result_mcq_score": 33,
+  "result_coding_score": 20,
+  "total_mark": 430
+}

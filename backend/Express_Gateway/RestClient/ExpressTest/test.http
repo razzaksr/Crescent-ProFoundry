@@ -1,0 +1,75 @@
+### Create Test
+POST http://localhost:8086/test_gateway/test/create
+Content-Type: application/json
+
+{
+  "test_name": "MongoDb Test",
+  "test_language": "DB",
+  "test_total_score": 25,
+  "test_mcq_id": [],
+  "test_coding_id": []
+}
+
+###
+
+### Get All Tests
+GET http://localhost:8086/test_gateway/test/all
+
+###
+
+### Get Only Active Tests (auto-disables expired tests after 24 hrs)
+GET http://localhost:8086/test_gateway/test/active
+
+###
+
+### Get Test by ID
+GET http://localhost:8086/test_gateway/test/get_by_test_id/7fb99966-8e32-4481-9f54-50bcf7e33e50
+
+###
+
+### Update Test (Add MCQ & Coding Test IDs)
+PUT http://localhost:8086/test_gateway/test/update
+Content-Type: application/json
+
+{
+  "test_id": "7213c219-3295-462d-b6cf-e35e3ee03a75",
+  "coding_test_id": ["9ee19f23-e30b-434d-a541-af9e5c51eac3"]
+}
+
+###
+
+### Toggle Test Status to ACTIVE (sets activeAt timestamp)
+PUT http://localhost:8086/test_gateway/test/toggle_status
+Content-Type: application/json
+
+{
+  "test_id": "1b5318ce-feb7-462c-a97e-565e7bc0576f",
+  "status": "disabled"
+}
+
+###
+
+### Toggle Test Status to DISABLED (clears activeAt)
+PUT http://localhost:8086/test_gateway/test/toggle_status
+Content-Type: application/json
+
+{
+  "test_id": "b913cdf9-79ff-4745-a57b-0a5882253dd2",
+  "status": "disabled"
+}
+
+###
+
+### Delete Test
+DELETE http://localhost:8086/test_gateway/test/delete/11571180-691a-4b62-b126-43e000b98479
+
+###
+
+### Remove MCQ from Test
+PUT http://localhost:8086/test_gateway/test/remove_mcq_from_test
+Content-Type: application/json
+
+{
+  "test_id": "11571180-691a-4b62-b126-43e000b98479",
+  "mcq_id": "d3d88451-7419-4bcd-ae0c-d04e515b2546"
+}

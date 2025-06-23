@@ -1,0 +1,86 @@
+### Create Test
+POST http://localhost:8082/test/create
+Content-Type: application/json
+
+{
+  "test_name": "C Programming Test",
+  "test_language": "C",
+  "test_total_score": 30,
+  "test_mcq_id":  [
+    "854fa4d2-ec3a-4526-a818-d2928f353d61",
+    "66ec67b5-c288-40ca-abb6-c3a447dd58b5",
+    "2ed4ce5a-a9a8-436d-8886-7ccaefe33aea",
+    "723564f5-3996-4cfd-a502-3eb74726649a",
+    "f3e9d12f-3fbd-47ac-b676-de9c7e68a924",
+    "715bdd34-3d9f-497c-aefd-9c96fe03547f",
+    "4c816047-27f8-44b4-a4fa-dcad2de92206",
+    "f3abd71e-cc94-4b68-8829-4e0e60d2123f",
+    "8eb73f80-7041-4962-8c77-03668b45b6c6",
+    "b05e2d38-0bfd-4506-adb4-9f2c04f5dcf7"
+  ]
+}
+
+###
+
+### Get All Tests
+GET http://localhost:8082/test/all
+
+###
+
+### Get Only Active Tests (auto-disables expired tests after 24 hrs)
+GET http://localhost:8082/test/active
+
+###
+
+### Get Test by ID
+GET http://localhost:8082/test/get_by_test_id/7fb99966-8e32-4481-9f54-50bcf7e33e50
+
+###
+
+### Update Test (Add MCQ & Coding Test IDs)
+PUT http://localhost:8082/test/update
+Content-Type: application/json
+
+{
+  "test_id": "b913cdf9-79ff-4745-a57b-0a5882253dd2",
+  "mcq_id": ["5822a799-2a0e-4c14-90df-f25f72ef5d0e"],
+  "coding_test_id": ["coding_id-5", "coding_id-6"]
+}
+
+###
+
+### Toggle Test Status to ACTIVE (sets activeAt timestamp)
+PUT http://localhost:8082/test/toggle_status
+Content-Type: application/json
+
+{
+  "test_id": "14ccc540-e9bc-434d-960b-d31712f18ba3",
+  "status": "active"
+}
+
+###
+
+### Toggle Test Status to DISABLED (clears activeAt)
+PUT http://localhost:8082/test/toggle_status
+Content-Type: application/json
+
+{
+  "test_id": "b913cdf9-79ff-4745-a57b-0a5882253dd2",
+  "status": "disabled"
+}
+
+###
+
+### Delete Test
+DELETE http://localhost:8082/test/delete/11571180-691a-4b62-b126-43e000b98479
+
+###
+
+### Remove MCQ from Test
+PUT http://localhost:8082/test/remove_mcq_from_test
+Content-Type: application/json
+
+{
+  "test_id": "11571180-691a-4b62-b126-43e000b98479",
+  "mcq_id": "d3d88451-7419-4bcd-ae0c-d04e515b2546"
+}

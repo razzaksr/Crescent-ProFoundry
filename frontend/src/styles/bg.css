@@ -1,0 +1,113 @@
+/* Background Styles */
+:root {
+    --primary: #0c83c8;
+    --primary-dark: #0a6eaa;
+    --secondary: #fc7a46;
+    --secondary-dark: #e56a3d;
+  }
+  
+  .container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(12, 131, 200, 0.1) 0%, rgba(252, 122, 70, 0.1) 100%);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    font-family: "Inter", sans-serif;
+  }
+  
+  /* Background decorative elements */
+  .container::before,
+  .container::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    animation: float 15s infinite ease-in-out;
+  }
+  
+  .container::before {
+    top: -5%;
+    right: -5%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(12, 131, 200, 0.1) 0%, rgba(12, 131, 200, 0) 70%);
+    animation-delay: 0s;
+  }
+  
+  .container::after {
+    bottom: -5%;
+    left: -5%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(252, 122, 70, 0.1) 0%, rgba(252, 122, 70, 0) 70%);
+    animation-delay: -5s;
+  }
+  
+  /* Decorative circles */
+  .decorativeCircle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.05;
+    animation: float 20s infinite ease-in-out;
+  }
+  
+  .circle1 {
+    top: 20%;
+    left: 15%;
+    width: 200px;
+    height: 200px;
+    background: var(--primary);
+    animation-delay: -3s;
+  }
+  
+  .circle2 {
+    top: 60%;
+    right: 10%;
+    width: 150px;
+    height: 150px;
+    background: var(--secondary);
+    animation-delay: -7s;
+  }
+  
+  /* Animations */
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0) translateX(0);
+    }
+    25% {
+      transform: translateY(-20px) translateX(10px);
+    }
+    50% {
+      transform: translateY(0) translateX(20px);
+    }
+    75% {
+      transform: translateY(20px) translateX(10px);
+    }
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 600px) {
+    .container::before {
+      width: 200px;
+      height: 200px;
+    }
+  
+    .container::after {
+      width: 150px;
+      height: 150px;
+    }
+  
+    .circle1 {
+      width: 100px;
+      height: 100px;
+    }
+  
+    .circle2 {
+      width: 80px;
+      height: 80px;
+    }
+  }
+  

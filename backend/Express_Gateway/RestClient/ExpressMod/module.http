@@ -1,0 +1,32 @@
+### Create Module
+POST http://localhost:8086/modules_gateway/modules/add_module
+Content-Type: application/json
+
+{
+  "mod_name": "Full Stack Devcscselopment",
+  "mod_tech": "MERcscN",
+  "mod_duration": "6 monsccths"
+}
+
+### Get All Modules
+GET http://localhost:8086/modules_gateway/modules/get_all_module
+
+### Get Module by ID
+GET http://localhost:8086/modules_gateway/modules/get_module_by_id/863662d6-7565-4ba7-aaa5-5ecc9d6cae9e
+
+### Update Module
+PUT http://localhost:8086/modules_gateway/modules/update_module
+Content-Type: application/json
+
+{
+  "mod_id": "ca81469c-0763-48e0-bbdd-bfd919769454",
+  "mod_name": "Advanced Full Stack",
+  "mod_tech": "MERN + React Native",
+  "mod_duration": "8 months"
+}
+
+###  Delete Module
+DELETE http://localhost:8086/modules_gateway/modules/delete_module/ca81469c-0763-48e0-bbdd-bfd919769454
+### Get Module Name by ID
+GET http://localhost:8086/modules_gateway/modules/get_module_name_by_id/ca81469c-0763-48e0-bbdd-bfd919769454
+

@@ -1,0 +1,79 @@
+### Create a Test Id and Post the testCase
+POST http://localhost:8082/testcase/create_testCase
+Content-Type: application/json
+
+[
+        {
+          "testcase_input": ["radar"],
+          "testcase_output": ["1"],
+          "testcase_tags": ["C", "palindrome", "string", "Ccoding2"]
+        },
+        {
+          "testcase_input": ["Radar"],
+          "testcase_output": ["0"],
+          "testcase_tags": ["C", "palindrome", "string", "case_sensitive", "Ccoding2"]
+        },
+        {
+          "testcase_input": ["hello"],
+          "testcase_output": ["0"],
+          "testcase_tags": ["C", "palindrome", "string", "Ccoding2"]
+        },
+        {
+          "testcase_input": ["level"],
+          "testcase_output": ["1"],
+          "testcase_tags": ["C", "palindrome", "string", "Ccoding2"]
+        },
+        {
+          "testcase_input": ["racecar"],
+          "testcase_output": ["1"],
+          "testcase_tags": ["C", "palindrome", "string", "Ccoding2"]
+        },
+        {
+          "testcase_input": ["12321"],
+          "testcase_output": ["1"],
+          "testcase_tags": ["C", "palindrome", "string", "numeric", "Ccoding2"]
+        },
+        {
+          "testcase_input": ["12345"],
+          "testcase_output": ["0"],
+          "testcase_tags": ["C", "palindrome", "string", "numeric", "Ccoding2"]
+        },
+        {
+          "testcase_input": ["a"],
+          "testcase_output": ["1"],
+          "testcase_tags": ["C", "palindrome", "string", "edge_case", "Ccoding2"]
+        },
+        {
+          "testcase_input": ["ab"],
+          "testcase_output": ["0"],
+          "testcase_tags": ["C", "palindrome", "string", "Ccoding2"]
+        },
+        {
+          "testcase_input": ["deked"],
+          "testcase_output": ["1"],
+          "testcase_tags": ["C", "palindrome", "string", "Ccoding2"]
+        }
+      ]
+
+### Read all the testCase 
+GET http://localhost:8082/testcase/get_all_testCases
+
+### Get the testCase 
+GET http://localhost:8082/testcase/get_testcases_by_tag/Ccoding2
+
+### Read the testCase by ID
+GET http://localhost:8082/testcase/get_testCase_id/dcb40000-a33a-420f-bd9d-109ccbacc132
+
+### update the TestCase Using 
+PUT http://localhost:8082/testcase/update_testCase
+Content-Type: application/json
+
+{
+    "testcase_id": "8fdd98c0-6746-4c88-8419-b92cc8c61ecd",
+    "testcase_input": "5 3",
+    "testcase_output": "8",
+    "testcase_tags": ["math", "addition"]
+}
+
+#### Delete the TestCase 
+DELETE http://localhost:8082/testcase/delete_testCase/8fdd98c0-6746-4c88-8419-b92cc8c61ecd

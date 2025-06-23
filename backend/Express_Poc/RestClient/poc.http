@@ -1,0 +1,129 @@
+### Create a new POC
+POST http://localhost:8084/poc/add_poc
+Content-Type: application/json
+
+{
+    "mod_poc_name": "vetvs dvvdri",
+    "mod_poc_role": "AP",
+    "mod_poc_email": "vetrscscssvsi@gmail.com",
+    "mod_poc_mobile": "26213283847784"
+}
+
+### Get all POCs
+GET http://localhost:8084/poc/read_all_poc
+
+### Get POC by mod_poc_id
+GET http://localhost:8084/poc/get_poc_by_poc_id/43302da3-2f15-45e1-a09f-ff825759e19a
+
+### Get POC ID AND MOD ID BY USER ID
+GET http://localhost:8084/poc/mod_id_poc_id/528f7cb8-0bfe-4366-a98d-831719ec53e6
+
+### Update POC details
+PUT http://localhost:8084/poc/update_poc
+Content-Type: application/json
+
+{
+    "mod_poc_id": "b4021b93-8384-4607-8b59-58c66fdd794d",
+    "poc_certificate": {
+    "cert_status": true
+  }
+}
+
+### Update only mod_tests and mod_users
+PUT http://localhost:8084/poc/update_mod_field 
+Content-Type: application/json
+
+{
+    "mod_poc_id": "028621b4-d508-4eae-8a6f-07a4df9f9f32",
+    "mod_users": [
+        "717150b2-2a19-45e8-9c24-69d93b4751c2",
+        "528f7cb8-0bfe-4366-a98d-831719ec53e6",
+        "dc3b072d-1ae6-4da9-bd92-04380fa78d11",
+        "41a1404a-2b8c-427c-98a9-3d199d6674fb",
+        "95bf4b6a-1665-4561-af9f-5ed41dd8d453",
+        "7f37bc0f-da5e-41cc-93bc-cb566ebf1e54",
+        "d70123a9-efec-417d-9c58-c98a977acbbc",
+        "efe06b56-aaf6-4198-840f-4a2b966b55f0",
+        "89810ab1-72b2-444e-8c7a-d8c9b6fe0039"
+    ]
+}
+
+### Add test IDs to a POC
+PUT http://localhost:8084/poc/update_test
+Content-Type: application/json
+
+{
+    "mod_poc_id": "43302da3-2f15-45e1-a09f-ff825759e19a",
+    "test_id": [
+        { "test_id": "19vvvv540-e9bc-434d-960b-d31712f18ba3", "assigned_date": "29/05/2025" },
+        { "test_id": "7fb99966-8e32-4481-9f54-50bcf7e33e50", "assigned_date": "29/05/2025" },
+        { "test_id": "17ddd540-e9bc-434d-960b-d31712f18ba3", "assigned_date": "29/05/2025" },
+        { "test_id": "7ab99966-8e32-4481-9f54-50bcf7e33e50", "assigned_date": "29/05/2025" }
+    ]
+}
+
+### Delete all test_ids from a POC
+DELETE http://localhost:8084/poc/delete_test/57b7bb55-a49e-4065-b38d-fbd13c396d2b
+
+### Delete a POC
+DELETE http://localhost:8084/poc/delete_poc/028621b4-d508-4eae-8a6f-07a4df9f9f32
+
+### Get mod_id by user_id
+GET http://localhost:8084/poc/mod_by_user/9ccefe74-f80c-4427-804e-827a61d7619a
+
+### Get mod_id, mod_poc_id, mod_poc_name, and test_ids by user_id
+GET http://localhost:8084/poc/mod_and_poc/717150b2-2a19-45e8-9c24-69d93b4751c2
+
+### Get today's test IDs from a specific POC
+GET http://localhost:8084/poc/tests_today/b4021b93-8384-4607-8b59-58c66fdd794d
+
+### Get test IDs from a POC up to today's date
+GET http://localhost:8084/poc/tests_till_today/b4021b93-8384-4607-8b59-58c66fdd794d
+
+### Get Report by mod_poc_id
+GET http://localhost:8084/poc/get_poc_report_by_poc_id/9ccefe74-f80c-4427-804e-827a61d7619a
+
+### Get all test with poc IDs
+GET http://localhost:8084/poc/get_all_tests/9ccefe74-f80c-4427-804e-827a61d7619a
+
+### Create a Certficcate in poc using user id 
+POST http://localhost:8084/poc/generate-certificates
+Content-Type: application/json
+
+{
+  "mod_poc_id": "b4021b93-8384-4607-8b59-58c66fdd794d",
+  "userIds": "406907d4-6ce0-46c7-8aea-222ec7193160"
+}
+
+### Create a Certficcate in poc using bulk user id  
+POST http://localhost:8084/poc/generate-certificates
+Content-Type: application/json
+
+{
+  "mod_poc_id": "b4021b93-8384-4607-8b59-58c66fdd794d",
+    "userIds": [
+        "406907d4-6ce0-46c7-8aea-222ec7193160",
+        "55ff31f6-a739-4fbe-8c1b-da6ff7e569e6"
+    ]
+}
+
+### Get Certificate ID for a User
+GET http://localhost:8084/poc/get-certificate/dd13e5af-a777-4ce5-9a3d-8ee1b2502958/528f7cb8-0bfe-4366-a98d-831719ec53e6
+
+### Remove User and Certificate
+DELETE http://localhost:8084/poc/remove-user/dd13e5af-a777-4ce5-9a3d-8ee1b2502958/user123
+
+### Update Certificate (send in body instead of params)
+PUT http://localhost:8084/poc/update-certificate
+Content-Type: application/json
+
+{
+  "pocId": "dd13e5af-a777-4ce5-9a3d-8ee1b2502958",
+  "userId": "528f7cb8-0bfe-4366-a98d-831719ec53e6"
+}
+
+### GET NAME OF POC 
+GET http://localhost:8084/poc//read_all_poc_name
+
+
+

@@ -1,0 +1,56 @@
+### Create a Coding data
+POST http://localhost:8082/coding/code
+Content-Type: application/json
+
+{
+"code_problem_statement": "Write a C function to check if a given string is a palindrome (case-sensitive).",
+      "code_test_cases_id":  [
+    "aa2ffaf4-b992-4a23-bb9b-50898bb5b83c",
+    "b8cb2cf6-31aa-4afe-a7fc-08b44a7a9207",
+    "d40a3600-4c61-478b-963b-f12bd6a47450",
+    "59642207-9e53-4592-85e1-434679c59474",
+    "a7a16670-b4f6-4fc3-b62e-38e7d97d600e",
+    "6bf4e673-b332-457b-8bfb-66d6976d783f",
+    "4d916009-6d1d-4df9-9953-9d987691387e",
+    "24b80ad4-847d-4e11-8522-f03fd4cd44a4",
+    "7b8b56d7-2414-4e2a-9eb1-318545f9b2f5",
+    "d4f9c421-2b03-48fa-b807-1b9245d1da93"
+  ],
+"code_tags": ["C", "palindrome", "string", "logic"]
+}
+
+### Get All Codes
+GET http://localhost:8082/coding/get_allCodes
+
+### Get code details by id 
+GET http://localhost:8082/coding/get_code_by_id/9ee19f23-e30b-434d-a541-af9e5c51eac3
+
+
+### Update the Code
+PUT http://localhost:8082/coding/update_code
+Content-Type: application/json
+
+{
+  "code_id": "2021bea1-2ab1-4d70-b997-623ca8935ffb",
+  "code_problem_statement": "Write a function to find the factorial of a number.",
+  "code_test_cases": ["test1", "test2"],
+  "code_tags": ["math", "recursion", "factorial"]
+}
+
+### Delete a code
+DELETE http://localhost:8082/coding/delete_code/2021bea1-2ab1-4d70-b997-623ca8935ffb
+
+###############
+POST http://localhost:8082/coding/compiler
+Content-Type: application/json
+
+{
+  "language": "python",
+  "code": "print('Hello, World!');",
+  "testCases": [
+    {
+      "input": "",
+      "output": "Hello, World!"
+    }
+  ]
+}
