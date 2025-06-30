@@ -9,7 +9,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: "Inter", "Roboto", "Segoe UI", Arial, sans-serif;
-  background-color: #f8fafc;
+  background-color: #ffffff; /* Changed to white for a clean look */
   overflow-x: hidden;
 }
 
@@ -19,8 +19,8 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(135deg, #0c83c8 0%, #0a6ba3 100%);
-  color: white;
+  background: linear-gradient(135deg, #0c83c8 0%, #fc7a46 100%); /* Updated to use primary colors */
+  color: #ffffff; /* White text for contrast */
   z-index: 1000;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
@@ -44,10 +44,11 @@ body {
   font-weight: 600;
   font-size: 1.25rem;
   margin: 0;
+  color: #ffffff; /* Ensure white text */
 }
 
 .info-button {
-  color: white !important;
+  color: #ffffff !important;
   padding: 8px !important;
   transition: all 0.2s ease;
 }
@@ -70,16 +71,19 @@ body {
   padding: 8px 16px;
   border-radius: 20px;
   backdrop-filter: blur(10px);
+  color: #ffffff; /* White text for timer */
 }
 
 .timer-icon {
   font-size: 20px !important;
+  color: #ffffff; /* White icon */
 }
 
 .timer-text {
   font-weight: 600;
   font-size: 1rem;
   min-width: 50px;
+  color: #ffffff; /* White text */
 }
 
 /* Main Content */
@@ -93,11 +97,12 @@ body {
   margin-left: auto;
   margin-right: auto;
   min-height: calc(100vh - 80px);
+  background-color: #ffffff; /* White background */
 }
 
 /* Question Card */
 .question-card {
-  background: white;
+  background: #ffffff; /* White background */
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   border: 1px solid #e2e8f0;
@@ -114,11 +119,11 @@ body {
 .question-header {
   padding: 20px 24px 16px;
   border-bottom: 1px solid #e2e8f0;
-  background: linear-gradient(to top, #f8fafc 0%, #f1f5f9 100%);
+  background: linear-gradient(to top, #ffffff 0%, #f1f5f9 100%); /* White base */
 }
 
 .question-number {
-  color: #0c83c8;
+  color: #0c83c8; /* Blue for question number */
   font-weight: 600;
   margin: 0;
 }
@@ -136,9 +141,9 @@ body {
   color: #334155;
   margin-bottom: 24px;
   padding: 16px;
-  background: #f8fafc;
+  background: #ffffff; /* White background */
   border-radius: 8px;
-  border-left: 4px solid #0c83c8;
+  border-left: 4px solid #0c83c8; /* Blue accent */
   user-select: none;
 }
 
@@ -154,20 +159,20 @@ body {
   padding: 12px 16px;
   border-radius: 8px;
   border: 2px solid #e2e8f0;
-  background: white;
+  background: #ffffff; /* White background */
   transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
   user-select: none;
 }
 
 .option-item:hover {
-  background: #f0f9ff;
+  background: rgba(12, 131, 200, 0.05); /* Light blue hover */
   transform: scale(1.02);
   box-shadow: 0 2px 8px rgba(12, 131, 200, 0.3);
 }
 
 .option-item.selected {
-  background: #f0f9ff;
+  background: rgba(12, 131, 200, 0.1); /* Blue tint for selected */
   transform: scale(1.02);
   box-shadow: 0 2px 8px rgba(12, 131, 200, 0.3);
 }
@@ -180,13 +185,13 @@ body {
 }
 
 .custom-radio {
-  color: #64748b;
+  color: #0c83c8; /* Blue radio button */
 }
 
 .question-actions {
   padding: 20px 24px;
   border-top: 1px solid #e2e8f0;
-  background: #f8fafc;
+  background: #ffffff; /* White background */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -202,13 +207,14 @@ body {
 
 /* Info Card */
 .info-card {
-  background: white;
+  background: #ffffff; /* White background */
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   border: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  cursor: pointer;
   transition: all 0.2s ease;
 }
 
@@ -219,11 +225,11 @@ body {
 .student-info {
   padding: 20px 24px;
   border-bottom: 1px solid #e2e8f0;
-  background: linear-gradient(to top, #f8fafc 0%, #f1f5f9 100%);
+  background: linear-gradient(to top, #ffffff 0%, #f1f5f9 100%); /* White base */
 }
 
 .student-name {
-  color: #0c83c8;
+  color: #0c83c8; /* Blue for student name */
   font-weight: 600;
   margin: 0;
   text-align: center;
@@ -255,29 +261,80 @@ body {
   border-color: #e2e8f0;
 }
 
-/* Pie Chart */
 .pie-chart-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  box-shadow: none;
+  position: relative;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pie-chart-container.stable {
+  transform: scale(1.05);
+  animation: completionGlow 2s ease-in-out infinite alternate;
 }
 
 .pie-chart {
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.pie-chart-container.stable .pie-chart {
+  filter: drop-shadow(0 4px 12px rgba(34, 197, 94, 0.3));
+}
+
+.pie-background {
+  transition: stroke 0.4s ease;
+}
+
+.progress-ring {
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  stroke-dashoffset: 0;
+}
+
+.progress-ring.completed {
+  stroke: #22c55e;
+  stroke-width: 10;
+  filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.4));
+  animation: progressPulse 2s ease-in-out infinite;
 }
 
 .pie-slice {
-  transition: all 0.5s ease-in-out;
+  stroke: #fff;
+  stroke-width: 1;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
 }
 
-.pie-slice:hover {
+.pie-slice:hover:not(.stable) {
   transform: scale(1.05);
-  filter
-
-: brightness(1.1);
+  filter: brightness(1.1);
 }
+
+.pie-slice.stable {
+  stroke-width: 2;
+  stroke: rgba(255, 255, 255, 0.8);
+  filter: brightness(1.1) saturate(1.2);
+  animation: stabilize 0.8s ease-out;
+}
+
+
+/* Optional: animate on load */
+@keyframes fillPie {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
 
 /* Circular Timer */
 .circular-timer {
@@ -315,7 +372,7 @@ body {
 }
 
 .navigator-title {
-  color: #64748b;
+  color: #0c83c8; /* Blue for title */
   font-weight: 600;
   margin: 0 0 16px 0;
   text-align: center;
@@ -339,7 +396,7 @@ body {
   font-size: 14px;
   border: 2px solid transparent;
   transition: all 0.2s ease;
-  color: white;
+  color: #ffffff; /* White text for contrast */
 }
 
 .question-bubble:hover {
@@ -348,27 +405,38 @@ body {
 }
 
 .question-bubble.current {
-  box-shadow: 0 0 0 2px rgba(51, 65, 85, 0.3);
+  box-shadow: 0 0 0 2px #0c83c8; /* Blue outline for current */
 }
 
 .question-bubble.answered {
-  background: #22c55e;
+  background: #42be05cc; /* Green for answered */
 }
 
 .question-bubble.answered:hover {
-  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+  box-shadow: 0 4px 12px rgba(12, 131, 200, 0.3);
 }
 
 .question-bubble.marked {
-  background: #f97316;
+  background: #fc7a46; /* Orange for marked */
 }
 
 .question-bubble.marked:hover {
-  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+  box-shadow: 0 4px 12px rgba(252, 122, 70, 0.3);
+}
+
+.question-bubble.answered-and-marked {
+  background:#0c83c8; /* Updated to use primary colors */
+ ;
+  color: white;
+}
+
+
+.question-bubble.answered-and-marked:hover {
+  box-shadow: 0 4px 12px rgba(12, 131, 200, 0.5); /* Mixed shadow */
 }
 
 .question-bubble.not-answered {
-  background: #ef4444;
+  background: #ef4444; /* Keep red for not answered */
 }
 
 .question-bubble.not-answered:hover {
@@ -376,7 +444,7 @@ body {
 }
 
 .question-bubble.not-visited {
-  background: #9ca3af;
+  background: #9ca3af; /* Keep gray for not visited */
 }
 
 .question-bubble.not-visited:hover {
@@ -387,7 +455,7 @@ body {
 .final-actions {
   padding: 20px;
   border-top: 1px solid #e2e8f0;
-  background: #f8fafc;
+  background: #ffffff; /* White background */
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -409,42 +477,42 @@ body {
 }
 
 .clean-button.primary {
-  background-color: #0c83c8;
+  background-color: #0c83c8; /* Blue for primary buttons */
   border-color: #0c83c8;
-  color: white;
+  color: #ffffff; /* White text */
 }
 
 .clean-button.primary:hover {
-  background-color: #0a6ba3;
+  background-color: #0a6ba3; /* Darker blue */
   border-color: #0a6ba3;
   box-shadow: 0 4px 12px rgba(12, 131, 200, 0.3);
 }
 
 .mark-button {
-  color: #fc7a46 !important;
+  color: #fc7a46 !important; /* Orange for mark button */
   border-color: #fc7a46 !important;
 }
 
 .mark-button:hover {
   background-color: #fc7a46 !important;
-  color: white !important;
+  color: #ffffff !important; /* White text on hover */
 }
 
 .nav-button {
-  color: #0c83c8;
+  color: #0c83c8; /* Blue for navigation buttons */
   border-color: #0c83c8;
 }
 
 .nav-button:hover {
   background-color: #0c83c8;
-  color: white;
+  color: #ffffff; /* White text */
   box-shadow: 0 4px 12px rgba(12, 131, 200, 0.3);
 }
 
 .proceed-button {
-  background-color: #0c83c8;
+  background-color: #0c83c8; /* Blue for proceed */
   border-color: #0c83c8;
-  color: white;
+  color: #ffffff; /* White text */
 }
 
 .proceed-button:hover {
@@ -454,21 +522,21 @@ body {
 }
 
 .submit-button {
-  background-color: #fc7a46;
+  background-color: #fc7a46; /* Orange for submit */
   border-color: #fc7a46;
-  color: white;
+  color: #ffffff; /* White text */
 }
 
 .submit-button:hover {
-  background-color: #e65100;
+  background-color: #e65100; /* Darker orange */
   border-color: #e65100;
   box-shadow: 0 4px 12px rgba(252, 122, 70, 0.3);
 }
 
 .coding-button {
-  background-color: #0c83c8;
+  background-color: #0c83c8; /* Blue for coding button */
   border-color: #0c83c8;
-  color: white;
+  color: #ffffff; /* White text */
 }
 
 .coding-button:hover {
@@ -481,27 +549,29 @@ body {
 .clean-dialog .MuiDialog-paper {
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  background: #ffffff; /* White background */
 }
 
 .clean-dialog .MuiDialogTitle-root {
-  background: linear-gradient(135deg, #0c83c8 0%, #0a6ba3 100%);
-  color: white;
+  background: linear-gradient(135deg, #0c83c8 0%, #fc7a46 100%); /* Gradient for dialog title */
+  color: #ffffff; /* White text */
   font-weight: 600;
 }
 
 .clean-dialog .MuiDialogContent-root {
   padding: 24px;
+  background: #ffffff; /* White background */
 }
 
 .clean-dialog .MuiDialogActions-root {
   padding: 16px 24px;
-  background: #f8fafc;
+  background: #ffffff; /* White background */
 }
 
 /* Focus States for Accessibility */
 .clean-button:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 0 3px rgba(12, 131, 200, 0.3); /* Blue focus */
 }
 
 .clean-button.primary:focus {
@@ -509,7 +579,7 @@ body {
 }
 
 .mark-button:focus {
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.3);
+  box-shadow: 0 0 0 3px rgba(252, 122, 70, 0.3); /* Orange focus */
 }
 
 .nav-button:focus {
@@ -533,11 +603,15 @@ body {
 }
 
 .question-bubble.answered:focus {
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.3);
+  box-shadow: 0 0 0 3px rgba(12, 131, 200, 0.3); /* Blue focus */
 }
 
 .question-bubble.marked:focus {
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.3);
+  box-shadow: 0 0 0 3px rgba(252, 122, 70, 0.3); /* Orange focus */
+}
+
+.question-bubble.answered-and-marked:focus {
+  box-shadow: 0 0 0 3px rgba(12, 131, 200, 0.5); /* Mixed focus */
 }
 
 .question-bubble.not-answered:focus {
@@ -550,12 +624,12 @@ body {
 
 .option-item:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(12, 131, 200, 0.3);
+  box-shadow: 0 0 0 3px rgba(12, 131, 200, 0.3); /* Blue focus */
 }
 
 .info-button:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3); /* White focus */
 }
 
 /* Responsive Design */
@@ -695,5 +769,6 @@ body {
   .info-card {
     box-shadow: none;
     border: 1px solid #000;
+    background: #ffffff; /* White for print */
   }
 }

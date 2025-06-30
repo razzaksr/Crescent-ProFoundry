@@ -1,5 +1,5 @@
 ### Create a Coding data
-POST http://localhost:8082/coding/code
+POST http://localhost:8082/coding/add_code
 Content-Type: application/json
 
 {

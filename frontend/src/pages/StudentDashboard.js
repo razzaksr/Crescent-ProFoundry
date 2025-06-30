@@ -48,7 +48,7 @@ export default function StudentDashboard() {
       }
     });
 
-    // Clear browser history and set current page as only entry
+    // Clear browser history and clear current page as only entry
     window.history.replaceState(null, null, window.location.href);
 
     const storedUser = localStorage.getItem("true");
@@ -208,11 +208,11 @@ export default function StudentDashboard() {
       boxSizing: "border-box",
     },
     header: {
-      background: `linear-gradient(135deg, #0c83c8 0%, #0a6eaa 100%)`,
+      background: `linear-gradient(135deg, #38b6ff 0%, #2a8cc0 100%)`,
       color: "white",
       padding: "24px",
       borderRadius: "0 0 20px 20px",
-      boxShadow: "0 4px 20px rgba(12, 131, 200, 0.2)",
+      boxShadow: "0 4px 20px rgba(56, 182, 255, 0.2)",
       marginBottom: "24px",
     },
     headerTitle: {
@@ -236,7 +236,7 @@ export default function StudentDashboard() {
       width: "clamp(150px, 25vw, 200px)",
       height: "clamp(150px, 25vw, 200px)",
       borderRadius: "50%",
-      background: `conic-gradient(#fc7a46 ${courseProgress}%, rgba(255,255,255,0.2) 0)`,
+      background: `conic-gradient(#ff66c4 ${courseProgress}%, rgba(255,255,255,0.2) 0)`,
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
@@ -246,7 +246,7 @@ export default function StudentDashboard() {
       position: "absolute",
       inset: "10px",
       borderRadius: "50%",
-      background: "rgba(12, 131, 200, 0.8)",
+      background: "rgba(56, 182, 255, 0.8)",
     },
     progressText: {
       position: "relative",
@@ -358,7 +358,7 @@ export default function StudentDashboard() {
         <Box style={styles.loadingContainer}>
           <CircularProgress
             size={isMobile ? "60px" : "80px"}
-            sx={{ color: "#0c83c8" }}
+            sx={{ color: "#38b6ff" }}
           />
         </Box>
       </div>
@@ -401,7 +401,7 @@ export default function StudentDashboard() {
               <div style={styles.buttonContainer}>
                 <button
                   style={{
-                    backgroundColor: testIds.length === 0 || allTestsTaken ? "#cccccc" : "#fc7a46",
+                    backgroundColor: testIds.length === 0 || allTestsTaken ? "#cccccc" : "#ff66c4",
                     color: "white",
                     border: "none",
                     borderRadius: "8px",
@@ -417,14 +417,14 @@ export default function StudentDashboard() {
                   disabled={testIds.length === 0 || allTestsTaken}
                   onMouseOver={(e) => {
                     if (testIds.length > 0 && !allTestsTaken) {
-                      e.currentTarget.style.backgroundColor = "#e56a3c";
+                      e.currentTarget.style.backgroundColor = "#e55ab2";
                       e.currentTarget.style.boxShadow = "inset 0 2px 4px rgba(0, 0, 0, 0.2)";
                       e.currentTarget.style.transform = "scale(1.05)";
                     }
                   }}
                   onMouseOut={(e) => {
                     if (testIds.length > 0 && !allTestsTaken) {
-                      e.currentTarget.style.backgroundColor = "#fc7a46";
+                      e.currentTarget.style.backgroundColor = "#ff66c4";
                       e.currentTarget.style.boxShadow = "none";
                       e.currentTarget.style.transform = "scale(1)";
                     }
@@ -450,7 +450,7 @@ export default function StudentDashboard() {
                     }}
                     onClick={handleDownloadCertificate}
                     onMouseOver={(e) => {
-                      e.currentTarget.style.backgroundColor = "#0b70ad";
+                      e.currentTarget.style.backgroundColor = "#2a8cc0";
                       e.currentTarget.style.boxShadow = "inset 0 2px 4px rgba(0, 0, 0, 0.2)";
                       e.currentTarget.style.transform = "scale(1.05)";
                     }}

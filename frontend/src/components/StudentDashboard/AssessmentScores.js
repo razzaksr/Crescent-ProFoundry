@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { fetchResultsByUserId } from "../../axios";
+import { fetchResultsByUserAndPoc } from "../../axios";
 
 const AssessmentScores = () => {
   const [assessmentData, setAssessmentData] = useState([]);
@@ -20,7 +20,7 @@ const AssessmentScores = () => {
     },
     cardHeader: {
       padding: "16px",
-      background: "linear-gradient(135deg, #0c83c8 0%, #0a6eaa 100%)",
+      background: "linear-gradient(135deg, #38b6ff 0%, #2a8cc0 100%)",
       color: "white",
     },
     cardTitle: { fontSize: "18px", fontWeight: "600", marginBottom: "6px" },
@@ -51,8 +51,8 @@ const AssessmentScores = () => {
           boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
         }}>
           <p style={{ margin: "0", fontWeight: "bold" }}>{label}</p>
-          <p style={{ margin: "4px 0", color: "#0c83c8" }}>Obtained Score: {data.scored}</p>
-          <p style={{ margin: "4px 0", color: "#82ca9d" }}>Total Score: {data.total}</p>
+          <p style={{ margin: "4px 0", color: "#38b6ff" }}>Obtained Score: {data.scored}</p>
+          <p style={{ margin: "4px 0", color: "#f06292" }}>Total Score: {data.total}</p>
         </div>
       );
     }
@@ -64,21 +64,22 @@ const AssessmentScores = () => {
       try {
         const storedUser = localStorage.getItem("true");
         if (!storedUser) {
-          console.warn("No user found in session storage");
+          console.warn("No user found in localStorage");
           setAssessmentData([]);
           return;
         }
 
-        const user = JSON.parse(storedUser);
-        const currentUserId = user?.user?.user_id;
+        const userData = JSON.parse(storedUser);
+        const currentUserId = userData?.user?.user_id;
+        const currentPocId = userData?.user?.mod_poc_id?.mod_poc_id;
 
-        if (!currentUserId) {
-          console.warn("No user ID available");
+        if (!currentUserId || !currentPocId) {
+          console.warn("No user ID or POC ID available in localStorage");
           setAssessmentData([]);
           return;
         }
 
-        const resultData = await fetchResultsByUserId(currentUserId);
+        const resultData = await fetchResultsByUserAndPoc(currentUserId, currentPocId);
         if (resultData?.success && Array.isArray(resultData.data) && resultData.data.length > 0) {
           const transformedData = resultData.data.map((result, index) => ({
             name: `Assessment ${index + 1}`,
@@ -115,7 +116,7 @@ const AssessmentScores = () => {
         <p style={styles.cardSubtitle}>Your performance in recent assessments</p>
       </div>
       <div style={styles.cardContent}>
-        <strike style={styles.chartContainer}>
+        <div style={styles.chartContainer}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={assessmentData}
@@ -126,10 +127,10 @@ const AssessmentScores = () => {
               <YAxis domain={[0, Math.max(...assessmentData.map(d => d.total), 50)]} />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
-              <Bar dataKey="scored" fill="#0c83c8" radius={[4, 4, 0, 0]} name="Obtained Score" />
+              <Bar dataKey="scored" fill="#38b6ff" radius={[4, 4, 0, 0]} name="Obtained Score" />
             </BarChart>
           </ResponsiveContainer>
-        </strike>
+        </div>
       </div>
     </div>
   );

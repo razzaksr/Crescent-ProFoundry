@@ -28,4 +28,4 @@ Content-Type: application/json
 DELETE http://localhost:8085/modules/delete_module/f4e59446-5b4b-4504-8932-f10f07794a90
 
 ### Get Module Name by ID
-GET http://localhost:8085/modules/get_module_name_by_id/f4e59446-5b4b-4504-8932-f10f07794a90
+GET http://localhost:8085/modules/get_module_name_by_id/ce8953f2-51e2-417e-b0ff-187fb2db5fac

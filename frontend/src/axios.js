@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const BASE_URL = "http://localhost:8086";
-// const BASE_URL = "https://vw47nbtx-8086.inc1.devtunnels.ms";
+// const BASE_URL = "https://100.25.243.36";
 
 
 // Sign-in API call
@@ -85,9 +85,9 @@ export const getModuleById = async (modId) => {
 };
 
 // Fetch Result by User ID
-export const fetchResultsByUserId = async (userId) => {
+export const fetchResultsByUserAndPoc = async (userId, pocId) => {
   try {
-    const response = await axios.get(`${BASE_URL}/results_gateway/results/get_results_by_user_id/${userId}`);
+    const response = await axios.get(`${BASE_URL}/results_gateway/results/get_results_by_user_and_poc/${userId}/${pocId}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching result data:", error);
@@ -106,6 +106,16 @@ export const checkIfTestTaken = async (userId, testId) => {
     return response.data;
   } catch (error) {
     console.error('Error checking test result:', error);
+    throw error;
+  }
+};
+
+// Fetch POC name by mod_poc_id
+export const fetchPocNameById = async (mod_poc_id) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/poc_gateway/poc/get_poc_name_by_id/${mod_poc_id}`);
+    return response;
+  } catch (error) {
     throw error;
   }
 };
@@ -450,19 +460,17 @@ export const addExpert = async (expertData) => {
 
 // Add a new Coding problem
 
-export const createCodeProblem = async (problemStatement, tags) => {
-  const payload = {
-    code_problem_statement: problemStatement,
-    code_test_cases_id: [],
-    code_tags: tags.split(',').map(tag => tag.trim()).filter(Boolean),
-  };
+export const createCodeProblem = async (payload) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/coding_gateway/coding/add_code`, payload, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return response.data;
+  } catch (err) {
+    throw err.response?.data || { message: 'Failed to add code problem' };
+  }
+};
 
-  const response = await axios.post(`${BASE_URL}/coding_gateway/coding/add_code`, payload, {
-    headers: { 'Content-Type': 'application/json' },
-  });
-
-  return response.data;
-};  
 
 // Add a new Testcase
 export const createTestCase = async (payload) => {
@@ -568,6 +576,21 @@ export const bulkAddUsers = async (users) => {
   }
 };
 
+// ADD MCQ
+export const addMcq = async (mcqData) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/mcq_gateway/mcq/add_mcq`, mcqData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    console.log("addMcq response:", response);
+    return response;
+  } catch (error) {
+    console.error("addMcq error:", error.response || error.message);
+    throw error;
+  }
+};
 // Update Poc
 
 export const updatePoc = async (updateData) => {

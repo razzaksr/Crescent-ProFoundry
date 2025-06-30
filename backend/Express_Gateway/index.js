@@ -37,6 +37,8 @@ const fetchingService = async (requestedService) => {
     }
 };
 
+
+
 // Middleware to forward requests to the respective microservices
 const forwardRequest = (serviceName) => {
     return async (req, res, next) => {
@@ -71,6 +73,7 @@ app.use('/results_gateway', forwardRequest('RESULTS'));
 app.use('/user_gateway', forwardRequest('USER'));
 app.use('/modules_gateway', forwardRequest('MODULES'));
 app.use('/organization_gateway', forwardRequest('ORGANIZATION'));
+app.use('/login_gateway', forwardRequest('LOGIN'));
 
 // Start the API Gateway
 app.listen(PORT, () => {

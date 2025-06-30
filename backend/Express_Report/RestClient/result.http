@@ -43,7 +43,7 @@ GET http://localhost:8083/results/get_result_by_user_id_test_id?result_user_id=5
 Content-Type: application/json
 
 ### Fetch Result BY user ID
-GET http://localhost:8083/results/get_results_by_user_id/fab89ab1-d46f-4b03-827d-ae1388c11991
+GET http://localhost:8083/results/get_results_by_user_and_poc/58652fc1-ee41-4fc2-8829-9505a724ac8e/6e1f1861-f2b4-43f8-9d59-db1956f32db5
 
 ### GET PERCEMTAGE OF TEST
 GET http://localhost:8083/results/aggregate_scores/9ccefe74-f80c-4427-804e-827a61d7619a/fab89ab1-d46f-4b03-827d-ae1388c11991

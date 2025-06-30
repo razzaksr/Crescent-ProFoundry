@@ -17,7 +17,7 @@ export default function CourseInfoCards({ orgName, moduleName, expertName, coord
       <div
         style={{
           ...styles.statCard,
-          backgroundColor: "rgba(12, 131, 200, 0.1)",
+          backgroundColor: "rgba(56, 182, 255, 0.1)",
         }}
         onMouseOver={(e) => {
           e.currentTarget.style.transform = "translateY(-5px)";
@@ -31,8 +31,8 @@ export default function CourseInfoCards({ orgName, moduleName, expertName, coord
         <div
           style={{
             ...styles.iconWrapper,
-            backgroundColor: "rgba(12, 131, 200, 0.2)",
-            color: "#0c83c8",
+            backgroundColor: "rgba(56, 182, 255, 0.2)",
+            color: "#38b6ff",
           }}
         >
           <Building size={20} />
@@ -46,7 +46,7 @@ export default function CourseInfoCards({ orgName, moduleName, expertName, coord
       <div
         style={{
           ...styles.statCard,
-          backgroundColor: "rgba(252, 122, 70, 0.1)",
+          backgroundColor: "rgba(255, 102, 196, 0.1)",
         }}
         onMouseOver={(e) => {
           e.currentTarget.style.transform = "translateY(-5px)";
@@ -60,8 +60,8 @@ export default function CourseInfoCards({ orgName, moduleName, expertName, coord
         <div
           style={{
             ...styles.iconWrapper,
-            backgroundColor: "rgba(252, 122, 70, 0.2)",
-            color: "#fc7a46",
+            backgroundColor: "rgba(255, 102, 196, 0.2)",
+            color: "#ff66c4",
           }}
         >
           <GraduationCap size={20} />
@@ -75,7 +75,7 @@ export default function CourseInfoCards({ orgName, moduleName, expertName, coord
       <div
         style={{
           ...styles.statCard,
-          backgroundColor: "rgba(103, 58, 183, 0.1)",
+          backgroundColor: "rgba(64, 196, 255, 0.1)",
         }}
         onMouseOver={(e) => {
           e.currentTarget.style.transform = "translateY(-5px)";
@@ -89,8 +89,8 @@ export default function CourseInfoCards({ orgName, moduleName, expertName, coord
         <div
           style={{
             ...styles.iconWrapper,
-            backgroundColor: "rgba(103, 58, 183, 0.2)",
-            color: "#673ab7",
+            backgroundColor: "rgba(64, 196, 255, 0.2)",
+            color: "#40c4ff",
           }}
         >
           <User size={20} />
@@ -104,7 +104,7 @@ export default function CourseInfoCards({ orgName, moduleName, expertName, coord
       <div
         style={{
           ...styles.statCard,
-          backgroundColor: "rgba(76, 175, 80, 0.1)",
+          backgroundColor: "rgba(240, 98, 146, 0.1)",
         }}
         onMouseOver={(e) => {
           e.currentTarget.style.transform = "translateY(-5px)";
@@ -118,8 +118,8 @@ export default function CourseInfoCards({ orgName, moduleName, expertName, coord
         <div
           style={{
             ...styles.iconWrapper,
-            backgroundColor: "rgba(76, 175, 80, 0.2)",
-            color: "#4caf50",
+            backgroundColor: "rgba(240, 98, 146, 0.2)",
+            color: "#f06292",
           }}
         >
           <Users size={20} />

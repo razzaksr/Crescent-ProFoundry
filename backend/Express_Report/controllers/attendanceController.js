@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Attendance = require("../models/Attendance");
+const Attendance = require("../models/attendance");
 const mongoose = require("mongoose");
 
 //  GET: Fetch attendance records

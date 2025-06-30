@@ -27,12 +27,18 @@ import jsPDF from "jspdf";
 import dayjs from "dayjs";
 import { createRoot } from "react-dom/client";
 import { QRCodeCanvas } from "qrcode.react";
-import BackgroundImg from "../assests/cert_bg.jpg.jpg";
+import BackgroundImg from "../assests/cert_bg.jpg";
 import DigiSign from "../assests/DigiSign.png";
 import { getUserById, getModuleById, fetchAggregateScores, fetchOrGenerateCertificates, fetchAllPocs, fetchPocById } from "../axios";
 import Admin_Dashboard from "../components/AdminDash";
 
-const CertificateTemplate = ({ forwardedRef, certificateId, userDetails, moduleDetails, aggregateScore }) => {
+const CertificateTemplate = ({
+  forwardedRef,
+  certificateId,
+  userDetails,
+  moduleDetails,
+  aggregateScore
+}) => {
   if (!userDetails || !moduleDetails || !aggregateScore || !certificateId) return null;
 
   const percentage = aggregateScore?.average_percentage?.toFixed(2) || "0.00";
@@ -41,102 +47,115 @@ const CertificateTemplate = ({ forwardedRef, certificateId, userDetails, moduleD
 
   return (
     <div
-      ref={forwardedRef}
       style={{
-        width: "1123px",
-        height: "794px",
-        background: "transparent",
-        position: "relative",
-        fontFamily: "Georgia, serif",
-        padding: "60px",
-        boxSizing: "border-box",
-        color: "#000",
-        textAlign: "center",
+        width: "100%",
+        maxWidth: "29.7cm",
+        margin: "0 auto",
+        transform: "scale(calc(100vw / 1200))",
+        transformOrigin: "top center",
+        overflow: "hidden",
       }}
     >
-      <img
-        src={BackgroundImg}
-        alt="Background"
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          zIndex: -1,
-          objectFit: "cover",
-        }}
-        onError={(e) => console.error("Failed to load background image:", e, BackgroundImg)}
-      />
-      <h2 style={{ fontSize: "46px", marginTop: "130px" }}>CERTIFICATE OF COMPLETION</h2>
-      <p style={{ fontSize: "16px", fontStyle: "italic" }}>
-        Certificate ID: {certificateId}
-      </p>
-
-      <p style={{ fontSize: "2rem", fontWeight: "bold", marginTop: "30px" }}>
-        WE ARE PROUDLY PRESENT THIS SKILL WORKSHOP
-      </p>
-      <p style={{ fontSize: "2rem", fontWeight: "bold", marginTop: "30px" }}>CERTIFICATE TO</p>
-
-      <div style={{ display: "inline-block", textAlign: "center", marginTop: "-50px" }}>
-        <h3 style={{ fontSize: "26px", color: "#0c83c8", marginBottom: "5px" }}>
-          {userDetails.full_name?.toUpperCase()} ({userDetails.rollno})
-        </h3>
-        <div style={{ height: "2px", backgroundColor: "#0c83c8", width: "100%" }} />
-      </div>
-
-      <p style={{ fontSize: "18px", margin: "30px auto", width: "80%" }}>
-        Department of <strong>{userDetails.department}</strong> from <strong>{userDetails.college}</strong> on
-        <strong> {moduleDetails.mod_name}</strong>. Obtained a mark of <strong>{percentage}%</strong>.<br />
-        Duration: {moduleDetails.mod_duration}.
-      </p>
-
       <div
+        ref={forwardedRef}
         style={{
-          position: "absolute",
-          bottom: "90px",
-          left: "220px",
+          width: "29.7cm",
+          height: "21cm",
+          background: "transparent",
+          position: "relative",
+          fontFamily: "Times New Roman",
+          padding: "60px",
+          boxSizing: "border-box",
+          color: "#000",
           textAlign: "center",
-        }}
-      >
-        <QRCodeCanvas
-          value={verificationUrl}
-          size={100}
-          level="H"
-          style={{ marginBottom: "10px" }}
-        />
-      </div>
-
-      <div
-        style={{
-          position: "absolute",
-          bottom: "40px",
-          left: "200px",
-          textAlign: "center",
-          fontSize: "1.3rem",
-        }}
-      >
-        <strong>{issueDate}</strong>
-        <div style={{ height: "2px", backgroundColor: "#0c83c8", width: "140px", margin: "5px auto 0" }} />
-        <span style={{ fontWeight: "bold" }}>Date of Issue</span>
-      </div>
-
-      <div
-        style={{
-          position: "absolute",
-          bottom: "40px",
-          right: "60px",
-          textAlign: "center",
-          fontSize: "1.3rem",
         }}
       >
         <img
-          src={DigiSign || "/placeholder.svg"}
-          alt="Digital Signature"
-          style={{ height: "90px", width: "90px", marginBottom: "5px" }}
+          src={BackgroundImg}
+          alt="Background"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            zIndex: -1,
+            objectFit: "cover",
+          }}
+          onError={(e) => console.error("Failed to load background image:", e, BackgroundImg)}
         />
-        <div style={{ height: "2px", backgroundColor: "#0c83c8", width: "200px", margin: "5px auto 0" }} />
-        <span style={{ fontWeight: "bold" }}>Head - Technology & Training</span>
+        <div style={{ marginTop: "130px", display: "flex", flexDirection: "column", alignItems: "flex-end", width: "fit-content", marginLeft: "auto", marginRight: "auto" }}>
+          <h2 style={{ fontSize: 47, charSpace: 0.1, margin: 0 }}>CERTIFICATE OF COMPLETION</h2>
+          <p style={{ fontSize: 27, fontStyle: "italic", fontFamily: "Charm", margin: "5px 0 0 0" }}>
+            Certificate ID: {certificateId}
+          </p>
+        </div>
+
+        <p style={{ fontSize: 27, fontWeight: "bold", marginTop: "10px" }}>
+          WE ARE PROUDLY PRESENT THIS SKILL WORKSHOP
+        </p>
+        <p style={{ fontSize: 27, fontWeight: "bold", marginTop: "5px" }}>CERTIFICATE TO</p>
+
+        <div style={{ display: "inline-block", textAlign: "center", marginTop: "5px" }}>
+          <h3 style={{ fontSize: 27, color: "black", fontWeight: "bold" }}>
+            {userDetails.full_name?.toUpperCase()}
+            {userDetails.rollno ? ` ${userDetails.rollno}` : ""}
+          </h3>
+        </div>
+
+        <p style={{ fontSize: 27, margin: "10px auto", width: "80%" }}>
+          Department of <strong>{userDetails.department}</strong> from <strong>{userDetails.college}</strong> on
+          <strong> {moduleDetails.mod_name}</strong>. Obtained a mark of <strong>{percentage}%</strong>.<br />
+          Duration: {moduleDetails.mod_duration}.
+        </p>
+
+        <div
+          style={{
+            position: "absolute",
+            bottom: "90px",
+            left: "220px",
+            textAlign: "center",
+          }}
+        >
+          <QRCodeCanvas
+            value={verificationUrl}
+            size={100}
+            level="H"
+            style={{ marginBottom: "28px", marginLeft: "5px" }}
+          />
+        </div>
+
+        <div
+          style={{
+            position: "absolute",
+            bottom: "40px",
+            left: "200px",
+            textAlign: "center",
+            fontSize: 27,
+          }}
+        >
+          <strong>{issueDate}</strong>
+          <div style={{ height: "2px", backgroundColor: "#35b5ff", width: "140px", margin: "5px auto 0" }} />
+          <span style={{ fontWeight: "bold" }}>Date of Issue</span>
+        </div>
+
+        <div
+          style={{
+            position: "absolute",
+            bottom: "40px",
+            right: "60px",
+            textAlign: "center",
+            fontSize: 27,
+          }}
+        >
+          <img
+            src={DigiSign || "/placeholder.svg"}
+            alt="Digital Signature"
+            style={{ height: "90px", width: "90px", marginBottom: "5px" }}
+          />
+          <div style={{ height: "2px", backgroundColor: "#35b5ff", width: "200px", margin: "5px auto 0" }} />
+          <span style={{ fontWeight: "bold" }}>Head - Technology & Training</span>
+        </div>
       </div>
     </div>
   );
@@ -252,7 +271,7 @@ const BulkCertificateGenerator = () => {
             return {
               id: userId,
               full_name: userDetails.full_name || "Unknown",
-              rollno: userDetails.rollno || "Unknown",
+              rollno: userDetails.rollno || "",
               department: userDetails.department || "Unknown",
               college: userDetails.college || "Unknown",
               aggregate_score: scoreData.response?.average_percentage?.toFixed(2) || "0.00",
@@ -262,7 +281,7 @@ const BulkCertificateGenerator = () => {
             return {
               id: userId,
               full_name: "Unknown",
-              rollno: "Unknown",
+              rollno: "",
               department: "Unknown",
               college: "Unknown",
               aggregate_score: "0.00",
@@ -323,7 +342,7 @@ const BulkCertificateGenerator = () => {
         throw new Error("No certificates generated for the selected users");
       }
 
-      const pdf = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4", compress: true });
+      const pdf = new jsPDF({ orientation: "landscape", unit: "mm", format: [297, 210], compress: true });
 
       for (let i = 0; i < results.length; i++) {
         const { userId, certificateId } = results[i];
@@ -356,7 +375,7 @@ const BulkCertificateGenerator = () => {
         }
         console.log("Adding background to PDF:", background.src);
         pdf.addImage(background, "JPEG", 0, 0, 297, 210, undefined, "FAST");
-        pdf.addImage(imgData, "JPEG", 0, 2, 297, 208, undefined, "FAST");
+        pdf.addImage(imgData, "JPEG", 0, 0, 297, 210, undefined, "FAST");
       }
 
       if (certificateErrors.length > 0) {
@@ -370,7 +389,7 @@ const BulkCertificateGenerator = () => {
       window.open(pdfUrl, "_blank");
       URL.revokeObjectURL(pdfUrl);
 
-      setDialogMessage(true);
+      setDialogMessage("Certificates generated successfully!");
       setSnackbar({
         open: true,
         message: "Certificates generated successfully!",
@@ -639,7 +658,7 @@ const BulkCertificateGenerator = () => {
               <Box>
                 {dialogMessage && (
                   <Typography sx={{ color: '#1f2937', fontSize: { xs: '0.95rem', sm: '1rem' } }}>
-                    Certificates generated successfully!
+                    {dialogMessage}
                   </Typography>
                 )}
                 {certificateErrors.length > 0 && (

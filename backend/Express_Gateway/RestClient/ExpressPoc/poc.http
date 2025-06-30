@@ -11,6 +11,8 @@ Content-Type: application/json
 
 ### Get all POCs
 GET http://localhost:8086/poc_gateway/poc/read_all_poc
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ODY1MmZjMS1lZTQxLTRmYzItODgyOS05NTA1YTcyNGFjOGUiLCJmdWxsX25hbWUiOiJESEFSVU4gUFJBS0FTSCBKIEEiLCJpYXQiOjE3NTA3NTc2NTUsImV4cCI6MTc1MDc5MzY1NX0.CTapWOnL97G7a1zl1n0zhYZz0AIzo5_Y74MnUVsfqv8
 
 ### Get POC by mod_poc_id
 GET http://localhost:8086/poc_gateway/poc/get_poc_by_poc_id/b4021b93-8384-4607-8b59-58c66fdd794d
@@ -83,6 +85,7 @@ GET http://localhost:8086/poc_gateway/poc/get_poc_certificate_by_mod_id/6503caf1
 ### Create a Certficcate in poc using user id 
 POST  http://localhost:8086/poc_gateway/poc/generate-certificates
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ODY1MmZjMS1lZTQxLTRmYzItODgyOS05NTA1YTcyNGFjOGUiLCJmdWxsX25hbWUiOiJESEFSVU4gUFJBS0FTSCBKIEEiLCJpYXQiOjE3NTA3NTc2NTUsImV4cCI6MTc1MDc5MzY1NX0.CTapWOnL97G7a1zl1n0zhYZz0AIzo5_Y74MnUVsfqv8
 
 {
   "mod_poc_id": "b4021b93-8384-4607-8b59-58c66fdd794d",

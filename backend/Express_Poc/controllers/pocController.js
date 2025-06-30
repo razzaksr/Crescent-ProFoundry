@@ -477,54 +477,46 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 
 // Unified endpoint for single and bulk certificate generation
+// POST generate certificates
 router.post("/generate-certificates", async (req, res) => {
   try {
     const { mod_poc_id, userIds } = req.body;
 
-    // Validate input
     if (!mod_poc_id) {
       return res.status(400).json({ message: "mod_poc_id is required" });
     }
 
-    // Normalize userIds to an array
     const userIdsArray = Array.isArray(userIds) ? userIds : typeof userIds === "string" ? [userIds] : [];
     if (userIdsArray.length === 0) {
       return res.status(400).json({ message: "userIds must be a non-empty string or array" });
     }
 
-    // Find the Poc document using mod_poc_id
     const poc = await Poc.findOne({ mod_poc_id });
     if (!poc) {
       return res.status(404).json({ message: "Poc not found" });
     }
 
-    // Fetch user details service via Consul
     const serviceName = "Express_User";
     const services = await consul.catalog.service.nodes(serviceName);
-
     if (!services || services.length === 0) {
       return res.status(500).json({ message: "No available service instances found in Consul" });
     }
 
-    const { ServiceAddress, ServicePort } = services[0];
-
-    if (!ServiceAddress || !ServicePort) {
-      return res.status(500).json({ message: "Invalid service details from Consul" });
+    const { Address, ServicePort } = services[0]; // Use Address directly
+    if (!Address || !ServicePort) {
+      return res.status(500).json({ message: "Invalid service address from Consul" });
     }
 
     const results = [];
     const errors = [];
 
-    // Process each userId
     for (const userId of userIdsArray) {
       try {
-        // Check if user is part of mod_users
         if (!poc.mod_users.includes(userId)) {
           errors.push({ userId, message: "User not found in mod_users" });
           continue;
         }
 
-        // Check if certificate already exists in MongoDB
         if (poc.certificates.has(userId)) {
           const existingCertificateId = poc.certificates.get(userId);
           results.push({
@@ -535,8 +527,7 @@ router.post("/generate-certificates", async (req, res) => {
           continue;
         }
 
-        // Fetch user details
-        const targetUrl = `http://${ServiceAddress}:${ServicePort}/user/get_user_by_id/${userId}`;
+        const targetUrl = `http://${Address}:${ServicePort}/user/get_user_by_id/${userId}`;
         const response = await axios.get(targetUrl);
         const user = response.data;
 
@@ -545,17 +536,15 @@ router.post("/generate-certificates", async (req, res) => {
           continue;
         }
 
-        // Generate certificate ID with 5-digit number
         let newCertificateId;
         let attempts = 0;
         const maxAttempts = 5;
 
         while (attempts < maxAttempts) {
-          const certPrefix = poc.poc_certificate.cert_id; // e.g., "CET/WP/"
+          const certPrefix = poc.poc_certificate.cert_id;
           const randomFiveDigit = Math.floor(10000 + Math.random() * 90000).toString();
-          newCertificateId = `${certPrefix}${randomFiveDigit}`; // e.g., "CET/WP/12345"
+          newCertificateId = `${certPrefix}${randomFiveDigit}`;
 
-          // Check for duplicate in Firestore
           const certificateRef = db.collection("certificates").doc(newCertificateId);
           const certificateDoc = await certificateRef.get();
           if (!certificateDoc.exists) {
@@ -569,10 +558,7 @@ router.post("/generate-certificates", async (req, res) => {
           continue;
         }
 
-        // Set certificate in MongoDB
         poc.certificates.set(userId, newCertificateId);
-
-        // Save to Firebase Firestore
         const certificateRef = db.collection("certificates").doc(newCertificateId);
         await certificateRef.set({
           userId,
@@ -588,19 +574,17 @@ router.post("/generate-certificates", async (req, res) => {
         results.push({
           userId,
           certificateId: newCertificateId,
-          message: "Certificate generated and saved to Firebase",
+          message: "Certificate generated successfully",
+          updatedPoc: poc
         });
       } catch (error) {
         errors.push({ userId, message: error.message || "Error processing user" });
       }
     }
 
-    // Save updated Poc document
     await poc.save();
 
-    // Return response based on single or bulk request
     if (userIdsArray.length === 1) {
-      // Single certificate response (compatible with /add-certificate)
       const result = results[0];
       const error = errors[0];
       if (result) {
@@ -614,7 +598,6 @@ router.post("/generate-certificates", async (req, res) => {
         });
       }
     } else {
-      // Bulk certificate response
       return res.status(200).json({
         message: "Certificate generation completed",
         results,
@@ -753,24 +736,23 @@ router.get("/get_poc_report_by_poc_id/:mod_poc_id", async (req, res) => {
   }
 });
 
-//get
- router.get("/get-by-mod-id/:mod_id", async (req, res) => {
+
+// GET module by mod_id
+router.get("/get-by-mod-id/:mod_id", async (req, res) => {
   const { mod_id } = req.params;
 
   try {
     const result = await consul.catalog.service.nodes('Express_Mod');
-
     if (!result || result.length === 0) {
       return res.status(404).json({ error: "Express_Mod service not found in Consul" });
     }
 
     const service = result[0];
-    const serviceAddress = service.Address || 'localhost';
+    const serviceAddress = service.Address || 'localhost'; // Fallback to localhost
     const servicePort = service.ServicePort;
 
     const response = await axios.get(`http://${serviceAddress}:${servicePort}/modules/get_module_by_id/${mod_id}`);
     res.json(response.data);
-
   } catch (err) {
     console.error("Error fetching module by ID:", err.message);
     res.status(500).json({ error: "Unexpected error", details: err.message });
@@ -778,57 +760,50 @@ router.get("/get_poc_report_by_poc_id/:mod_poc_id", async (req, res) => {
 });
 
 
+// GET expert details using mod_poc_id
 router.get("/get_expert_using_poc/:mod_poc_id", async (req, res) => {
   const { mod_poc_id } = req.params;
 
   try {
     const result = await consul.catalog.service.nodes('Express_Poc');
-
     if (!result || result.length === 0) {
-      return res.status(404).json({ error: "Express_Mod service not found in Consul" });
+      return res.status(404).json({ error: "Express_Poc service not found in Consul" });
     }
 
     const service = result[0];
-    const serviceAddress = service.Address || 'localhost';
+    const serviceAddress = service.Address || 'localhost'; // Fallback to localhost
     const servicePort = service.ServicePort;
 
     const response = await axios.get(`http://${serviceAddress}:${servicePort}/expert/get_expert_poc_id/${mod_poc_id}`);
     res.json(response.data);
-
   } catch (err) {
     console.error("Error fetching module by ID:", err.message);
     res.status(500).json({ error: "Unexpected error", details: err.message });
   }
 });
 
-/// GET TEST NAME 
+// GET test name by test_id
 router.get("/get_test_name/:mod_tests", async (req, res) => {
   const { mod_tests } = req.params;
 
   try {
     const result = await consul.catalog.service.nodes('Express_Test');
-
     if (!result || result.length === 0) {
-      return res.status(404).json({ error: "Express_test service not found in Consul" });
+      return res.status(404).json({ error: "Express_Test service not found in Consul" });
     }
 
     const service = result[0];
-    const serviceAddress = service.Address || 'localhost';
+    const serviceAddress = service.Address || 'localhost'; // Fallback to localhost
     const servicePort = service.ServicePort;
 
     const response = await axios.get(`http://${serviceAddress}:${servicePort}/test/get_by_test_id/${mod_tests}`);
-
-    // Extract and send only the test_name
     const { test_name } = response.data;
     res.json({ test_name });
-
   } catch (err) {
     console.error("Error fetching test by ID:", err.message);
     res.status(500).json({ error: "Unexpected error", details: err.message });
   }
 });
-
-
 
 
 router.get('/get_poc/:mod_poc_id', async (req, res) => {
@@ -840,6 +815,19 @@ router.get('/get_poc/:mod_poc_id', async (req, res) => {
     res.status(200).json(poc);
   } catch (error) {
     res.status(500).json({ message: "Error fetching POC", error: error.message });
+  }
+});
+
+// GET POC NAME BY ID
+router.get('/get_poc_name_by_id/:mod_poc_id', async (req, res) => {
+  try {
+    const poc = await Poc.findOne({ mod_poc_id: req.params.mod_poc_id }, { mod_poc_name: 1, _id: 0 });
+    if (!poc) {
+      return res.status(404).json({ message: `POC with ID ${req.params.mod_poc_id} not found` });
+    }
+    res.status(200).json({ mod_poc_name: poc.mod_poc_name });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching POC name", error: error.message });
   }
 });
 
@@ -863,12 +851,13 @@ const formatExecutionDates = (start, end) => {
 
 
 // PUT route handler - corrected version
+// PUT generate report
 router.put('/generate_report/:mod_poc_id', async (req, res) => {
-  const { mod_poc_id } = req.params;    
+  const { mod_poc_id } = req.params;
   const { summary, title, background, address, scopeOfTheTraining, totalStrength, company, email, student_ranking } = req.body;
 
   try {
-    // 1. Fetch POC service info
+    // Fetch POC service info
     const pocService = await consul.catalog.service.nodes("Express_Poc");
     if (!pocService || pocService.length === 0) {
       return res.status(404).json({ error: "Express_Poc service not found in Consul" });
@@ -876,19 +865,15 @@ router.put('/generate_report/:mod_poc_id', async (req, res) => {
     const serviceAddress = pocService[0].Address;
     const servicePort = pocService[0].ServicePort;
 
-    // 2. Get POC data - FIXED: Added backticks
+    // Get POC data
     const pocUrl = `http://${serviceAddress}:${servicePort}/poc/get_poc_by_poc_id/${mod_poc_id}`;
     let pocResponse, poc;
-    
     try {
       pocResponse = await axios.get(pocUrl);
       poc = pocResponse.data;
     } catch (error) {
       console.error("Error fetching POC data:", error.message);
-      return res.status(500).json({ 
-        error: "Failed to fetch POC data", 
-        details: error.message 
-      });
+      return res.status(500).json({ error: "Failed to fetch POC data", details: error.message });
     }
 
     if (!poc) {
@@ -897,7 +882,7 @@ router.put('/generate_report/:mod_poc_id', async (req, res) => {
 
     const { mod_id, mod_poc_name, mod_poc_role, mod_poc_email, mod_poc_mobile, mod_tests } = poc;
 
-    // 3. Get Module data - FIXED: Added backticks
+    // Get Module data
     const modService = await consul.catalog.service.nodes("Express_Mod");
     if (!modService || modService.length === 0) {
       return res.status(404).json({ error: "Express_Mod service not found in Consul" });
@@ -907,46 +892,23 @@ router.put('/generate_report/:mod_poc_id', async (req, res) => {
 
     const modUrl = `http://${modServiceAddress}:${modServicePort}/modules/get_module_by_id/${mod_id}`;
     let modResponse, modData;
-    
     try {
       modResponse = await axios.get(modUrl);
       modData = modResponse.data;
     } catch (error) {
       console.error("Error fetching Module data:", error.message);
-      return res.status(500).json({ 
-        error: "Failed to fetch Module data", 
-        details: error.message 
-      });
+      return res.status(500).json({ error: "Failed to fetch Module data", details: error.message });
     }
 
-    // 4. Format dates - FIXED: Added proper date handling
+    // Format dates
     const [start, end] = modData.mod_duration.split(" - ");
     const executiondates = formatExecutionDates(start, end);
-    
-    // Using moment (make sure it's installed)
     const startDate = moment(start, "DD/MM/YYYY");
     const endDate = moment(end, "DD/MM/YYYY");
     const durationDays = endDate.diff(startDate, "days") + 1;
     const schedule = `${durationDays} ${durationDays === 1 ? "day" : "days"}`;
 
-    // Alternative without moment:
-    /*
-    const calculateDuration = (start, end) => {
-      const [startDay, startMonth, startYear] = start.split('/');
-      const [endDay, endMonth, endYear] = end.split('/');
-      
-      const startDate = new Date(startYear, startMonth - 1, startDay);
-      const endDate = new Date(endYear, endMonth - 1, endDay);
-      
-      const diffTime = Math.abs(endDate - startDate);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-      
-      return `${diffDays} ${diffDays === 1 ? "day" : "days"}`;
-    };
-    const schedule = calculateDuration(start, end);
-    */
-
-    // 5. Get Expert details - FIXED: Added backticks
+    // Get Expert details
     const expertUrl = `http://${serviceAddress}:${servicePort}/poc/get_expert_using_poc/${mod_poc_id}`;
     const expertResponse = await axios.get(expertUrl);
     const expertData = expertResponse.data;
@@ -959,58 +921,47 @@ router.put('/generate_report/:mod_poc_id', async (req, res) => {
       contact: expertData.mod_expert_mobile || "N/A",
     };
 
-   
-
-    // 6. Fetch test names from mod_tests - FIXED: Added backticks and better error handling
+    // Fetch test names from mod_tests
     let test_details = [];
-
     if (mod_tests && Object.keys(mod_tests).length > 0) {
       const testService = await consul.catalog.service.nodes("Express_Test");
       if (!testService || testService.length === 0) {
         console.warn("Express_Test service not found in Consul");
-        // Don't return error, just continue with empty test_details
       } else {
         const testServiceAddress = testService[0].Address;
         const testServicePort = testService[0].ServicePort;
-      
-        // Extract test IDs properly
         const testIds = Object.values(mod_tests).map(test => test.test_id);
-      
+
         for (const testId of testIds) {
           if (!testId) {
             console.warn(`Skipping invalid test ID:`, testId);
             continue;
           }
-      
           try {
-            // FIXED: Added backticks
             const response = await axios.get(`http://${testServiceAddress}:${testServicePort}/test/get_by_test_id/${testId}`);
             if (response.data && response.data.test_name) {
               test_details.push(response.data.test_name);
             }
           } catch (err) {
             console.error(`Failed to fetch test name for test ID ${testId}:`, err.message);
-            // Continue with other tests instead of failing completely
           }
         }
       }
     }
-    
     console.log("Fetched Test Details:", test_details);
 
-    // 7. Create Point of Contact block
+    // Create Point of Contact block
     const pointOfContact = {
       name: mod_poc_name || "N/A",
       role: mod_poc_role || "N/A",
       email: mod_poc_email || "N/A",
       contact: mod_poc_mobile || "N/A",
       test_details: [...test_details],
-      summary: summary || []
+      summary: summary || [],
     };
 
-    // 8. Process update
+    // Process update
     let updateFields = {};
-
     if (student_ranking) {
       const processedStudentRanking = Array.isArray(student_ranking) ? student_ranking : [student_ranking];
       updateFields['report.student_ranking'] = processedStudentRanking;
@@ -1030,7 +981,7 @@ router.put('/generate_report/:mod_poc_id', async (req, res) => {
       updateFields['report.totalStrength'] = Number(totalStrength) || 0;
     }
 
-    // 9. Update database - Added error handling
+    // Update database
     let updated;
     try {
       updated = await Poc.findOneAndUpdate(
@@ -1038,19 +989,15 @@ router.put('/generate_report/:mod_poc_id', async (req, res) => {
         { $set: updateFields },
         { new: true }
       );
-
       if (!updated) {
         return res.status(404).json({ error: "POC record not found for update" });
       }
     } catch (error) {
       console.error("Database update error:", error.message);
-      return res.status(500).json({ 
-        error: "Failed to update database", 
-        details: error.message 
-      });
+      return res.status(500).json({ error: "Failed to update database", details: error.message });
     }
 
-    // 10. Return result
+    // Return result
     res.status(200).json({
       message: "Report generated successfully",
       reportData: {
@@ -1064,16 +1011,15 @@ router.put('/generate_report/:mod_poc_id', async (req, res) => {
         moduleDetails: modData,
         expertDetails,
         updatedReport: updated.report,
-        userCount: totalStrength || "N/A"
-      }
+        userCount: totalStrength || "N/A",
+      },
     });
-
   } catch (err) {
     console.error("Error generating report:", err.message);
-    console.error("Full error:", err); // This will help debug
+    console.error("Full error:", err);
     res.status(500).json({
       error: "Unexpected error",
-      details: err.message
+      details: err.message,
     });
   }
 });

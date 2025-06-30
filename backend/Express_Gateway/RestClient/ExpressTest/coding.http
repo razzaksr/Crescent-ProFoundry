@@ -21,8 +21,8 @@ PUT http://localhost:8086/coding_gateway/coding/update_code
 Content-Type: application/json
 
 {
-  "code_id": "9ee19f23-e30b-434d-a541-af9e5c51eac3",
-  "code_test_cases": ["2c05193b-6ce4-483c-81b6-44b86e23c277"],
+  "code_id": "41a1583c-2d83-4b1e-a8dd-0a60e97225b2",
+  "code_test_cases_id": ["2c05193b-6ce4-483c-81b6-44b86e23c277","eewegegwgw","wgonogowjgwoigw"]
 }
 
 ### Delete a code

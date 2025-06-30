@@ -3,7 +3,7 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import dayjs from "dayjs";
 import { createRoot } from "react-dom/client";
-import BackgroundImg from "../assests/cert_bg.jpg.jpg";
+import BackgroundImg from "../assests/cert_bg.jpg";
 import DigiSign from "../assests/DigiSign.png";
 import { getUserById, getModuleById, fetchAggregateScores, fetchOrGenerateCertificates } from "../axios";
 import {
@@ -116,7 +116,8 @@ const CertificateTemplate = ({ forwardedRef, certificateId }) => {
 
         <div style={{ display: "inline-block", textAlign: "center", marginTop: "5px" }}>
           <h3 style={{ fontSize: 27, color: "black", fontWeight: "bold" }}>
-            {userDetails.full_name?.toUpperCase()} ({userDetails.rollno})
+            {userDetails.full_name?.toUpperCase()}
+            {userDetails.rollno ? ` ${userDetails.rollno}` : ""}
           </h3>
         </div>
 
@@ -138,7 +139,7 @@ const CertificateTemplate = ({ forwardedRef, certificateId }) => {
             value={verificationUrl}
             size={100}
             level="H"
-            style={{ marginBottom: "28px",marginLeft:"5px" }}
+            style={{ marginBottom: "28px", marginLeft: "5px" }}
           />
         </div>
 
@@ -222,7 +223,12 @@ const generateCertificate = async (certificateId, setProgress, setError) => {
     const imgData = canvas.toDataURL("image/jpeg", 0.8);
     console.log(`Canvas data URL size: ${(imgData.length * 0.75 / 1024 / 1024).toFixed(2)} MB`);
 
-    const pdf = new jsPDF({ orientation: "landscape", unit: "mm", format: [297, 210], compress: true });
+    const pdf = new jsPDF({
+      orientation: "landscape",
+      unit: "mm",
+      format: [297, 210],
+      compress: true,
+    });
     console.log("Adding background to PDF:", background.src);
     pdf.addImage(background, "JPEG", 0, 0, 297, 210);
     pdf.addImage(imgData, "JPEG", 0, 0, 297, 210);
@@ -417,7 +423,7 @@ const CertificateGenerator = forwardRef((props, ref) => {
           {error ? (
             <Typography
               variant="body1"
-color="error"
+              color="error"
               sx={{
                 fontWeight: 500,
                 fontSize: { xs: "0.9rem", sm: "1rem" },

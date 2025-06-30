@@ -70,7 +70,7 @@ const Add_User = () => {
           `"${(row.plain_password || '').replace(/"/g, '""')}"`,
           `"${row.department.replace(/"/g, '""')}"`,
           `"${row.college.replace(/"/g, '""')}"`,
-          row.rollno,
+          row.rollno || '',
         ].join(',')
       ),
     ];
@@ -132,7 +132,7 @@ const Add_User = () => {
       case 'college':
         return formData.admin || value.trim() ? '' : 'College is required';
       case 'rollno':
-        return formData.admin || value.trim() ? '' : 'Roll number is required';
+        return ''; // Roll number is now optional for non-admin users
       case 'password':
         if (formData.admin && !value) return 'Password is required for admin users';
         if (value && value.length < 4) return 'Password must be at least 4 characters';
@@ -218,20 +218,19 @@ const Add_User = () => {
           'full_name',
           'department',
           'college',
-          'rollno',
           'email',
           'mobile_no',
           'admin',
         ];
         const headers = Object.keys(result.data[0] || {}).map((h) => h.trim().toLowerCase());
         const isValid = expectedHeaders.every((h) =>
-          h === 'admin' ? true : headers.includes(h)
+          h === 'admin' || h === 'rollno' ? true : headers.includes(h)
         );
 
         if (!isValid) {
           setSnackbar({
             open: true,
-            message: `Invalid CSV format. Expected headers: ${expectedHeaders.join(', ')} (admin optional)`,
+            message: `Invalid CSV format. Expected headers: ${expectedHeaders.join(', ')}, rollno (optional), admin (optional)`,
             severity: 'error',
           });
           setCsvLoading(false);
@@ -339,8 +338,8 @@ const Add_User = () => {
       width: isMobile ? 100 : 150,
       renderHeader: () => (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <User size={16} color="white" />
-          <Typography variant="inherit" fontWeight="bold">
+          <User size={16} color="#0c83c8" />
+          <Typography variant="inherit" fontWeight="bold" color="#0c83c8">
             Full Name
           </Typography>
         </Box>
@@ -352,8 +351,8 @@ const Add_User = () => {
       width: isMobile ? 80 : 120,
       renderHeader: () => (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Briefcase size={16} color="white" />
-          <Typography variant="inherit" fontWeight="bold">
+          <Briefcase size={16} color="#0c83c8" />
+          <Typography variant="inherit" fontWeight="bold" color="#0c83c8">
             Department
           </Typography>
         </Box>
@@ -365,8 +364,8 @@ const Add_User = () => {
       width: isMobile ? 120 : 200,
       renderHeader: () => (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <School size={16} color="white" />
-          <Typography variant="inherit" fontWeight="bold">
+          <School size={16} color="#0c83c8" />
+          <Typography variant="inherit" fontWeight="bold" color="#0c83c8">
             College
           </Typography>
         </Box>
@@ -378,8 +377,8 @@ const Add_User = () => {
       width: isMobile ? 80 : 120,
       renderHeader: () => (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Hash size={16} color="white" />
-          <Typography variant="inherit" fontWeight="bold">
+          <Hash size={16} color="#0c83c8" />
+          <Typography variant="inherit" fontWeight="bold" color="#0c83c8">
             Roll Number
           </Typography>
         </Box>
@@ -391,8 +390,8 @@ const Add_User = () => {
       width: isMobile ? 120 : 200,
       renderHeader: () => (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Mail size={16} color="white" />
-          <Typography variant="inherit" fontWeight="bold">
+          <Mail size={16} color="#0c83c8" />
+          <Typography variant="inherit" fontWeight="bold" color="#0c83c8">
             Email
           </Typography>
         </Box>
@@ -404,8 +403,8 @@ const Add_User = () => {
       width: isMobile ? 100 : 150,
       renderHeader: () => (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Phone size={16} color="white" />
-          <Typography variant="inherit" fontWeight="bold">
+          <Phone size={16} color="#0c83c8" />
+          <Typography variant="inherit" fontWeight="bold" color="#0c83c8">
             Mobile Number
           </Typography>
         </Box>
@@ -418,8 +417,8 @@ const Add_User = () => {
       type: 'boolean',
       renderHeader: () => (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Users size={16} color="white" />
-          <Typography variant="inherit" fontWeight="bold">
+          <Users size={16} color="#0c83c8" />
+          <Typography variant="inherit" fontWeight="bold" color="#0c83c8">
             Admin
           </Typography>
         </Box>
@@ -596,7 +595,7 @@ const Add_User = () => {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 error={!!errors.rollno}
-                helperText={errors.rollno || (formData.admin ? 'Disabled for admins' : 'Enter roll number')}
+                helperText={errors.rollno || (formData.admin ? 'Disabled for admins' : 'Optional roll number')}
                 disabled={formData.admin}
                 variant="outlined"
                 size={isMobile ? 'small' : 'medium'}
@@ -772,7 +771,7 @@ const Add_User = () => {
               color="text.secondary"
               sx={{ mt: 1, fontSize: isMobile ? '0.75rem' : '0.875rem' }}
             >
-              Upload a CSV with headers: full_name, department, college, rollno, email, mobile_no, admin (admin optional)
+              Upload a CSV with headers: full_name, department, college, email, mobile_no, rollno (optional), admin (optional)
             </Typography>
           </Grid>
         </Grid>

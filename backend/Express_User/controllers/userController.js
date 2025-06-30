@@ -13,7 +13,7 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // 🔐 Authenticate user
+    // Authenticate user
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ msg: 'User not found' });
@@ -24,7 +24,7 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ msg: 'Invalid credentials' });
     }
 
-    // 🎟️ Create JWT
+    // Create JWT
     const token = jwt.sign(
       {
         userId: user.user_id,
@@ -34,7 +34,7 @@ router.post('/login', async (req, res) => {
       { expiresIn: '10h', algorithm: "HS256" }
     );
 
-    // ✅ If admin, skip Consul and return basic info
+    // If admin, skip Consul and return basic info
     if (user.admin === true) {
       return res.status(200).json({
         msg: 'Login successful (admin)',
@@ -47,7 +47,7 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // 🧭 Find the Express_Poc service via Consul
+    // Find the Express_Poc service via Consul
     const serviceName = "Express_Poc";
     const services = await consul.catalog.service.nodes(serviceName);
 
@@ -55,18 +55,18 @@ router.post('/login', async (req, res) => {
       return res.status(500).json({ msg: "Express_Poc service not found in Consul" });
     }
 
-    const { ServiceAddress, ServicePort } = services[0];
+    const { Address, ServicePort } = services[0]; // Use Address directly
 
-    if (!ServiceAddress || !ServicePort) {
+    if (!Address || !ServicePort) {
       return res.status(500).json({ msg: "Invalid service address from Consul" });
     }
 
-    // 🔗 Make request to get mod_poc_id
-    const modAndPocUrl = `http://${ServiceAddress}:${ServicePort}/poc/mod_id_poc_id/${user.user_id}`;
+    // Make request to get mod_poc_id
+    const modAndPocUrl = `http://${Address}:${ServicePort}/poc/mod_id_poc_id/${user.user_id}`;
     const modAndPocRes = await axios.get(modAndPocUrl);
     const mod_poc_id = modAndPocRes.data;
 
-    // ✅ Return full info for non-admins
+    // Return full info for non-admins
     res.status(200).json({
       msg: 'Login successful',
       token,
@@ -132,10 +132,10 @@ router.post("/add_user", async (req, res) => {
       return res.status(400).json({ msg: "Password is required for admin users" });
     }
   } else {
-    if (!department || !college || !rollno) {
+    if (!department || !college) {
       return res
         .status(400)
-        .json({ msg: "Department, college, and roll number are required for non-admin users" });
+        .json({ msg: "Department and college are required for non-admin users" });
     }
     if (!rawPassword && !mobile_no) {
       return res.status(400).json({ msg: "Mobile number is required for non-admin users when password is empty" });
@@ -226,10 +226,10 @@ router.post("/bulk_add_users", async (req, res) => {
           continue;
         }
       } else {
-        if (!department || !college || !rollno) {
+        if (!department || !college) {
           results.failures.push({
             email: email || "unknown",
-            msg: "Department, college, and roll number are required for non-admin users",
+            msg: "Department and college are required for non-admin users",
           });
           continue;
         }

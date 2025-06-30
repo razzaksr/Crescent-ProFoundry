@@ -116,8 +116,8 @@ const UpcomingDeadlines = ({ testIds: propTestIds }) => {
     },
     outlinedButtonSmall: {
       backgroundColor: "transparent",
-      color: "#0369a1",
-      border: "1.5px solid #0369a1",
+      color: "#38b6ff",
+      border: "1.5px solid #38b6ff",
       borderRadius: "12px",
       fontWeight: "600",
       padding: "10px 16px",

@@ -1,7 +1,6 @@
 const express = require('express');
 const MCQ = require('../models/MCQ');
-const Consul = require("consul");
-const consul = new Consul();
+const consul = require('../middleware/consul');
 const axios = require("axios");
 const { v4: uuidv4 } = require("uuid");
 
@@ -125,75 +124,67 @@ router.delete("/delete_mcq/:mcq_id", async (req, res) => {
 // Submit result to external service using consul
 
 router.post("/submit_result", async (req, res) => {
-    try {
-      let {
-        result_user_id,
-        result_test_id,
-        result_score,
-        result_total_score,
-        result_poc_id,
-        result_id,
-      } = req.body;
-  
-      // Generate unique result_id if not provided
-      if (!result_id) {
-        result_id = uuidv4();
-        // console.log("🆕 Generated result_id:", result_id);
-      }
-  
-      // Fetch service details from Consul
-      const serviceName = "Express_Report";
-      const services = await consul.catalog.service.nodes(serviceName);
-      
-    //   console.log("🔍 Retrieved services from Consul:", services);
-  
-      if (!services || services.length === 0) {
-        // console.error("❌ No available service instances found in Consul");
-        return res.status(500).json({ message: "No available service instances found in Consul" });
-      }
-  
-      const { ServiceAddress, ServicePort } = services[0];
-    //   console.log(`📡 Target Service: ${ServiceAddress}:${ServicePort}`);
-  
-      if (!ServiceAddress || !ServicePort) {
-        // console.error("❌ Invalid service details from Consul:", services[0]);
-        return res.status(500).json({ message: "Invalid service details from Consul" });
-      }
-  
-      const targetUrl = `http://${ServiceAddress}:${ServicePort}/results/post-result`;
-    //   console.log(`🚀 Sending request to: ${targetUrl}`);
-  
-      const response = await axios.post(targetUrl, {
-        result_id,
-        result_user_id,
-        result_test_id,
-        result_score,
-        result_total_score,
-        result_poc_id,
-      });
-  
-      console.log("✅ Response from external service:", response.data);
-  
-      res.status(200).json({
-        message: "✅ Result sent successfully to external service",
-        response: response.data,
-      });
-  
-    } catch (error) {
-      console.error("❌ Error sending result to external service:", error.message);
-  
-      if (error.response) {
-        console.error("⚠️ Response Data:", error.response.data);
-        console.error("⚠️ Response Status:", error.response.status);
-      }
-  
-      res.status(500).json({
-        message: "Error sending result",
-        error: error.message,
-      });
+  try {
+    let {
+      result_user_id,
+      result_test_id,
+      result_score,
+      result_total_score,
+      result_poc_id,
+      result_id,
+    } = req.body;
+
+    // Generate unique result_id if not provided
+    if (!result_id) {
+      result_id = uuidv4();
     }
+
+    // Fetch service details from Consul
+    const serviceName = "Express_Report";
+    const services = await consul.catalog.service.nodes(serviceName);
+
+    if (!services || services.length === 0) {
+      return res.status(500).json({ message: "No available service instances found in Consul" });
+    }
+
+    const { Address, ServicePort } = services[0]; // Use Address directly
+
+    if (!Address || !ServicePort) {
+      return res.status(500).json({ message: "Invalid service details from Consul" });
+    }
+
+    const targetUrl = `http://${Address}:${ServicePort}/results/post-result`;
+
+    const response = await axios.post(targetUrl, {
+      result_id,
+      result_user_id,
+      result_test_id,
+      result_score,
+      result_total_score,
+      result_poc_id,
+    });
+
+    console.log("✅ Response from external service:", response.data);
+
+    res.status(200).json({
+      message: "✅ Result sent successfully to external service",
+      response: response.data,
+    });
+
+  } catch (error) {
+    console.error("❌ Error sending result to external service:", error.message);
+
+    if (error.response) {
+      console.error("⚠️ Response Data:", error.response.data);
+      console.error("⚠️ Response Status:", error.response.status);
+    }
+
+    res.status(500).json({
+      message: "Error sending result",
+      error: error.message,
+    });
+  }
 });
-  
 
 
 // GET /mcq/ids - Fetch only mcq_id values
@@ -238,15 +229,15 @@ router.post("/post_data_analytics", async (req, res) => {
       return res.status(500).json({ message: "No available service instances found in Consul" });
     }
 
-    const { ServiceAddress, ServicePort } = services[0];
+    const { Address, ServicePort } = services[0]; // Use Address directly
 
-    if (!ServiceAddress || !ServicePort) {
+    if (!Address || !ServicePort) {
       return res.status(500).json({ message: "Invalid service details from Consul" });
     }
 
-    const targetUrl = `http://${ServiceAddress}:${ServicePort}/individual/post-individual`;
+    const targetUrl = `http://${Address}:${ServicePort}/individual/post-individual`;
 
-    // 🧨 THIS IS THE FIX: send FLAT body, not an array
+    // Send FLAT body, not an array
     const payload = {
       user_id,
       module_poc_name,

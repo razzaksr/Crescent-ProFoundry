@@ -127,10 +127,10 @@ export default function ZealousSignIn() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: `linear-gradient(135deg, rgba(12, 131, 200, 0.05) 0%, rgba(252, 122, 70, 0.05) 100%)`,
+        background: `linear-gradient(135deg, rgba(56, 182, 255, 0.05) 0%, rgba(255, 102, 196, 0.05) 100%)`,
         position: "relative",
         overflow: "hidden",
-        fontFamily: "'Montserrat', sans-serif",
+        fontFamily: "'Magnolia Script', cursive",
         padding: { xs: "16px", sm: "24px" },
 
         // Background decorative elements
@@ -145,7 +145,7 @@ export default function ZealousSignIn() {
           right: "-5%",
           width: { xs: "250px", md: "500px" },
           height: { xs: "250px", md: "500px" },
-          background: "radial-gradient(circle, rgba(12, 131, 200, 0.08) 0%, rgba(12, 131, 200, 0) 70%)",
+          background: "radial-gradient(circle, rgba(56, 182, 255, 0.08) 0%, rgba(56, 182, 255, 0) 70%)",
           animationDelay: "0s",
         },
         "&::after": {
@@ -153,7 +153,7 @@ export default function ZealousSignIn() {
           left: "-5%",
           width: { xs: "200px", md: "400px" },
           height: { xs: "200px", md: "400px" },
-          background: "radial-gradient(circle, rgba(252, 122, 70, 0.08) 0%, rgba(252, 122, 70, 0) 70%)",
+          background: "radial-gradient(circle, rgba(255, 102, 196, 0.08) 0%, rgba(255, 102, 196, 0) 70%)",
           animationDelay: "-7s",
         },
 
@@ -161,7 +161,7 @@ export default function ZealousSignIn() {
         "& .z-shape": {
           position: "absolute",
           opacity: 0.03,
-          background: "#0c83c8",
+          background: "#38b6ff",
           animation: "float 15s infinite ease-in-out",
         },
 
@@ -192,10 +192,10 @@ export default function ZealousSignIn() {
 
         // Typography
         "& *": {
-          fontFamily: "'Montserrat', sans-serif",
+          fontFamily: "'Magnolia Script', cursive",
         },
         "& h1, & h2, & h3, & h4, & h5, & h6": {
-          fontFamily: "'Montserrat', sans-serif",
+          fontFamily: "'Magnolia Script', cursive",
           fontWeight: 600,
         },
       }}
@@ -269,7 +269,7 @@ export default function ZealousSignIn() {
               left: 0,
               right: 0,
               height: "6px",
-              background: "linear-gradient(90deg, #0c83c8, #fc7a46)",
+              background: "linear-gradient(90deg, #38b6ff, #ff66c4)",
             },
           }}
         >
@@ -282,7 +282,7 @@ export default function ZealousSignIn() {
               right: 0,
               bottom: 0,
               opacity: 0.02,
-              backgroundImage: `radial-gradient(#0c83c8 1px, transparent 1px), radial-gradient(#fc7a46 1px, transparent 1px)`,
+              backgroundImage: `radial-gradient(#38b6ff 1px, transparent 1px), radial-gradient(#ff66c4 1px, transparent 1px)`,
               backgroundSize: "20px 20px",
               backgroundPosition: "0 0, 10px 10px",
               pointerEvents: "none",
@@ -292,7 +292,7 @@ export default function ZealousSignIn() {
           {/* Logo Header */}
           <Box
             sx={{
-              background: "linear-gradient(to right, rgba(12, 131, 200, 0.03), rgba(252, 122, 70, 0.03))",
+              background: "linear-gradient(to right, rgba(56, 182, 255, 0.03), rgba(255, 102, 196, 0.03))",
               padding: { xs: "24px 24px 16px", md: "32px 32px 24px" },
               display: "flex",
               flexDirection: "column",
@@ -335,6 +335,7 @@ export default function ZealousSignIn() {
                 transform: mounted ? "translateY(0)" : "translateY(10px)",
                 transition: "opacity 0.8s ease-out, transform 0.8s ease-out",
                 transitionDelay: "0.5s",
+                marginTop: "15px",
               }}
             >
               Sign in to your account
@@ -361,7 +362,7 @@ export default function ZealousSignIn() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Mail size={20} color="#0c83c8" />
+                      <Mail size={20} color="#38b6ff" />
                     </InputAdornment>
                   ),
                 }}
@@ -381,17 +382,22 @@ export default function ZealousSignIn() {
                       transform: "translateY(-2px)",
                       boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
                       "& fieldset": {
-                        borderColor: "#0c83c8",
+                        borderColor: "#38b6ff",
                         borderWidth: "2px",
                       },
                     },
                   },
+                  "& .MuiInputLabel-root": {
+                    fontFamily: "'Roboto', sans-serif",
+                  },
                   "& .MuiInputLabel-root.Mui-focused": {
-                    color: "#0c83c8",
+                    color: "#38b6ff",
+                    fontFamily: "'Roboto', sans-serif",
                   },
                   "& .MuiInputBase-input": {
                     padding: "14px 14px 14px 0",
                     fontSize: "1rem",
+                    fontFamily: "'Roboto', sans-serif",
                   },
                 }}
               />
@@ -409,7 +415,7 @@ export default function ZealousSignIn() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Lock size={20} color="#0c83c8" />
+                      <Lock size={20} color="#38b6ff" />
                     </InputAdornment>
                   ),
                   endAdornment: (
@@ -423,7 +429,7 @@ export default function ZealousSignIn() {
                           transition: "transform 0.2s ease, color 0.2s ease",
                           "&:hover": {
                             transform: "scale(1.1)",
-                            color: "#0c83c8",
+                            color: "#38b6ff",
                           },
                         }}
                       >
@@ -448,17 +454,22 @@ export default function ZealousSignIn() {
                       transform: "translateY(-2px)",
                       boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
                       "& fieldset": {
-                        borderColor: "#0c83c8",
+                        borderColor: "#38b6ff",
                         borderWidth: "2px",
                       },
                     },
                   },
+                  "& .MuiInputLabel-root": {
+                    fontFamily: "'Roboto', sans-serif",
+                  },
                   "& .MuiInputLabel-root.Mui-focused": {
-                    color: "#0c83c8",
+                    color: "#38b6ff",
+                    fontFamily: "'Roboto', sans-serif",
                   },
                   "& .MuiInputBase-input": {
                     padding: "14px 14px 14px 0",
                     fontSize: "1rem",
+                    fontFamily: "'Roboto', sans-serif",
                   },
                 }}
               />
@@ -477,7 +488,7 @@ export default function ZealousSignIn() {
                   href="#"
                   underline="none"
                   sx={{
-                    color: "#0c83c8",
+                    color: "#38b6ff",
                     fontSize: "0.875rem",
                     fontWeight: 500,
                     position: "relative",
@@ -488,7 +499,7 @@ export default function ZealousSignIn() {
                       left: 0,
                       width: "0%",
                       height: "2px",
-                      backgroundColor: "#0c83c8",
+                      backgroundColor: "#38b6ff",
                       transition: "width 0.3s ease",
                     },
                     "&:hover::after": {
@@ -507,13 +518,13 @@ export default function ZealousSignIn() {
                 disabled={isLoading}
                 sx={{
                   padding: { xs: "12px", md: "14px" },
-                  background: "linear-gradient(45deg, #0c83c8 0%, #0a6eaa 100%)",
+                  background: "linear-gradient(45deg, #38b6ff 0%, #2a8cc0 100%)",
                   borderRadius: "12px",
                   textTransform: "none",
                   fontSize: { xs: "0.9rem", md: "1rem" },
                   fontWeight: 600,
                   letterSpacing: "0.5px",
-                  boxShadow: "0 4px 15px rgba(12, 131, 200, 0.3)",
+                  boxShadow: "0 4px 15px rgba(56, 182, 255, 0.3)",
                   position: "relative",
                   overflow: "hidden",
                   opacity: mounted ? 1 : 0,
@@ -531,7 +542,7 @@ export default function ZealousSignIn() {
                     transition: "left 0.7s ease",
                   },
                   "&:hover": {
-                    boxShadow: "0 6px 20px rgba(12, 131, 200, 0.4)",
+                    boxShadow: "0 6px 20px rgba(56, 182, 255, 0.4)",
                     transform: "translateY(-2px)",
                     "&::before": {
                       left: "100%",
@@ -539,7 +550,7 @@ export default function ZealousSignIn() {
                   },
                   "&:active": {
                     transform: "translateY(1px)",
-                    boxShadow: "0 2px 10px rgba(12, 131, 200, 0.3)",
+                    boxShadow: "0 2px 10px rgba(56, 182, 255, 0.3)",
                   },
                 }}
               >
@@ -558,8 +569,9 @@ export default function ZealousSignIn() {
               >
                 <Typography
                   sx={{
-                    color: "#fc7a46",
+                    color: "#ff66c4",
                     fontWeight: 500,
+                    fontFamily: "'Poppins', sans-serif",
                     position: "relative",
                     "&::after": {
                       content: '""',
@@ -568,7 +580,7 @@ export default function ZealousSignIn() {
                       left: 0,
                       width: "0%",
                       height: "2px",
-                      backgroundColor: "#fc7a46",
+                      backgroundColor: "#ff66c4",
                       transition: "width 0.3s ease",
                     },
                     "&:hover::after": {

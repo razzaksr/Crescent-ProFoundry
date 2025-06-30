@@ -64,29 +64,31 @@ const PieChart = ({ data }) => {
   };
 
   return (
-    <div className="pie-chart-container">
-      <svg viewBox="0 0 100 100" className="pie-chart">
-        {data.map((item, index) => {
-          if (item.value === 0) return null;
-          const percentage = (item.value / total) * 100;
-          const path = createPath(percentage, cumulativePercentage);
-          cumulativePercentage += percentage;
+    <div
+  className={`pie-chart-container ${
+    total === 100 ? "stable" : ""
+  }`}
+>
+  <svg viewBox="0 0 100 100" className="pie-chart">
+    {data.map((item, index) => {
+      if (item.value === 0) return null;
+      const rawPercent = (item.value / total) * 100;
+      const percentage = Math.min(rawPercent, 99.999); // prevent 100% glitch
+      const path = createPath(percentage, cumulativePercentage);
+      cumulativePercentage += percentage;
 
-          return (
-            <path
-              key={index}
-              d={path}
-              fill={item.color}
-              className="pie-slice"
-              style={{
-                transition: "all 0.5s ease-in-out",
-                transformOrigin: "center",
-              }}
-            />
-          );
-        })}
-      </svg>
-    </div>
+      return (
+        <path
+          key={index}
+          d={path}
+          fill={item.color}
+          className={`pie-slice ${total === 100 ? "stable" : ""}`}
+        />
+      );
+    })}
+  </svg>
+</div>
+
   );
 };
 
@@ -135,7 +137,8 @@ const QuestionNavigator = ({ progress, currentQuestion, onQuestionSelect }) => {
       <div className="question-grid">
         {progress.map((item, index) => {
           let status = "not-visited";
-          if (item.selected_option) status = "answered";
+          if (item.selected_option && item.marked) status = "answered-and-marked";
+          else if (item.selected_option) status = "answered";
           else if (item.marked) status = "marked";
           else if (item.visited) status = "not-answered";
 
@@ -325,12 +328,7 @@ const McqPage = () => {
           }
         } catch (error) {
           console.error("Fullscreen request failed:", error);
-          setDialog({
-            open: true,
-            type: "error",
-            message: "Failed to enter fullscreen mode. Please allow fullscreen and try again.",
-            onConfirm: () => setDialog({ open: false }),
-          });
+         
         }
 
         setIsInitialized(true);
@@ -457,12 +455,6 @@ const McqPage = () => {
         }
       } catch (error) {
         console.error("Fullscreen request failed:", error);
-        setDialog({
-          open: true,
-          type: "error",
-          message: "Failed to enter fullscreen mode. Please allow fullscreen and try again.",
-          onConfirm: () => setDialog({ open: false }),
-        });
       }
     };
 
@@ -705,19 +697,22 @@ const McqPage = () => {
 
   let answeredCount = 0;
   let markedCount = 0;
+  let answeredAndMarkedCount = 0;
   let notAnsweredCount = 0;
   let notVisitedCount = 0;
 
   progress.forEach((p) => {
-    if (p.selected_option) answeredCount += 1;
+    if (p.selected_option && p.marked) answeredAndMarkedCount += 1;
+    else if (p.selected_option) answeredCount += 1;
     else if (p.marked) markedCount += 1;
     else if (p.visited) notAnsweredCount += 1;
     else notVisitedCount += 1;
   });
 
   const pieChartData = [
+    { label: "Answered & Marked", value: answeredAndMarkedCount, color: "#0c83c8" },
     { label: "Answered", value: answeredCount, color: "#22c55e" },
-    { label: "Marked", value: markedCount, color: "#f97316" },
+    { label: "Marked", value: markedCount, color: "#fc7a46" },
     { label: "Not Answered", value: notAnsweredCount, color: "#ef4444" },
     { label: "Not Visited", value: notVisitedCount, color: "#9ca3af" },
   ];

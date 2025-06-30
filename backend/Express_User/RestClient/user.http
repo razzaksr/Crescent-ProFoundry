@@ -3,10 +3,9 @@ POST http://localhost:8081/user/add_user
 Content-Type: application/json
 
 {
-  "full_name": "Kaviya S",
+  "full_name": "test S",
   "department": "INFORMATION TECHNOLOGY ",
   "college": "MUTHAYAMMAL ENGINEERING COLLEGE",
-  "rollno": "22IT036",
   "email": "kaviyaselvam801@gmail.com",
   "password": "kavi2962"
 }
@@ -28,7 +27,7 @@ Content-Type: application/json
 
 {
   "email": "dp@gmail.com",
-  "password": "000"
+  "password": "0000"
 }
 
 ### Get All Users

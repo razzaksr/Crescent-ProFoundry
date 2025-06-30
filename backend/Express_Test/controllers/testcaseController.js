@@ -4,32 +4,43 @@ const { v4: uuidv4 } = require("uuid");
 const TestCase = require("../models/TestCase");
 
 
-// ✅ Create TestCase
+// Create TestCase
 router.post("/create_testCase", async (req, res) => {
   try {
-    const { testcase_input, testcase_output, testcase_tags } = req.body;
+    // Normalize input: convert single object to array if needed
+    const testCasesData = Array.isArray(req.body) ? req.body : [req.body];
 
-    if (!testcase_input || !testcase_output) {
-      return res.status(400).json({ error: "Input and output fields are required" });
+    // Validate each test case
+    for (const testCase of testCasesData) {
+      const { testcase_input, testcase_output } = testCase;
+      if (!testcase_input || !testcase_output) {
+        return res.status(400).json({ error: "Input and output fields are required for all test cases" });
+      }
     }
 
-    const newTestCase = new TestCase({
+    // Create test cases with unique IDs
+    const newTestCases = testCasesData.map((testCase) => ({
       testcase_id: uuidv4(),
-      testcase_input,
-      testcase_output,
-      testcase_tags,
-    });
+      testcase_input: testCase.testcase_input,
+      testcase_output: testCase.testcase_output,
+      testcase_tags: testCase.testcase_tags || [],
+    }));
 
-    await newTestCase.save();
-    res.status(201).json(newTestCase);
+    // Bulk insert test cases
+    const savedTestCases = await TestCase.insertMany(newTestCases);
+
+    // Return single object if input was a single object, else return array
+    const response = Array.isArray(req.body) ? savedTestCases : savedTestCases[0];
+
+    res.status(201).json(response);
   } catch (error) {
-    console.error("Error creating test case:", error);
+    console.error("Error creating test cases:", error);
     res.status(500).json({ error: error.message });
   }
 });
 
 
-// ✅ Get All TestCases
+// Get All TestCases
 router.get("/get_all_testCases", async (req, res) => {
   try {
     const testCases = await TestCase.find();
@@ -40,7 +51,7 @@ router.get("/get_all_testCases", async (req, res) => {
   }
 });
 
-// ✅ Get TestCase by ID (FIXED)
+// Get TestCase by ID (FIXED)
 router.get("/get_testCase_id/:id", async (req, res) => {
   try {
     const testCase = await TestCase.findOne({ testcase_id: req.params.id });
@@ -86,7 +97,7 @@ router.put('/update_testCase', async (req, res) => {
 
 
 
-// ✅ Delete TestCase (FIXED)
+// Delete TestCase (FIXED)
 router.delete("/delete_testCase/:id", async (req, res) => {
   try {
     const deletedTestCase = await TestCase.findOneAndDelete({ testcase_id: req.params.id });

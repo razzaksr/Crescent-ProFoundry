@@ -213,18 +213,21 @@ router.get("/get_result_by_user_id_test_id", async (req, res) => {
 });
 
 // GET route to fetch results by user ID
-router.get('/get_results_by_user_id/:userId', async (req, res) => {
+router.get('/get_results_by_user_and_poc/:userId/:pocId', async (req, res) => {
   try {
-    const userId = req.params.userId;
+    const { userId, pocId } = req.params;
 
-    // Find all results for the specified user ID
-    const results = await Result.find({ result_user_id: userId });
+    // Find all results for the specified user ID and POC ID
+    const results = await Result.find({ 
+      result_user_id: userId,
+      result_poc_id: pocId 
+    });
 
     // If no results found
     if (!results || results.length === 0) {
       return res.status(404).json({
         success: false,
-        message: `No results found for user ID: ${userId}`
+        message: `No results found for user ID: ${userId} and POC ID: ${pocId}`
       });
     }
 
@@ -252,17 +255,17 @@ async function getServiceAddress(serviceName) {
   try {
     const services = await consul.catalog.service.nodes(serviceName);
     if (!services || services.length === 0) {
-      console.error(` No available service instances found for ${serviceName}`);
+      console.error(`No available service instances found for ${serviceName}`);
       throw new Error(`No available service instances found for ${serviceName}`);
     }
-    const { ServiceAddress, ServicePort } = services[0];
-    if (!ServiceAddress || !ServicePort) {
-      console.error(` Invalid service details for ${serviceName}:`, services[0]);
+    const { Address, ServicePort } = services[0]; // Use Address directly
+    if (!Address || !ServicePort) {
+      console.error(`Invalid service details for ${serviceName}:`, services[0]);
       throw new Error(`Invalid service details for ${serviceName}`);
     }
-    return `http://${ServiceAddress}:${ServicePort}`;
+    return `http://${Address}:${ServicePort}`;
   } catch (error) {
-    console.error(` Error fetching service ${serviceName}:`, error.message);
+    console.error(`Error fetching service ${serviceName}:`, error.message);
     throw error;
   }
 }
@@ -270,29 +273,29 @@ async function getServiceAddress(serviceName) {
 router.get('/aggregate_scores/:poc_id/:user_id', async (req, res) => {
   try {
     const { poc_id, user_id } = req.params;
-    console.log(` Processing aggregate_scores for poc_id: ${poc_id}, user_id: ${user_id}`);
+    console.log(`Processing aggregate_scores for poc_id: ${poc_id}, user_id: ${user_id}`);
 
     // Fetch Express_Poc service address
     const pocGatewayUrl = await getServiceAddress('Express_Poc');
-    console.log(` Express_Poc URL: ${pocGatewayUrl}`);
+    console.log(`Express_Poc URL: ${pocGatewayUrl}`);
 
     const testsResponse = await axios.get(`${pocGatewayUrl}/poc/tests_till_today/${poc_id}`);
     const testIds = testsResponse.data.tests_till_today.map(test => test.test_id);
-    console.log(` Fetched ${testIds.length} test IDs:`, testIds);
+    console.log(`Fetched ${testIds.length} test IDs:`, testIds);
 
     if (!testIds.length) {
-      console.log(` No tests found for poc_id: ${poc_id}`);
+      console.log(`No tests found for poc_id: ${poc_id}`);
       return res.status(200).json({
-        message: ' No tests found for this POC',
+        message: 'No tests found for this POC',
         response: { tests: [], total_result_score: 0, total_test_score: 0, average_percentage: 0 }
       });
     }
 
     // Fetch Express_Test service address
     const testGatewayUrl = await getServiceAddress('Express_Test');
-    console.log(` Express_Test URL: ${testGatewayUrl}`);
+    console.log(`Express_Test URL: ${testGatewayUrl}`);
 
-    // Fetch Express_Report'); service address (self)
+    // Fetch Express_Report service address (self)
     const resultGatewayUrl = await getServiceAddress('Express_Report');
 
     const results = await Promise.all(
@@ -302,10 +305,10 @@ router.get('/aggregate_scores/:poc_id/:user_id', async (req, res) => {
           const testResponse = await axios.get(`${testGatewayUrl}/test/get_by_test_id/${test_id}`);
           test_total_score = testResponse.data.test_total_score || 0;
         } catch (error) {
-          console.error(` Error fetching test ${test_id}:`, error.message);
+          console.error(`Error fetching test ${test_id}:`, error.message);
           if (error.response) {
-            console.error(` Response Data:`, error.response.data);
-            console.error(` Response Status:`, error.response.status);
+            console.error(`Response Data:`, error.response.data);
+            console.error(`Response Status:`, error.response.status);
           }
           test_total_score = 0;
         }
@@ -317,10 +320,10 @@ router.get('/aggregate_scores/:poc_id/:user_id', async (req, res) => {
           );
           result_score = resultResponse.data[0]?.result_score || 0;
         } catch (error) {
-          console.log(` No result found for test_id ${test_id}, user_id ${user_id}`);
+          console.log(`No result found for test_id ${test_id}, user_id ${user_id}`);
           if (error.response) {
-            console.error(` Error fetching result for test ${test_id}:`, error.response.data);
-            console.error(` Response Status:`, error.response.status);
+            console.error(`Error fetching result for test ${test_id}:`, error.response.data);
+            console.error(`Response Status:`, error.response.status);
           }
           result_score = 0;
         }
@@ -336,14 +339,14 @@ router.get('/aggregate_scores/:poc_id/:user_id', async (req, res) => {
     const average_percentage = total_test_score > 0 ? (total_result_score / total_test_score) * 100 : 0;
 
     res.status(200).json({
-      message: ' Scores aggregated successfully',
+      message: 'Scores aggregated successfully',
       response: { tests: results, total_result_score, total_test_score, average_percentage }
     });
   } catch (error) {
-    console.error(' Error in aggregate_scores:', error.message);
+    console.error('Error in aggregate_scores:', error.message);
     if (error.response) {
-      console.error(' Response Data:', error.response.data);
-      console.error(' Response Status:', error.response.status);
+      console.error('Response Data:', error.response.data);
+      console.error('Response Status:', error.response.status);
     }
     res.status(500).json({ message: 'Error aggregating scores', error: error.message });
   }

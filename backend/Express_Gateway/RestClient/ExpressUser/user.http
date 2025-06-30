@@ -1,6 +1,25 @@
+### Login to Obtain JWT Token
+POST http://localhost:8086/login_gateway/login
+Content-Type: application/json
+
+{
+  "email": "reachus@zealoustechcorp.com",
+  "password": "Zactacademy@2013"
+}
+
+# Note: Copy the "token" from the response and replace <your_jwt_token> in subsequent requests.
+
+###
+
+### Health Check (Unprotected)
+GET http://localhost:8086/health
+
+###
+
 ### Create User
 POST http://localhost:8086/user_gateway/user/add_user
 Content-Type: application/json
+Authorization: Bearer <your_jwt_token>
 
 {
   "full_name": "student_1",
@@ -11,48 +30,54 @@ Content-Type: application/json
   "mobile_no": "+919876513210"
 }
 
+###
+
 ### Create User in Bulk
 POST http://localhost:8086/user_gateway/user/bulk_add_users
 Content-Type: application/json
+Authorization: Bearer <your_jwt_token>
 
 [
-{
-  "full_name": "student_2",
-  "department": "Computer Science Engineering",
-  "college": "Muthayammal Engineering College",
-  "rollno": "22CS002",
-  "email": "student2@gmail.com",
-  "mobile_no": "+919876512222"
-},
-{
-  "full_name": "student_3",
-  "department": "Computer Science Engineering",
-  "college": "Muthayammal Engineering College",
-  "rollno": "22CS003",
-  "email": "student3@gmail.com",
-  "mobile_no": "+919876513333"
-},
-{
-  "full_name": "student_4",
-  "department": "Computer Science Engineering",
-  "college": "Muthayammal Engineering College",
-  "rollno": "22CS004",
-  "email": "student4@gmail.com",
-  "mobile_no": "+919876514444"
-},
-{
-  "full_name": "student_5",
-  "department": "Computer Science Engineering",
-  "college": "Muthayammal Engineering College",
-  "rollno": "22CS005",
-  "email": "student5@gmail.com",
-  "mobile_no": "+919876515555"
-}
+  {
+    "full_name": "student_2",
+    "department": "Computer Science Engineering",
+    "college": "Muthayammal Engineering College",
+    "rollno": "22CS002",
+    "email": "student2@gmail.com",
+    "mobile_no": "+919876512222"
+  },
+  {
+    "full_name": "student_3",
+    "department": "Computer Science Engineering",
+    "college": "Muthayammal Engineering College",
+    "rollno": "22CS003",
+    "email": "student3@gmail.com",
+    "mobile_no": "+919876513333"
+  },
+  {
+    "full_name": "student_4",
+    "department": "Computer Science Engineering",
+    "college": "Muthayammal Engineering College",
+    "rollno": "22CS004",
+    "email": "student4@gmail.com",
+    "mobile_no": "+919876514444"
+  },
+  {
+    "full_name": "student_5",
+    "department": "Computer Science Engineering",
+    "college": "Muthayammal Engineering College",
+    "rollno": "22CS005",
+    "email": "student5@gmail.com",
+    "mobile_no": "+919876515555"
+  }
 ]
+
+###
 
 ### Create Admin
 POST http://localhost:8086/user_gateway/user/add_user
 Content-Type: application/json
+Authorization: Bearer <your_jwt_token>
 
 {
   "full_name": "Zealoudds Tech Corp",
@@ -60,26 +85,25 @@ Content-Type: application/json
   "password": "Zactacademy@2013",
   "admin": true
 }
-### Login User
-POST http://localhost:8086/user_gateway/user/login
-Content-Type: application/json
 
-{
-  "email": "dharun@gmail.com",
-  "password": "0000"
-}
-
+###
 
 ### Get All Users
 GET http://localhost:8086/user_gateway/user/read_all_users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ODY1MmZjMS1lZTQxLTRmYzItODgyOS05NTA1YTcyNGFjOGUiLCJmdWxsX25hbWUiOiJESEFSVU4gUFJBS0FTSCBKIEEiLCJpYXQiOjE3NTA3NDcwODIsImV4cCI6MTc1MDc4MzA4Mn0.hteaiCOLMCwaLN_MpMKNXUJMHgefpn6dTgEmA2IP7D0
+
+###
 
 ### Get User by ID
 GET http://localhost:8086/user_gateway/user/get_user_by_id/717150b2-2a19-45e8-9c24-69d93b4751c2
+Authorization: Bearer <your_jwt_token>
 
+###
 
 ### Update User
 PUT http://localhost:8086/user_gateway/user/update_user/b7062a63-5ed2-4ae6-b499-0bdcdda0d7fa
 Content-Type: application/json
+Authorization: Bearer <your_jwt_token>
 
 {
   "full_name": "Updated John Doe",
@@ -87,18 +111,19 @@ Content-Type: application/json
   "password": "newpassword123"
 }
 
+###
+
 ### Update User Last Login
 PUT http://localhost:8086/user_gateway/user/update_last_login/b7062a63-5ed2-4ae6-b499-0bdcdda0d7fa
 Content-Type: application/json
+Authorization: Bearer <your_jwt_token>
 
 {
   "user_last_login": "2025-03-16T12:30:00Z"
 }
 
+###
+
 ### Delete User
 DELETE http://localhost:8086/user_gateway/user/delete_user/b7062a63-5ed2-4ae6-b499-0bdcdda0d7fa
-
-
-###############
-GET http://localhost:8086/health
-
+Authorization: Bearer <your_jwt_token>

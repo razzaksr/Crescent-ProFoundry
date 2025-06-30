@@ -630,9 +630,9 @@ useEffect(() => {
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
     document.addEventListener("contextmenu", handleContextMenu);
-    document.addEventListener("copy", handleCopy);
-    document.addEventListener("paste", handlePaste);
-    document.addEventListener("keydown", handleKeyDown);
+    // document.addEventListener("copy", handleCopy);
+    // document.addEventListener("paste", handlePaste);
+    // document.addEventListener("keydown", handleKeyDown);
     const editorElement = document.querySelector(".monaco-editor .inputarea");
     if (editorElement) {
       editorElement.addEventListener("input", handleEditorInput);
@@ -641,9 +641,9 @@ useEffect(() => {
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       document.removeEventListener("contextmenu", handleContextMenu);
-      document.removeEventListener("copy", handleCopy);
-      document.removeEventListener("paste", handlePaste);
-      document.removeEventListener("keydown", handleKeyDown);
+      // document.removeEventListener("copy", handleCopy);
+      // document.removeEventListener("paste", handlePaste);
+      // document.removeEventListener("keydown", handleKeyDown);
       if (editorElement) {
         editorElement.removeEventListener("input", handleEditorInput);
       }

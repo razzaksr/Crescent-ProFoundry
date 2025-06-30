@@ -3,57 +3,17 @@ POST http://localhost:8082/testcase/create_testCase
 Content-Type: application/json
 
 [
-        {
-          "testcase_input": ["radar"],
-          "testcase_output": ["1"],
-          "testcase_tags": ["C", "palindrome", "string", "Ccoding2"]
-        },
-        {
-          "testcase_input": ["Radar"],
-          "testcase_output": ["0"],
-          "testcase_tags": ["C", "palindrome", "string", "case_sensitive", "Ccoding2"]
-        },
-        {
-          "testcase_input": ["hello"],
-          "testcase_output": ["0"],
-          "testcase_tags": ["C", "palindrome", "string", "Ccoding2"]
-        },
-        {
-          "testcase_input": ["level"],
-          "testcase_output": ["1"],
-          "testcase_tags": ["C", "palindrome", "string", "Ccoding2"]
-        },
-        {
-          "testcase_input": ["racecar"],
-          "testcase_output": ["1"],
-          "testcase_tags": ["C", "palindrome", "string", "Ccoding2"]
-        },
-        {
-          "testcase_input": ["12321"],
-          "testcase_output": ["1"],
-          "testcase_tags": ["C", "palindrome", "string", "numeric", "Ccoding2"]
-        },
-        {
-          "testcase_input": ["12345"],
-          "testcase_output": ["0"],
-          "testcase_tags": ["C", "palindrome", "string", "numeric", "Ccoding2"]
-        },
-        {
-          "testcase_input": ["a"],
-          "testcase_output": ["1"],
-          "testcase_tags": ["C", "palindrome", "string", "edge_case", "Ccoding2"]
-        },
-        {
-          "testcase_input": ["ab"],
-          "testcase_output": ["0"],
-          "testcase_tags": ["C", "palindrome", "string", "Ccoding2"]
-        },
-        {
-          "testcase_input": ["deked"],
-          "testcase_output": ["1"],
-          "testcase_tags": ["C", "palindrome", "string", "Ccoding2"]
-        }
-      ]
+  {
+    "testcase_input": ["radar"],
+    "testcase_output": ["1"],
+    "testcase_tags": ["C", "palindrome", "string", "Ccoding2"]
+  },
+  {
+    "testcase_input": ["Radar"],
+    "testcase_output": ["0"],
+    "testcase_tags": ["C", "palindrome", "string", "case_sensitive", "Ccoding2"]
+  }
+]
 
 ### Read all the testCase 
 GET http://localhost:8082/testcase/get_all_testCases

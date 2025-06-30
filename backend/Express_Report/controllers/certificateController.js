@@ -24,9 +24,12 @@ const getServiceUrl = async (serviceName, path = "") => {
       throw new Error(`Service ${serviceName} not found in Consul`);
     }
 
-    const { ServiceAddress, ServicePort } = services[0];
-    const host = ServiceAddress || "localhost"; // Fallback to localhost
-    return `http://${host}:${ServicePort}${path}`;
+    const { Address, ServicePort } = services[0]; // Use Address directly
+    if (!Address || !ServicePort) {
+      throw new Error(`Invalid service details for ${serviceName} in Consul`);
+    }
+
+    return `http://${Address}:${ServicePort}${path}`;
   } catch (error) {
     console.error(`❌ Error fetching ${serviceName} service URL:`, error.message);
     return null;

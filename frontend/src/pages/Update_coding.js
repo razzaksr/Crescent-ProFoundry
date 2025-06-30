@@ -7,7 +7,6 @@ import {
   CircularProgress,
   Alert,
   Snackbar,
-  IconButton,
   Stepper,
   Step,
   StepLabel,
@@ -27,16 +26,24 @@ import {
   TableRow,
   useTheme,
   useMediaQuery,
+  Tooltip,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import CloseIcon from "@mui/icons-material/Close";
 import CodeIcon from "@mui/icons-material/Code";
 import BugReportIcon from "@mui/icons-material/BugReport";
 import SaveIcon from "@mui/icons-material/Save";
+import AddIcon from "@mui/icons-material/Add";
 import { stepConnectorClasses } from '@mui/material/StepConnector';
 import Admin_Dashboard from "../components/AdminDash";
 import { fetchAllCodes, fetchAllTestCases, updateCode } from "../axios";
+import { useNavigate } from "react-router-dom";
+
+// UUID validation regex
+const isValidUUID = (id) => {
+  if (!id || typeof id !== 'string') return false;
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(id);
+};
 
 const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
   [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -73,7 +80,7 @@ const ColorlibStepIconRoot = styled('div')(({ theme, ownerState }) => ({
   justifyContent: 'center',
   alignItems: 'center',
   transition: 'all 0.3s ease',
-  ...(ownerState.active || ownerState.completed
+  ...(ownerState?.active || ownerState?.completed
     ? {
         background: 'linear-gradient(90deg, #0c83c8, #fc7a46)',
         boxShadow: '0 4px 12px rgba(12, 131, 200, 0.3)',
@@ -82,7 +89,7 @@ const ColorlibStepIconRoot = styled('div')(({ theme, ownerState }) => ({
 }));
 
 function ColorlibStepIcon(props) {
-  const { active, completed, className, icon } = props;
+  const { active = false, completed = false, className, icon } = props;
 
   const icons = {
     1: <CodeIcon />,
@@ -99,14 +106,15 @@ function ColorlibStepIcon(props) {
 
 const steps = ['Select Code', 'Select Test Cases', 'Review and Confirm'];
 
-
 const Update_coding = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const navigate = useNavigate();
   const [codeRows, setCodeRows] = useState([]);
   const [testcaseRows, setTestcaseRows] = useState([]);
   const [selectedCodeId, setSelectedCodeId] = useState(null);
   const [selectedTestcaseIds, setSelectedTestcaseIds] = useState([]);
+  const [activeStep, setActiveStep] = useState(0);
   const [loading, setLoading] = useState({
     codes: true,
     testcases: true,
@@ -117,7 +125,6 @@ const Update_coding = () => {
     message: '',
     severity: 'success',
   });
-  const [activeStep, setActiveStep] = useState(0);
   const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
 
   // Load selections from localStorage on mount
@@ -126,8 +133,15 @@ const Update_coding = () => {
       const codeId = JSON.parse(localStorage.getItem('selectedCodeId'));
       const testcaseIds = JSON.parse(localStorage.getItem('selectedTestcaseIds')) || [];
 
-      if (codeId) setSelectedCodeId(codeId);
-      setSelectedTestcaseIds(Array.isArray(testcaseIds) ? testcaseIds : []);
+      if (codeId && isValidUUID(codeId)) {
+        setSelectedCodeId(codeId);
+      } else if (codeId) {
+        console.warn('Invalid codeId in localStorage:', codeId);
+        localStorage.removeItem('selectedCodeId');
+      }
+      setSelectedTestcaseIds(
+        Array.isArray(testcaseIds) ? testcaseIds.filter(id => isValidUUID(id)) : []
+      );
     } catch (error) {
       setSnackbar({
         open: true,
@@ -152,28 +166,51 @@ const Update_coding = () => {
     const fetchData = async () => {
       try {
         const codeResponse = await fetchAllCodes();
-        const codesArray = codeResponse.codes || [];
+        const codesArray = Array.isArray(codeResponse.data)
+          ? codeResponse.data
+          : Array.isArray(codeResponse.data?.codes)
+          ? codeResponse.data.codes
+          : Array.isArray(codeResponse.codes)
+          ? codeResponse.codes
+          : [];
         if (!Array.isArray(codesArray)) {
-          throw new Error("Code data is not an array");
+          throw new Error('Code data is not an array');
         }
-        const formattedCodes = codesArray.map((item, index) => ({
-          id: item._id || `temp-id-${index}`,
-          code_id: item.code_id || 'N/A',
-          problem: item.code_problem_statement || 'N/A',
-          testCasesCount: Array.isArray(item.code_test_cases_id)
-            ? item.code_test_cases_id.length
-            : Array.isArray(item.code_test_cases)
-            ? item.code_test_cases.length
-            : 0,
-          tags: Array.isArray(item.code_tags) ? item.code_tags : [],
-          createdAt: item.createdAt ? new Date(item.createdAt).toLocaleString() : 'N/A',
-          updatedAt: item.updatedAt ? new Date(item.updatedAt).toLocaleString() : 'N/A',
-        }));
+        const formattedCodes = codesArray
+          .filter(item => isValidUUID(item.code_id))
+          .map((item, index) => ({
+            id: item.code_id, // Use code_id as the unique identifier
+            code_id: item.code_id || 'N/A',
+            problem: item.code_problem_statement || 'N/A',
+            testCasesCount: Array.isArray(item.code_test_cases_id)
+              ? item.code_test_cases_id.length
+              : Array.isArray(item.code_test_cases)
+              ? item.code_test_cases.length
+              : 0,
+            tags: Array.isArray(item.code_tags) ? [...new Set(item.code_tags)] : [],
+            createdAt: item.createdAt && !isNaN(new Date(item.createdAt))
+              ? new Date(item.createdAt).toLocaleString()
+              : 'N/A',
+            updatedAt: item.updatedAt && !isNaN(new Date(item.updatedAt))
+              ? new Date(item.updatedAt).toLocaleString()
+              : 'N/A',
+          }));
         setCodeRows(formattedCodes);
+        if (formattedCodes.length === 0) {
+          setSnackbar({
+            open: true,
+            message: 'No valid codes found. Please ensure code IDs are valid UUIDs.',
+            severity: 'warning',
+          });
+        }
       } catch (error) {
         setSnackbar({
           open: true,
-          message: 'Failed to fetch code data.',
+          message: `Failed to fetch code data: ${
+            error.response?.status
+              ? `HTTP ${error.response.status}: ${error.response?.data?.msg || error.message}`
+              : error.message || 'Unknown error'
+          }`,
           severity: 'error',
         });
       } finally {
@@ -182,21 +219,46 @@ const Update_coding = () => {
 
       try {
         const testcaseResponse = await fetchAllTestCases();
-        const testcasesArray = Array.isArray(testcaseResponse) ? testcaseResponse : [];
-        const formattedTestcases = testcasesArray.map((item, index) => ({
-          id: item._id || `temp-id-${index}`,
-          testcase_id: item.testcase_id || 'N/A',
-          input: Array.isArray(item.testcase_input) ? item.testcase_input.join(', ') : 'N/A',
-          output: Array.isArray(item.testcase_output) ? item.testcase_output.join(', ') : 'N/A',
-          tags: Array.isArray(item.testcase_tags) ? item.testcase_tags : [],
-          createdAt: item.createdAt ? new Date(item.createdAt).toLocaleString() : 'N/A',
-          updatedAt: item.updatedAt ? new Date(item.updatedAt).toLocaleString() : 'N/A',
-        }));
+        const testcasesArray = Array.isArray(testcaseResponse.data)
+          ? testcaseResponse.data
+          : Array.isArray(testcaseResponse)
+          ? testcaseResponse
+          : [];
+        const formattedTestcases = testcasesArray
+          .filter(item => isValidUUID(item.testcase_id))
+          .map((item, index) => ({
+            id: item.testcase_id, // Use testcase_id as the unique identifier
+            testcase_id: item.testcase_id || 'N/A',
+            input: Array.isArray(item.testcase_input)
+              ? item.testcase_input.join(', ')
+              : item.testcase_input || 'N/A',
+            output: Array.isArray(item.testcase_output)
+              ? item.testcase_output.join(', ')
+              : item.testcase_output || 'N/A',
+            tags: Array.isArray(item.testcase_tags) ? [...new Set(item.testcase_tags)] : [],
+            createdAt: item.createdAt && !isNaN(new Date(item.createdAt))
+              ? new Date(item.createdAt).toLocaleString()
+              : 'N/A',
+            updatedAt: item.updatedAt && !isNaN(new Date(item.updatedAt))
+              ? new Date(item.updatedAt).toLocaleString()
+              : 'N/A',
+          }));
         setTestcaseRows(formattedTestcases);
+        if (formattedTestcases.length === 0) {
+          setSnackbar({
+            open: true,
+            message: 'No valid test cases found. Please ensure test case IDs are valid UUIDs.',
+            severity: 'warning',
+          });
+        }
       } catch (error) {
         setSnackbar({
           open: true,
-          message: 'Failed to fetch test cases.',
+          message: `Failed to fetch test cases: ${
+            error.response?.status
+              ? `HTTP ${error.response.status}: ${error.response?.data?.msg || error.message}`
+              : error.message || 'Unknown error'
+          }`,
           severity: 'error',
         });
       } finally {
@@ -215,6 +277,16 @@ const Update_coding = () => {
       });
       return;
     }
+    if (activeStep === 0 && !isValidUUID(selectedCodeId)) {
+      setSnackbar({
+        open: true,
+        message: `Selected code ID (${selectedCodeId}) is not a valid UUID.`,
+        severity: 'error',
+      });
+      setSelectedCodeId(null);
+      localStorage.removeItem('selectedCodeId');
+      return;
+    }
     if (activeStep === 1 && selectedTestcaseIds.length === 0) {
       setSnackbar({
         open: true,
@@ -222,6 +294,19 @@ const Update_coding = () => {
         severity: 'error',
       });
       return;
+    }
+    if (activeStep === 1) {
+      const invalidIds = selectedTestcaseIds.filter(id => !isValidUUID(id));
+      if (invalidIds.length > 0) {
+        setSnackbar({
+          open: true,
+          message: `Invalid test case ID(s) selected: ${invalidIds.join(', ')}`,
+          severity: 'error',
+        });
+        setSelectedTestcaseIds(selectedTestcaseIds.filter(id => isValidUUID(id)));
+        localStorage.setItem('selectedTestcaseIds', JSON.stringify(selectedTestcaseIds.filter(id => isValidUUID(id))));
+        return;
+      }
     }
     if (activeStep === steps.length - 1) {
       setPreviewDialogOpen(true);
@@ -253,17 +338,42 @@ const Update_coding = () => {
       return;
     }
 
+    if (!isValidUUID(selectedCodeId)) {
+      setSnackbar({
+        open: true,
+        message: `Selected code ID (${selectedCodeId}) is not a valid UUID.`,
+        severity: 'error',
+      });
+      setPreviewDialogOpen(false);
+      setSelectedCodeId(null);
+      localStorage.removeItem('selectedCodeId');
+      return;
+    }
+
+    const invalidTestcaseIds = selectedTestcaseIds.filter(id => !isValidUUID(id));
+    if (invalidTestcaseIds.length > 0) {
+      setSnackbar({
+        open: true,
+        message: `Invalid test case ID(s): ${invalidTestcaseIds.join(', ')}`,
+        severity: 'error',
+      });
+      setPreviewDialogOpen(false);
+      setSelectedTestcaseIds(selectedTestcaseIds.filter(id => isValidUUID(id)));
+      localStorage.setItem('selectedTestcaseIds', JSON.stringify(selectedTestcaseIds.filter(id => isValidUUID(id))));
+      return;
+    }
+
     setLoading(prev => ({ ...prev, update: true }));
 
     try {
       const selectedCode = codeRows.find((row) => row.id === selectedCodeId);
-      const testcaseIdsToAdd = testcaseRows
-        .filter((t) => selectedTestcaseIds.includes(t.id))
-        .map((t) => t.testcase_id)
-        .filter(Boolean);
+      if (!selectedCode) {
+        throw new Error('Selected code not found in data');
+      }
+      const testcaseIdsToAdd = selectedTestcaseIds.filter(id => isValidUUID(id));
 
       const payload = {
-        code_id: selectedCode.code_id,
+        code_id: selectedCode.id,
         code_test_cases_id: testcaseIdsToAdd,
       };
 
@@ -277,20 +387,32 @@ const Update_coding = () => {
 
       // Refresh data
       const codeResponse = await fetchAllCodes();
-      const codesArray = codeResponse.codes || [];
-      const formattedCodes = codesArray.map((item, index) => ({
-        id: item._id || `temp-id-${index}`,
-        code_id: item.code_id || 'N/A',
-        problem: item.code_problem_statement || 'N/A',
-        testCasesCount: Array.isArray(item.code_test_cases_id)
-          ? item.code_test_cases_id.length
-          : Array.isArray(item.code_test_cases)
-          ? item.code_test_cases.length
-          : 0,
-        tags: Array.isArray(item.code_tags) ? item.code_tags : [],
-        createdAt: item.createdAt ? new Date(item.createdAt).toLocaleString() : 'N/A',
-        updatedAt: item.updatedAt ? new Date(item.updatedAt).toLocaleString() : 'N/A',
-      }));
+      const codesArray = Array.isArray(codeResponse.data)
+        ? codeResponse.data
+        : Array.isArray(codeResponse.data?.codes)
+        ? codeResponse.data.codes
+        : Array.isArray(codeResponse.codes)
+        ? codeResponse.codes
+        : [];
+      const formattedCodes = codesArray
+        .filter(item => isValidUUID(item.code_id))
+        .map((item, index) => ({
+          id: item.code_id,
+          code_id: item.code_id || 'N/A',
+          problem: item.code_problem_statement || 'N/A',
+          testCasesCount: Array.isArray(item.code_test_cases_id)
+            ? item.code_test_cases_id.length
+            : Array.isArray(item.code_test_cases)
+            ? item.code_test_cases.length
+            : 0,
+          tags: Array.isArray(item.code_tags) ? [...new Set(item.code_tags)] : [],
+          createdAt: item.createdAt && !isNaN(new Date(item.createdAt))
+            ? new Date(item.createdAt).toLocaleString()
+            : 'N/A',
+          updatedAt: item.updatedAt && !isNaN(new Date(item.updatedAt))
+            ? new Date(item.updatedAt).toLocaleString()
+            : 'N/A',
+        }));
       setCodeRows(formattedCodes);
 
       setPreviewDialogOpen(false);
@@ -302,7 +424,7 @@ const Update_coding = () => {
     } catch (error) {
       setSnackbar({
         open: true,
-        message: `Error: ${error.response?.data?.msg || error.message || 'Unknown error occurred'}`,
+        message: `Error: ${error.response?.data?.msg || error.message || 'Failed to update code association'}`,
         severity: 'error',
       });
     } finally {
@@ -310,22 +432,12 @@ const Update_coding = () => {
     }
   };
 
-  const handleCopyToClipboard = (text) => {
-    navigator.clipboard.writeText(text)
-      .then(() => {
-        setSnackbar({
-          open: true,
-          message: 'Copied to clipboard!',
-          severity: 'success',
-        });
-      })
-      .catch(() => {
-        setSnackbar({
-          open: true,
-          message: 'Failed to copy to clipboard.',
-          severity: 'error',
-        });
-      });
+  const handleAddCode = () => {
+    navigate('/add_coding');
+  };
+
+  const handleAddTestcase = () => {
+    navigate('/add_testcase');
   };
 
   const renderTagChips = (tags) => {
@@ -333,25 +445,52 @@ const Update_coding = () => {
       return <Typography variant="body2" sx={{ fontSize: { xs: '12px', sm: '14px' } }}>No tags</Typography>;
     }
     return tags.map((tag, index) => (
-      <Chip
-        key={index}
-        label={tag.trim()}
-        size="small"
-        sx={{
-          m: 0.5,
-          backgroundColor: '#e3f2fd',
-          color: '#0c83c8',
-          fontSize: { xs: '10px', sm: '12px' },
-          fontWeight: 500,
-          '&:hover': {
-            backgroundColor: '#d1e9ff',
-          },
-        }}
-      />
+      <Tooltip title={tag} key={index}>
+        <Chip
+          label={tag.trim()}
+          size="small"
+          sx={{
+            m: 0.5,
+            backgroundColor: '#e3f2fd',
+            color: '#0c83c8',
+            fontSize: { xs: '10px', sm: '12px' },
+            fontWeight: 500,
+            '&:hover': {
+              backgroundColor: '#d1e9ff',
+            },
+          }}
+        />
+      </Tooltip>
     ));
   };
 
   const codeColumns = [
+    // {
+    //   field: 'code_id',
+    //   headerName: 'Code ID',
+    //   minWidth: 150,
+    //   flex: 1,
+    //   renderHeader: () => (
+    //     <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+    //       <Typography variant="inherit" fontWeight="bold">
+    //         Code ID
+    //       </Typography>
+    //     </Box>
+    //   ),
+    //   renderCell: (params) => (
+    //     <Tooltip title={isValidUUID(params.value) ? 'Valid UUID' : 'Invalid UUID'}>
+    //       <Typography
+    //         variant="body2"
+    //         sx={{
+    //           color: isValidUUID(params.value) ? 'inherit' : 'error.main',
+    //           fontSize: { xs: '12px', sm: '14px' },
+    //         }}
+    //       >
+    //         {params.value}
+    //       </Typography>
+    //     </Tooltip>
+    //   ),
+    // },
     {
       field: 'problem',
       headerName: 'Problem Statement',
@@ -396,37 +535,35 @@ const Update_coding = () => {
         </Box>
       ),
     },
-    {
-      field: 'createdAt',
-      headerName: 'Created At',
-      minWidth: 180,
-      flex: 1,
-      hide: isMobile,
-      renderHeader: () => (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Typography variant="inherit" fontWeight="bold">
-            Created At
-          </Typography>
-        </Box>
-      ),
-    },
-    {
-      field: 'updatedAt',
-      headerName: 'Updated At',
-      minWidth: 180,
-      flex: 1,
-      hide: isMobile,
-      renderHeader: () => (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Typography variant="inherit" fontWeight="bold">
-            Updated At
-          </Typography>
-        </Box>
-      ),
-    },
   ];
 
   const testcaseColumns = [
+    // {
+    //   field: 'testcase_id',
+    //   headerName: 'Test Case ID',
+    //   minWidth: 150,
+    //   flex: 1,
+    //   renderHeader: () => (
+    //     <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+    //       <Typography variant="inherit" fontWeight="bold">
+    //         Test Case ID
+    //       </Typography>
+    //     </Box>
+    //   ),
+    //   renderCell: (params) => (
+    //     <Tooltip title={isValidUUID(params.value) ? 'Valid UUID' : 'Invalid UUID'}>
+    //       <Typography
+    //         variant="body2"
+    //         sx={{
+    //           color: isValidUUID(params.value) ? 'inherit' : 'error.main',
+    //           fontSize: { xs: '12px', sm: '14px' },
+    //         }}
+    //       >
+    //         {params.value}
+    //       </Typography>
+    //     </Tooltip>
+    //   ),
+    // },
     {
       field: 'input',
       headerName: 'Input',
@@ -471,41 +608,13 @@ const Update_coding = () => {
         </Box>
       ),
     },
-    {
-      field: 'createdAt',
-      headerName: 'Created At',
-      minWidth: 180,
-      flex: 1,
-      hide: isMobile,
-      renderHeader: () => (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Typography variant="inherit" fontWeight="bold">
-            Created At
-          </Typography>
-        </Box>
-      ),
-    },
-    {
-      field: 'updatedAt',
-      headerName: 'Updated At',
-      minWidth: 180,
-      flex: 1,
-      hide: isMobile,
-      renderHeader: () => (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Typography variant="inherit" fontWeight="bold">
-            Updated At
-          </Typography>
-        </Box>
-      ),
-    },
   ];
 
   const dataGridSx = {
     borderRadius: '12px',
     '& .MuiDataGrid-columnHeaders': {
       background: 'linear-gradient(90deg, #0c83c8, #fc7a46)',
-      color: '#0c83c8',
+      color: '#fff',
       fontWeight: '600',
       fontSize: { xs: '14px', sm: '15px' },
     },
@@ -520,6 +629,10 @@ const Update_coding = () => {
     '& .MuiDataGrid-cell': {
       fontSize: { xs: '12px', sm: '14px' },
       borderBottom: '1px solid #e5e7eb',
+    },
+    '& .MuiCheckbox-root': {
+      color: '#0c83c8',
+      '&.Mui-checked': { color: '#fc7a46' },
     },
     boxShadow: '0 2px 8px rgba(12, 131, 200, 0.05)',
     border: 'none',
@@ -605,23 +718,45 @@ const Update_coding = () => {
         >
           {activeStep === 0 && (
             <Box sx={{ mb: 2 }}>
-              <Typography
-                variant="h6"
-                sx={{
-                  mb: 2,
-                  background: 'linear-gradient(90deg, #0c83c8, #fc7a46)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  fontSize: { xs: '1.2rem', sm: '1.4rem' },
-                }}
-              >
-                Select Code
-              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    background: 'linear-gradient(90deg, #0c83c8, #fc7a46)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    fontSize: { xs: '1.2rem', sm: '1.4rem' },
+                  }}
+                >
+                  Select Code
+                </Typography>
+                <Tooltip title="Add a new code">
+                  <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    onClick={handleAddCode}
+                    sx={{
+                      background: 'linear-gradient(90deg, #0c83c8, #fc7a46)',
+                      '&:hover': { background: 'linear-gradient(90deg, #fc7a46, #0c83c8)' },
+                      fontSize: { xs: '12px', sm: '14px' },
+                      borderRadius: '8px',
+                      px: { xs: 2, sm: 3 },
+                      py: { xs: 0.5, sm: 0.75 },
+                    }}
+                  >
+                    Add Code
+                  </Button>
+                </Tooltip>
+              </Box>
               <Box sx={{ height: { xs: 300, sm: 400 }, width: '100%' }}>
                 {loading.codes ? (
                   <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
                     <CircularProgress sx={{ color: '#0c83c8' }} />
                   </Box>
+                ) : codeRows.length === 0 ? (
+                  <Typography variant="body2" sx={{ textAlign: 'center', py: 4 }}>
+                    No valid codes available. Please add a code with a valid UUID or check the API.
+                  </Typography>
                 ) : (
                   <DataGrid
                     rows={codeRows}
@@ -632,55 +767,89 @@ const Update_coding = () => {
                     pageSizeOptions={[10, 20, 50]}
                     getRowId={(row) => row.id}
                     checkboxSelection
+                    disableMultipleRowSelection
                     rowSelectionModel={selectedCodeId ? [selectedCodeId] : []}
                     onRowSelectionModelChange={(newSelection) => {
-                      const updatedSelection = newSelection.length > 0 ? newSelection[newSelection.length - 1] : null;
+                      const updatedSelection = newSelection.length > 0 ? newSelection[0] : null;
+                      if (updatedSelection && !isValidUUID(updatedSelection)) {
+                        setSnackbar({
+                          open: true,
+                          message: `Selected code ID (${updatedSelection}) is not a valid UUID.`,
+                          severity: 'error',
+                        });
+                        return;
+                      }
                       setSelectedCodeId(updatedSelection);
                       localStorage.setItem('selectedCodeId', JSON.stringify(updatedSelection));
                     }}
                     sx={dataGridSx}
                     aria-label="Codes DataGrid"
+                    isRowSelectable={(params) => isValidUUID(params.row.id)}
                   />
                 )}
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, gap: 1 }}>
-                <Button
-                  variant="contained"
-                  onClick={handleNext}
-                  disabled={!selectedCodeId || loading.codes}
-                  sx={{
-                    background: 'linear-gradient(90deg, #0c83c8, #fc7a46)',
-                    '&:hover': { background: 'linear-gradient(90deg, #fc7a46, #0c83c8)' },
-                    fontSize: { xs: '12px', sm: '14px' },
-                    borderRadius: '8px',
-                    px: { xs: 2, sm: 3 },
-                    py: { xs: 0.5, sm: 0.75 },
-                  }}
-                >
-                  Next
-                </Button>
+                <Tooltip title="Proceed to select test cases">
+                  <Button
+                    variant="contained"
+                    onClick={handleNext}
+                    disabled={!selectedCodeId || loading.codes}
+                    sx={{
+                      background: 'linear-gradient(90deg, #0c83c8, #fc7a46)',
+                      '&:hover': { background: 'linear-gradient(90deg, #fc7a46, #0c83c8)' },
+                      fontSize: { xs: '12px', sm: '14px' },
+                      borderRadius: '8px',
+                      px: { xs: 2, sm: 3 },
+                      py: { xs: 0.5, sm: 0.75 },
+                    }}
+                  >
+                    Next
+                  </Button>
+                </Tooltip>
               </Box>
             </Box>
           )}
           {activeStep === 1 && (
             <Box sx={{ mb: 2 }}>
-              <Typography
-                variant="h6"
-                sx={{
-                  mb: 2,
-                  background: 'linear-gradient(90deg, #0c83c8, #fc7a46)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  fontSize: { xs: '1.2rem', sm: '1.4rem' },
-                }}
-              >
-                Select Test Cases
-              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    background: 'linear-gradient(90deg, #0c83c8, #fc7a46)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    fontSize: { xs: '1.2rem', sm: '1.4rem' },
+                  }}
+                >
+                  Select Test Cases
+                </Typography>
+                <Tooltip title="Add a new test case">
+                  <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    onClick={handleAddTestcase}
+                    sx={{
+                      background: 'linear-gradient(90deg, #0c83c8, #fc7a46)',
+                      '&:hover': { background: 'linear-gradient(90deg, #fc7a46, #0c83c8)' },
+                      fontSize: { xs: '12px', sm: '14px' },
+                      borderRadius: '8px',
+                      px: { xs: 2, sm: 3 },
+                      py: { xs: 0.5, sm: 0.75 },
+                    }}
+                  >
+                    Add Test Case
+                  </Button>
+                </Tooltip>
+              </Box>
               <Box sx={{ height: { xs: 300, sm: 400 }, width: '100%' }}>
                 {loading.testcases ? (
                   <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
                     <CircularProgress sx={{ color: '#0c83c8' }} />
                   </Box>
+                ) : testcaseRows.length === 0 ? (
+                  <Typography variant="body2" sx={{ textAlign: 'center', py: 4 }}>
+                    No valid test cases available. Please add a test case with a valid UUID or check the API.
+                  </Typography>
                 ) : (
                   <DataGrid
                     rows={testcaseRows}
@@ -693,43 +862,57 @@ const Update_coding = () => {
                     checkboxSelection
                     rowSelectionModel={selectedTestcaseIds}
                     onRowSelectionModelChange={(newSelection) => {
+                      const invalidIds = newSelection.filter(id => !isValidUUID(id));
+                      if (invalidIds.length > 0) {
+                        setSnackbar({
+                          open: true,
+                          message: `Invalid test case ID(s) selected: ${invalidIds.join(', ')}`,
+                          severity: 'error',
+                        });
+                        return;
+                      }
                       setSelectedTestcaseIds(newSelection);
                       localStorage.setItem('selectedTestcaseIds', JSON.stringify(newSelection));
                     }}
                     sx={dataGridSx}
                     aria-label="Test Cases DataGrid"
+                    isRowSelectable={(params) => isValidUUID(params.row.id)}
                   />
                 )}
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2, gap: 1, flexWrap: 'wrap' }}>
-                <Button
-                  variant="outlined"
-                  onClick={handlePrevious}
-                  sx={{
-                    color: '#0c83c8',
-                    borderColor: '#0c83c8',
-                    fontSize: { xs: '12px', sm: '14px' },
-                    borderRadius: '8px',
-                    '&:hover': { borderColor: '#fc7a46', color: '#fc7a46' },
-                  }}
-                >
-                  Previous
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={handleNext}
-                  disabled={selectedTestcaseIds.length === 0 || loading.testcases}
-                  sx={{
-                    background: 'linear-gradient(90deg, #0c83c8, #fc7a46)',
-                    '&:hover': { background: 'linear-gradient(90deg, #fc7a46, #0c83c8)' },
-                    fontSize: { xs: '12px', sm: '14px' },
-                    borderRadius: '8px',
-                    px: { xs: 2, sm: 3 },
-                    py: { xs: 0.5, sm: 0.75 },
-                  }}
-                >
-                  Next
-                </Button>
+                <Tooltip title="Go back to code selection">
+                  <Button
+                    variant="outlined"
+                    onClick={handlePrevious}
+                    sx={{
+                      color: '#0c83c8',
+                      borderColor: '#0c83c8',
+                      fontSize: { xs: '12px', sm: '14px' },
+                      borderRadius: '8px',
+                      '&:hover': { borderColor: '#fc7a46', color: '#fc7a46' },
+                    }}
+                  >
+                    Previous
+                  </Button>
+                </Tooltip>
+                <Tooltip title="Proceed to review selections">
+                  <Button
+                    variant="contained"
+                    onClick={handleNext}
+                    disabled={selectedTestcaseIds.length === 0 || loading.testcases}
+                    sx={{
+                      background: 'linear-gradient(90deg, #0c83c8, #fc7a46)',
+                      '&:hover': { background: 'linear-gradient(90deg, #fc7a46, #0c83c8)' },
+                      fontSize: { xs: '12px', sm: '14px' },
+                      borderRadius: '8px',
+                      px: { xs: 2, sm: 3 },
+                      py: { xs: 0.5, sm: 0.75 },
+                    }}
+                  >
+                    Next
+                  </Button>
+                </Tooltip>
               </Box>
             </Box>
           )}
@@ -778,6 +961,9 @@ const Update_coding = () => {
                 {selectedCode ? (
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
                     <Typography variant="body2" sx={{ fontSize: { xs: '12px', sm: '14px' } }}>
+                      <strong>Code ID:</strong> {selectedCode.code_id || 'N/A'}
+                    </Typography>
+                    <Typography variant="body2" sx={{ fontSize: { xs: '12px', sm: '14px' } }}>
                       <strong>Problem:</strong> {selectedCode.problem || 'N/A'}
                     </Typography>
                     <Typography variant="body2" sx={{ fontSize: { xs: '12px', sm: '14px' } }}>
@@ -821,6 +1007,9 @@ const Update_coding = () => {
                       <TableHead>
                         <TableRow sx={{ background: 'linear-gradient(90deg, #0c83c8, #fc7a46)' }}>
                           <TableCell sx={{ color: 'white', fontWeight: 'bold', fontSize: { xs: '12px', sm: '14px' } }}>
+                            Test Case ID
+                          </TableCell>
+                          <TableCell sx={{ color: 'white', fontWeight: 'bold', fontSize: { xs: '12px', sm: '14px' } }}>
                             Input
                           </TableCell>
                           <TableCell sx={{ color: 'white', fontWeight: 'bold', fontSize: { xs: '12px', sm: '14px' } }}>
@@ -834,6 +1023,18 @@ const Update_coding = () => {
                       <TableBody>
                         {selectedTestcases.map((tc) => (
                           <TableRow key={tc.id}>
+                            <TableCell sx={{ fontSize: { xs: '12px', sm: '14px' } }}>
+                              <Tooltip title={isValidUUID(tc.testcase_id) ? 'Valid UUID' : 'Invalid UUID'}>
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    color: isValidUUID(tc.testcase_id) ? 'inherit' : 'error.main',
+                                  }}
+                                >
+                                  {tc.testcase_id || 'N/A'}
+                                </Typography>
+                              </Tooltip>
+                            </TableCell>
                             <TableCell sx={{ fontSize: { xs: '12px', sm: '14px' } }}>{tc.input || 'N/A'}</TableCell>
                             <TableCell sx={{ fontSize: { xs: '12px', sm: '14px' } }}>{tc.output || 'N/A'}</TableCell>
                             <TableCell>
@@ -853,33 +1054,37 @@ const Update_coding = () => {
                 )}
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2, gap: 1, flexWrap: 'wrap' }}>
-                <Button
-                  variant="outlined"
-                  onClick={handlePrevious}
-                  sx={{
-                    color: '#0c83c8',
-                    borderColor: '#0c83c8',
-                    fontSize: { xs: '12px', sm: '14px' },
-                    borderRadius: '8px',
-                    '&:hover': { borderColor: '#fc7a46', color: '#fc7a46' },
-                  }}
-                >
-                  Previous
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={handleNext}
-                  sx={{
-                    background: 'linear-gradient(90deg, #0c83c8, #fc7a46)',
-                    '&:hover': { background: 'linear-gradient(90deg, #fc7a46, #0c83c8)' },
-                    fontSize: { xs: '12px', sm: '14px' },
-                    borderRadius: '8px',
-                    px: { xs: '2', sm: 3 },
-                    py: { xs: 0.5, sm: 0.75 },
-                  }}
-                >
-                  Confirm
-                </Button>
+                <Tooltip title="Go back to test case selection">
+                  <Button
+                    variant="outlined"
+                    onClick={handlePrevious}
+                    sx={{
+                      color: '#0c83c8',
+                      borderColor: '#0c83c8',
+                      fontSize: { xs: '12px', sm: '14px' },
+                      borderRadius: '8px',
+                      '&:hover': { borderColor: '#fc7a46', color: '#fc7a46' },
+                    }}
+                  >
+                    Previous
+                  </Button>
+                </Tooltip>
+                <Tooltip title="Confirm selections and update">
+                  <Button
+                    variant="contained"
+                    onClick={handleNext}
+                    sx={{
+                      background: 'linear-gradient(90deg, #0c83c8, #fc7a46)',
+                      '&:hover': { background: 'linear-gradient(90deg, #fc7a46, #0c83c8)' },
+                      fontSize: { xs: '12px', sm: '14px' },
+                      borderRadius: '8px',
+                      px: { xs: 2, sm: 3 },
+                      py: { xs: 0.5, sm: 0.75 },
+                    }}
+                  >
+                    Confirm
+                  </Button>
+                </Tooltip>
               </Box>
             </Box>
           )}
@@ -907,41 +1112,57 @@ const Update_coding = () => {
               Review the changes below:
             </DialogContentText>
             {selectedCode && (
-              <Typography variant="body2" sx={{ mt: 2, fontSize: { xs: '12px', sm: '14px' } }}>
-                <strong>Code:</strong> {selectedCode.problem || 'Unknown'}
-              </Typography>
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="body2" sx={{ fontSize: { xs: '12px', sm: '14px' } }}>
+                  <strong>Code ID:</strong> {selectedCode.code_id || 'Unknown'}
+                </Typography>
+                <Typography variant="body2" sx={{ fontSize: { xs: '12px', sm: '14px' } }}>
+                  <strong>Problem:</strong> {selectedCode.problem || 'Unknown'}
+                </Typography>
+              </Box>
             )}
             {selectedTestcases.length > 0 && (
-              <Typography variant="body2" sx={{ mt: 1, fontSize: { xs: '12px', sm: '14px' } }}>
-                <strong>Test Cases:</strong> {selectedTestcases.length} selected
-              </Typography>
+              <Box sx={{ mt: 1 }}>
+                <Typography variant="body2" sx={{ fontSize: { xs: '12px', sm: '14px' } }}>
+                  <strong>Test Cases:</strong> {selectedTestcases.length} selected
+                </Typography>
+                {selectedTestcases.map((tc) => (
+                  <Typography key={tc.id} variant="body2" sx={{ fontSize: { xs: '12px', sm: '14px' }, ml: 2 }}>
+                    - {tc.testcase_id} {isValidUUID(tc.testcase_id) ? '' : '(Invalid UUID)'}
+                  </Typography>
+                ))}
+              </Box>
             )}
           </DialogContent>
           <DialogActions sx={{ p: 2 }}>
-            <Button
-              onClick={handleClosePreviewDialog}
-              sx={{
-                color: '#0c83c8',
-                fontSize: { xs: '12px', sm: '14px' },
-                borderRadius: '8px',
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="contained"
-              onClick={handleConfirmAssociation}
-              disabled={loading.update}
-              startIcon={loading.update ? <CircularProgress size={16} color="inherit" /> : <SaveIcon />}
-              sx={{
-                background: 'linear-gradient(90deg, #0c83c8, #fc7a46)',
-                '&:hover': { background: 'linear-gradient(90deg, #fc7a46, #0c83c8)' },
-                fontSize: { xs: '12px', sm: '14px' },
-                borderRadius: '8px',
-              }}
-            >
-              Confirm
-            </Button>
+            <Tooltip title="Cancel and return to review">
+              <Button
+                onClick={handleClosePreviewDialog}
+                sx={{
+                  color: '#0c83c8',
+                  fontSize: { xs: '12px', sm: '14px' },
+                  borderRadius: '8px',
+                }}
+              >
+                Cancel
+              </Button>
+            </Tooltip>
+            <Tooltip title="Confirm and save changes">
+              <Button
+                variant="contained"
+                onClick={handleConfirmAssociation}
+                disabled={loading.update}
+                startIcon={loading.update ? <CircularProgress size={16} color="inherit" /> : <SaveIcon />}
+                sx={{
+                  background: 'linear-gradient(90deg, #0c83c8, #fc7a46)',
+                  '&:hover': { background: 'linear-gradient(90deg, #fc7a46, #0c83c8)' },
+                  fontSize: { xs: '12px', sm: '14px' },
+                  borderRadius: '8px',
+                }}
+              >
+                Confirm
+              </Button>
+            </Tooltip>
           </DialogActions>
         </Dialog>
         <Snackbar

@@ -1,0 +1,8 @@
+### Login User
+POST http://localhost:8081/login
+Content-Type: application/json
+
+{
+  "email": "dp@gmail.com",
+  "password": "0000"
+}

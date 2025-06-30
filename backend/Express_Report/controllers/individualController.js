@@ -20,22 +20,23 @@ router.get("/get-result/:result_test_id", async (req, res) => {
     }
 
     const service = result[0];
-    const serviceAddress = service.Address ;
+    const address = service.Address; // Use Address directly
     const servicePort = service.ServicePort;
 
-    console.log(serviceAddress)
-    console.log(servicePort)
+    console.log(address);
+    console.log(servicePort);
 
-    const response = await axios.get(`http://${serviceAddress}:${servicePort}/user/get_user_by_id/${result_test_id}`);
+    // Corrected endpoint to match Express_Test service
+    const response = await axios.get(`http://${address}:${servicePort}/test/get_by_test_id/${result_test_id}`);
     res.json(response.data);
 
   } catch (err) {
-    console.error("Error fetching user by ID:", err.message);
+    console.error("Error fetching test by ID:", err.message);
     res.status(500).json({ error: "Unexpected error", details: err.message });
   }
 });
 
-//get user details by using user _id 
+// Get user details by using user_id
 router.get("/get-user-details-by-user-id/:user_id", async (req, res) => {
   const { user_id } = req.params;
 
@@ -47,13 +48,13 @@ router.get("/get-user-details-by-user-id/:user_id", async (req, res) => {
     }
 
     const service = result[0];
-    const serviceAddress = service.Address ;
+    const address = service.Address; // Use Address directly
     const servicePort = service.ServicePort;
 
-    console.log(serviceAddress)
-    console.log(servicePort)
+    console.log(address);
+    console.log(servicePort);
 
-    const response = await axios.get(`http://${serviceAddress}:${servicePort}/user/get_user_by_id/${user_id}`);
+    const response = await axios.get(`http://${address}:${servicePort}/user/get_user_by_id/${user_id}`);
     res.json(response.data);
 
   } catch (err) {
@@ -61,9 +62,9 @@ router.get("/get-user-details-by-user-id/:user_id", async (req, res) => {
     res.status(500).json({ error: "Unexpected error", details: err.message });
   }
 });
- // getting mod id from express_mod by using module_id
 
- router.get("/get-by-mod-id_express_mod/:module_id", async (req, res) => {
+// Get mod id from Express_Mod by using module_id
+router.get("/get-by-mod-id_express_mod/:module_id", async (req, res) => {
   const { module_id } = req.params;
 
   try {
@@ -74,10 +75,10 @@ router.get("/get-user-details-by-user-id/:user_id", async (req, res) => {
     }
 
     const service = result[0];
-    const serviceAddress = service.Address || 'localhost';
+    const address = service.Address; // Use Address directly
     const servicePort = service.ServicePort;
 
-    const response = await axios.get(`http://${serviceAddress}:${servicePort}/modules/get_module_by_id/${module_id}`);
+    const response = await axios.get(`http://${address}:${servicePort}/modules/get_module_by_id/${module_id}`);
     res.json(response.data);
 
   } catch (err) {
@@ -86,9 +87,7 @@ router.get("/get-user-details-by-user-id/:user_id", async (req, res) => {
   }
 });
 
-
-// getting org name by using org_id
-
+// Get org name by using org_id
 router.get("/get_org_by_org_id/:org_id", async (req, res) => {
   const { org_id } = req.params;
 
@@ -99,11 +98,11 @@ router.get("/get_org_by_org_id/:org_id", async (req, res) => {
       return res.status(404).json({ error: "Express_Mod service not found in Consul" });
     }
 
-    const service = result[0]; // 👈 safer to use 0
-    const serviceAddress = service.Address || 'localhost';
+    const service = result[0];
+    const address = service.Address; // Use Address directly
     const servicePort = service.ServicePort;
 
-    const response = await axios.get(`http://${serviceAddress}:${servicePort}/organization/get_org_by_id/${org_id}`);
+    const response = await axios.get(`http://${address}:${servicePort}/organization/get_org_by_id/${org_id}`);
     res.json(response.data);
 
   } catch (err) {
@@ -112,7 +111,7 @@ router.get("/get_org_by_org_id/:org_id", async (req, res) => {
   }
 });
 
-//getting poc_name by using poc id
+// Get poc_name by using poc_id
 router.get("/get_poc_by_poc_id/:module_poc_id", async (req, res) => {
   const { module_poc_id } = req.params;
 
@@ -123,11 +122,11 @@ router.get("/get_poc_by_poc_id/:module_poc_id", async (req, res) => {
       return res.status(404).json({ error: "Express_Poc service not found in Consul" });
     }
 
-    const service = result[0]; // 👈 safer to use 0
-    const serviceAddress = service.Address || 'localhost';
+    const service = result[0];
+    const address = service.Address; // Use Address directly
     const servicePort = service.ServicePort;
 
-    const response = await axios.get(`http://${serviceAddress}:${servicePort}/poc/get_poc_by_poc_id/${module_poc_id}`);
+    const response = await axios.get(`http://${address}:${servicePort}/poc/get_poc_by_poc_id/${module_poc_id}`);
     res.json(response.data);
 
   } catch (err) {
@@ -136,11 +135,7 @@ router.get("/get_poc_by_poc_id/:module_poc_id", async (req, res) => {
   }
 });
 
-
-// 📝 Create or Update Individual Report
-
-
-
+// Create or Update Individual Report
 router.post("/post-individual", async (req, res) => {
   try {
     let {
@@ -167,7 +162,6 @@ router.post("/post-individual", async (req, res) => {
     if (!date) {
       date = today;
     } else {
-      // Try parsing dd/MM/yyyy, fallback to ISO if needed
       let parsedDate = parse(date, "dd/MM/yyyy", new Date());
       if (isNaN(parsedDate)) parsedDate = parseISO(date);
       if (isNaN(parsedDate)) {
@@ -176,68 +170,66 @@ router.post("/post-individual", async (req, res) => {
       date = format(parsedDate, "yyyy-MM-dd");
     }
 
-    // 🧠 Fetch missing module details if needed
+    // Fetch missing module details if needed
     if (!module_name || !module_duration) {
       const modService = await consul.catalog.service.nodes("Express_Mod");
       if (!modService?.length)
         return res.status(404).json({ error: "Module service not found in Consul" });
 
-      const { ServiceAddress, ServicePort } = modService[0];
-      const modResponse = await axios.get(`http://${ServiceAddress}:${ServicePort}/modules/get_module_by_id/${module_id}`);
+      const { Address, ServicePort } = modService[0]; // Use Address directly
+      const modResponse = await axios.get(`http://${Address}:${ServicePort}/modules/get_module_by_id/${module_id}`);
       const modData = modResponse.data;
 
       module_name = module_name || modData.mod_name;
       module_duration = module_duration || modData.mod_duration;
     }
 
-    
     if (!college_name) {
       const orgService = await consul.catalog.service.nodes("Express_Mod");
       if (!orgService?.length)
         return res.status(404).json({ error: "Organization service not found in Consul" });
-    
-      const { ServiceAddress, ServicePort } = orgService[0];
-      const orgResponse = await axios.get(`http://${ServiceAddress}:${ServicePort}/organization/get_org_by_id/${org_id}`);
+
+      const { Address, ServicePort } = orgService[0]; // Use Address directly
+      const orgResponse = await axios.get(`http://${Address}:${ServicePort}/organization/get_org_by_id/${org_id}`);
       const orgData = orgResponse.data;
-    
+
       if (!orgData.org_name) {
         return res.status(404).json({ error: "Organization name not found for given module ID" });
       }
-    
+
       college_name = orgData.org_name;
     }
-     
 
     if (!user_name) {
       const usrService = await consul.catalog.service.nodes("Express_User");
       if (!usrService?.length)
-        return res.status(404).json({ error: "user service not found in Consul" });
-    
-      const { ServiceAddress, ServicePort } = usrService[0];
-      const usrResponse = await axios.get(`http://${ServiceAddress}:${ServicePort}/user/get_user_by_id/${user_id}`);
+        return res.status(404).json({ error: "User service not found in Consul" });
+
+      const { Address, ServicePort } = usrService[0]; // Use Address directly
+      const usrResponse = await axios.get(`http://${Address}:${ServicePort}/user/get_user_by_id/${user_id}`);
       const usrData = usrResponse.data;
-    
+
       if (!usrData.full_name) {
-        return res.status(404).json({ error: "full name name not found for given module ID" });
+        return res.status(404).json({ error: "Full name not found for given module ID" });
       }
-    
+
       user_name = usrData.full_name;
     }
 
-    // 🧠 Fetch missing POC name if needed
+    // Fetch missing POC name if needed
     if (!module_poc_name) {
       const pocService = await consul.catalog.service.nodes("Express_Poc");
       if (!pocService?.length)
         return res.status(404).json({ error: "POC service not found in Consul" });
 
-      const { ServiceAddress, ServicePort } = pocService[0];
-      const pocResponse = await axios.get(`http://${ServiceAddress}:${ServicePort}/poc/get_poc_by_poc_id/${module_poc_id}`);
+      const { Address, ServicePort } = pocService[0]; // Use Address directly
+      const pocResponse = await axios.get(`http://${Address}:${ServicePort}/poc/get_poc_by_poc_id/${module_poc_id}`);
       const pocData = pocResponse.data;
 
       module_poc_name = pocData.mod_poc_name;
     }
 
-    // ✅ Validate and parse module_duration
+    // Validate and parse module_duration
     if (!module_duration.includes("-")) {
       return res.status(400).json({ error: "Invalid module_duration format. Expected 'dd/MM/yyyy - dd/MM/yyyy'" });
     }
@@ -256,17 +248,14 @@ router.post("/post-individual", async (req, res) => {
 
     if (!moduleDates.includes(date)) {
       const testDateFormatted = format(parseISO(date), "dd/MM/yyyy");
-    
-      // Reformat module_duration to ensure it's in "dd/MM/yyyy - dd/MM/yyyy"
       const startFormatted = format(startDate, "dd/MM/yyyy");
       const endFormatted = format(endDate, "dd/MM/yyyy");
       const readableDuration = `${startFormatted} - ${endFormatted}`;
-    
+
       return res.status(400).json({
         error: `Test date ${testDateFormatted} is not within the module duration (${readableDuration})`
       });
     }
-    
 
     const total_days = moduleDates.length;
     const scored_mark = (Number(result_mcq_score) || 0) + (Number(result_coding_score) || 0);
@@ -278,7 +267,6 @@ router.post("/post-individual", async (req, res) => {
       result_coding_score: Number(result_coding_score || 0),
       scored_mark,
       total_mark: Number(total_mark || 100)
-      
     };
 
     let individual = await Individual.findOne({ user_id });
@@ -332,7 +320,7 @@ router.post("/post-individual", async (req, res) => {
       ...individual.toObject(),
       module_name,
       module_poc_name
-    }); 
+    });
 
   } catch (err) {
     console.error("Error in post-individual:", err.message);

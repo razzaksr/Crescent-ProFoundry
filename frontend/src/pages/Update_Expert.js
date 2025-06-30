@@ -28,7 +28,7 @@ import { styled } from '@mui/material/styles';
 import { DataGrid } from '@mui/x-data-grid';
 import { Slide } from '@mui/material';
 import { User, Users, Book, Save, Search, Copy, ArrowLeft, ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
-import { fetchAllExperts, fetchAllPocs, fetchAllModules, updateExpert } from '../axios';
+import { fetchAllExperts, fetchAllPocs, fetchAllModules, fetchPocNameById, fetchModuleName, getModuleById, updateExpert } from '../axios';
 import Admin_Dashboard from '../components/AdminDash';
 
 // Custom Stepper Connector
@@ -89,6 +89,8 @@ const Update_Expert = () => {
   const [filteredPocs, setFilteredPocs] = useState([]);
   const [modules, setModules] = useState([]);
   const [filteredModules, setFilteredModules] = useState([]);
+  const [pocNames, setPocNames] = useState({});
+  const [moduleNames, setModuleNames] = useState({});
 
   // State for search queries
   const [expertSearchQuery, setExpertSearchQuery] = useState('');
@@ -167,12 +169,54 @@ const Update_Expert = () => {
     };
   }, []);
 
-  // Fetch Experts data
+  // Fetch Experts data and resolve POC and Module names
   useEffect(() => {
     const getExperts = async () => {
       try {
         const response = await fetchAllExperts();
         const expertData = response.data || [];
+        
+        // Fetch POC and Module names for each expert
+        const pocNamePromises = [];
+        const moduleNamePromises = [];
+        
+        expertData.forEach(expert => {
+          if (expert.poc_id && Array.isArray(expert.poc_id)) {
+            expert.poc_id.forEach(id => {
+              pocNamePromises.push(
+                fetchPocNameById(id)
+                  .then(res => ({ id, name: res.data.mod_poc_name }))
+                  .catch(() => ({ id, name: 'Unknown POC' }))
+              );
+            });
+          }
+          if (expert.mod_id && Array.isArray(expert.mod_id)) {
+            console.log(expert.mod_id);
+            expert.mod_id.forEach(id => {
+              moduleNamePromises.push(
+                fetchModuleName(id)
+                  .then(res => ({ id, name: res.mod_name }))
+                  
+                  .catch(() => ({ id, name: 'Unknown Module' }))
+              );
+            });
+          }
+        });
+
+        const pocResults = await Promise.all(pocNamePromises);
+        const moduleResults = await Promise.all(moduleNamePromises);
+
+        const pocNameMap = pocResults.reduce((acc, { id, name }) => {
+          acc[id] = name;
+          return acc;
+        }, {});
+        const moduleNameMap = moduleResults.reduce((acc, { id, name }) => {
+          acc[id] = name;
+          return acc;
+        }, {});
+
+        setPocNames(pocNameMap);
+        setModuleNames(moduleNameMap);
         setExperts(expertData);
         setFilteredExperts(expertData);
         setLoading(prev => ({ ...prev, experts: false }));
@@ -322,6 +366,45 @@ const Update_Expert = () => {
       // Refresh experts data
       const updatedExpertsResponse = await fetchAllExperts();
       const expertData = updatedExpertsResponse.data || [];
+
+      // Re-fetch POC and Module names for updated experts
+      const pocNamePromises = [];
+      const moduleNamePromises = [];
+      expertData.forEach(expert => {
+        if (expert.poc_id && Array.isArray(expert.poc_id)) {
+          expert.poc_id.forEach(id => {
+            pocNamePromises.push(
+              fetchPocNameById(id)
+                .then(res => ({ id, name: res.data.mod_poc_name }))
+                .catch(() => ({ id, name: 'Unknown POC' }))
+            );
+          });
+        }
+        if (expert.mod_id && Array.isArray(expert.mod_id)) {
+          expert.mod_id.forEach(id => {
+            moduleNamePromises.push(
+              fetchModuleName(id)
+                .then(res => ({ id, name: res.data.mod_name }))
+                .catch(() => ({ id, name: 'Unknown Module' }))
+            );
+          });
+        }
+      });
+
+      const pocResults = await Promise.all(pocNamePromises);
+      const moduleResults = await Promise.all(moduleNamePromises);
+
+      const pocNameMap = pocResults.reduce((acc, { id, name }) => {
+        acc[id] = name;
+        return acc;
+      }, {});
+      const moduleNameMap = moduleResults.reduce((acc, { id, name }) => {
+        acc[id] = name;
+        return acc;
+      }, {});
+
+      setPocNames(pocNameMap);
+      setModuleNames(moduleNameMap);
       setExperts(expertData);
       setFilteredExperts(expertData);
 
@@ -402,53 +485,16 @@ const Update_Expert = () => {
         </Box>
       ),
     },
-    // {
-    //   field: 'mod_expert_id',
-    //   headerName: 'Expert ID',
-    //   minWidth: isMobile ? 150 : 200,
-    //   flex: 1,
-    //   renderHeader: () => (
-    //     <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-    //       <Users size={16} color="white" />
-    //       <Typography variant="inherit" fontWeight="bold">
-    //         Expert ID
-    //       </Typography>
-    //     </Box>
-    //   ),
-    //   renderCell: (params) => (
-    //     <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-    //       <Typography
-    //         variant="body2"
-    //         sx={{
-    //           overflow: 'hidden',
-    //           textOverflow: 'ellipsis',
-    //           whiteSpace: 'nowrap',
-    //           maxWidth: 'calc(100% - 30px)',
-    //           fontSize: isMobile ? '12px' : '14px',
-    //         }}
-    //       >
-    //         {params.value}
-    //       </Typography>
-    //       <IconButton
-    //         size="small"
-    //         onClick={() => handleCopyToClipboard(params.value)}
-    //         sx={{ ml: 'auto' }}
-    //       >
-    //         <Copy size={16} color="#0c83c8" />
-    //       </IconButton>
-    //     </Box>
-    //   ),
-    // },
     {
       field: 'poc_id',
-      headerName: 'POC IDs',
+      headerName: 'POC Names',
       minWidth: isMobile ? 150 : 250,
       flex: 1,
       renderHeader: () => (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Users size={16} color="white" />
           <Typography variant="inherit" fontWeight="bold">
-            POC IDs
+            POC Names
           </Typography>
         </Box>
       ),
@@ -457,7 +503,7 @@ const Update_Expert = () => {
           {params.value && params.value.length > 0 ? (
             params.value.map((id, index) => (
               <Typography key={index} variant="body2" sx={{ fontSize: isMobile ? '12px' : '14px' }}>
-                {id}
+                {pocNames[id] || 'Loading...'}
               </Typography>
             ))
           ) : (
@@ -470,14 +516,14 @@ const Update_Expert = () => {
     },
     {
       field: 'mod_id',
-      headerName: 'Module IDs',
+      headerName: 'Module Names',
       minWidth: isMobile ? 150 : 250,
       flex: 1,
       renderHeader: () => (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Book size={16} color="white" />
           <Typography variant="inherit" fontWeight="bold">
-            Module IDs
+            Module Names
           </Typography>
         </Box>
       ),
@@ -486,7 +532,7 @@ const Update_Expert = () => {
           {params.value && params.value.length > 0 ? (
             params.value.map((id, index) => (
               <Typography key={index} variant="body2" sx={{ fontSize: isMobile ? '12px' : '14px' }}>
-                {id}
+                {moduleNames[id] || 'Loading...'}
               </Typography>
             ))
           ) : (
@@ -557,43 +603,6 @@ const Update_Expert = () => {
         </Box>
       ),
     },
-    {
-      field: 'mod_poc_id',
-      headerName: 'POC ID',
-      minWidth: isMobile ? 150 : 200,
-      flex: 1,
-      renderHeader: () => (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Users size={16} color="white" />
-          <Typography variant="inherit" fontWeight="bold">
-            POC ID
-          </Typography>
-        </Box>
-      ),
-      renderCell: (params) => (
-        <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-          <Typography
-            variant="body2"
-            sx={{
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              maxWidth: 'calc(100% - 30px)',
-              fontSize: isMobile ? '12px' : '14px',
-            }}
-          >
-            {params.value}
-          </Typography>
-          <IconButton
-            size="small"
-            onClick={() => handleCopyToClipboard(params.value)}
-            sx={{ ml: 'auto' }}
-          >
-            <Copy size={16} color="#0c83c8" />
-          </IconButton>
-        </Box>
-      ),
-    },
   ];
 
   // Module DataGrid columns
@@ -613,42 +622,70 @@ const Update_Expert = () => {
       ),
     },
     {
-      field: 'mod_id',
-      headerName: 'Module ID',
-      minWidth: isMobile ? 150 : 250,
+      field: 'mod_tech',
+      headerName: 'Technology',
+      minWidth: isMobile ? 100 : 150,
+      flex: 0.8,
+      renderHeader: () => (
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Book size={16} color="white" />
+          <Typography variant="inherit" fontWeight="bold">
+            Technology
+          </Typography>
+        </Box>
+      ),
+    },
+    {
+      field: 'mod_duration',
+      headerName: 'Duration',
+      minWidth: isMobile ? 120 : 200,
       flex: 1,
       renderHeader: () => (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Book size={16} color="white" />
           <Typography variant="inherit" fontWeight="bold">
-            Module ID
+            Duration
           </Typography>
-        </Box>
-      ),
-      renderCell: (params) => (
-        <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-          <Typography
-            variant="body2"
-            sx={{
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              maxWidth: 'calc(100% - 30px)',
-              fontSize: isMobile ? '12px' : '14px',
-            }}
-          >
-            {params.value}
-          </Typography>
-          <IconButton
-            size="small"
-            onClick={() => handleCopyToClipboard(params.value)}
-            sx={{ ml: 'auto' }}
-          >
-            <Copy size={16} color="#0c83c8" />
-          </IconButton>
         </Box>
       ),
     },
+    // {
+    //   field: 'mod_id',
+    //   headerName: 'Module ID',
+    //   minWidth: isMobile ? 150 : 250,
+    //   flex: 1,
+    //   renderHeader: () => (
+    //     <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+    //       <Book size={16} color="white" />
+    //       <Typography variant="inherit" fontWeight="bold">
+    //         Module ID
+    //       </Typography>
+    //     </Box>
+    //   ),
+    //   renderCell: (params) => (
+    //     <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+    //       <Typography
+    //         variant="body2"
+    //         sx={{
+    //           overflow: 'hidden',
+    //           textOverflow: 'ellipsis',
+    //           whiteSpace: 'nowrap',
+    //           maxWidth: 'calc(100% - 30px)',
+    //           fontSize: isMobile ? '12px' : '14px',
+    //         }}
+    //       >
+    //         {params.value}
+    //       </Typography>
+    //       <IconButton
+    //         size="small"
+    //         onClick={() => handleCopyToClipboard(params.value)}
+    //         sx={{ ml: 'auto' }}
+    //       >
+    //         <Copy size={16} color="#0c83c8" />
+    //       </IconButton>
+    //     </Box>
+    //   ),
+    // },
   ];
 
   // Common DataGrid styling
@@ -687,18 +724,7 @@ const Update_Expert = () => {
           px: { xs: 2, sm: 6 },
         }}
       >
-       
-
-        {/* Stepper */}
-        <Paper
-          sx={{
-            p: { xs: 2, sm: 3 },
-            mb: 4,
-            borderRadius: '12px',
-            boxShadow: '0 6px 12px rgba(0,0,0,0.15)',
-          }}
-        >
-           {/* Gradient Header */}
+        {/* Gradient Header */}
         <Paper
           elevation={5}
           sx={{
@@ -723,7 +749,7 @@ const Update_Expert = () => {
               fontWeight={600}
               sx={{ fontSize: isMobile ? '1.2rem' : '1.5rem' }}
             >
-              Update Expert
+              Expert Management
             </Typography>
           </Box>
           <Typography
@@ -733,6 +759,16 @@ const Update_Expert = () => {
             Manage expert assignments
           </Typography>
         </Paper>
+
+        {/* Stepper */}
+        <Paper
+          sx={{
+            p: { xs: 2, sm: 3 },
+            mb: 4,
+            borderRadius: '12px',
+            boxShadow: '0 6px 12px rgba(0,0,0,0.15)',
+          }}
+        >
           <Stepper
             activeStep={activeStep}
             alternativeLabel
@@ -1108,7 +1144,7 @@ const Update_Expert = () => {
                         >
                           <ListItemText
                             primary={mod.mod_name || 'N/A'}
-                            secondary={`ID: ${mod.mod_id || 'N/A'}`}
+                            secondary={`ID: ${mod.mod_id || 'N/A'} | Technology: ${mod.mod_tech || 'N/A'} | Duration: ${mod.mod_duration || 'N/A'}`}
                             primaryTypographyProps={{ fontSize: isMobile ? '14px' : '16px' }}
                             secondaryTypographyProps={{ fontSize: isMobile ? '12px' : '14px' }}
                           />
