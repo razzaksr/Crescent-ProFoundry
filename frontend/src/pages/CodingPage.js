@@ -43,7 +43,7 @@ import CIcon from "@mui/icons-material/SettingsEthernet";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SaveIcon from "@mui/icons-material/Save";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
-import JavascriptIcon from "@mui/icons-material/Code" // Using Code icon for JavaScript
+import JavascriptIcon from "@mui/icons-material/Code"; // Using Code icon for JavaScript
 import TerminalIcon from "@mui/icons-material/Terminal";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -53,7 +53,13 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import DoneIcon from "@mui/icons-material/Done";
 import InfoIcon from "@mui/icons-material/Info";
-import { fetchCodeById, fetchTestCaseById, compileCode, submitTestResult, getTestById } from "../axios";
+import {
+  fetchCodeById,
+  fetchTestCaseById,
+  compileCode,
+  submitTestResult,
+  getTestById,
+} from "../axios";
 
 // Language mapping for backend
 const languageApiMap = {
@@ -131,7 +137,8 @@ const createAppTheme = (mode) => {
       error: { main: "#ef4444" },
       warning: { main: "#f59e0b" },
       info: { main: "#3b82f6" },
-      divider: mode === "dark" ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.08)",
+      divider:
+        mode === "dark" ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.08)",
     },
     typography: {
       h2: { fontWeight: 700 },
@@ -182,7 +189,9 @@ const createAppTheme = (mode) => {
             boxShadow: "none",
             "&:hover": {
               boxShadow:
-                mode === "dark" ? "0 4px 12px rgba(12, 131, 200, 0.25)" : "0 4px 12px rgba(12, 131, 200, 0.15)",
+                mode === "dark"
+                  ? "0 4px 12px rgba(12, 131, 200, 0.25)"
+                  : "0 4px 12px rgba(12, 131, 200, 0.15)",
             },
           },
           containedPrimary: {
@@ -200,7 +209,10 @@ const createAppTheme = (mode) => {
         styleOverrides: {
           root: {
             backgroundImage: "none",
-            boxShadow: mode === "dark" ? "0 4px 6px -1px rgba(0, 0, 0, 0.2)" : "0 4px 6px -1px rgba(0, 0, 0, 0.05)",
+            boxShadow:
+              mode === "dark"
+                ? "0 4px 6px -1px rgba(0, 0, 0, 0.2)"
+                : "0 4px 6px -1px rgba(0, 0, 0, 0.05)",
           },
         },
       },
@@ -209,7 +221,11 @@ const createAppTheme = (mode) => {
           root: {
             borderRadius: 12,
             overflow: "hidden",
-            border: `1px solid ${mode === "dark" ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.05)"}`,
+            border: `1px solid ${
+              mode === "dark"
+                ? "rgba(255, 255, 255, 0.08)"
+                : "rgba(0, 0, 0, 0.05)"
+            }`,
           },
         },
       },
@@ -218,7 +234,12 @@ const createAppTheme = (mode) => {
           root: {
             "& .MuiOutlinedInput-root": {
               borderRadius: 8,
-              "& fieldset": { borderColor: mode === "dark" ? "rgba(255, 255, 255, 0.15)" : "rgba(0, 0, 0, 0.1)" },
+              "& fieldset": {
+                borderColor:
+                  mode === "dark"
+                    ? "rgba(255, 255, 255, 0.15)"
+                    : "rgba(0, 0, 0, 0.1)",
+              },
               "&:hover fieldset": { borderColor: "#0c83c8" },
               "&.Mui-focused fieldset": { borderColor: "#0c83c8" },
             },
@@ -242,7 +263,12 @@ const createAppTheme = (mode) => {
       },
       MuiDivider: {
         styleOverrides: {
-          root: { borderColor: mode === "dark" ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.08)" },
+          root: {
+            borderColor:
+              mode === "dark"
+                ? "rgba(255, 255, 255, 0.08)"
+                : "rgba(0, 0, 0, 0.08)",
+          },
         },
       },
       MuiSelect: {
@@ -264,7 +290,8 @@ const createAppTheme = (mode) => {
         styleOverrides: {
           root: {
             "& .MuiAlert-root": {
-              fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+              fontFamily:
+                "'Inter', 'Helvetica', 'Arial', sans-serif !important",
             },
           },
         },
@@ -286,40 +313,48 @@ const CodingPage = () => {
   const [userId, setUserId] = useState("");
   const [pocId, setPocId] = useState("");
   const [studentName, setStudentName] = useState("");
-  const [timer, setTimer] = useState(parseInt(localStorage.getItem("test_timer")) || 0);
+  const [timer, setTimer] = useState(
+    parseInt(localStorage.getItem("test_timer")) || 0
+  );
   const timerRef = useRef(null);
 
   // Test context from localStorage or state
   const savedTestResult = JSON.parse(localStorage.getItem("test_result")) || {};
   const [testResult, setTestResult] = useState({
-    result_user_id: savedTestResult.result_user_id || state?.result_user_id || "",
-    codingAnswered: savedTestResult.codingAnswered || state?.codingAnswered || 0,
+    result_user_id:
+      savedTestResult.result_user_id || state?.result_user_id || "",
+    codingAnswered:
+      savedTestResult.codingAnswered || state?.codingAnswered || 0,
     codingCorrect: savedTestResult.codingCorrect || state?.codingCorrect || 0,
     codingIds: savedTestResult.codingIds || state?.codingIds || [],
-    codingNotAnswered: savedTestResult.codingNotAnswered || state?.codingNotAnswered || 0,
-    codingNotVisited: savedTestResult.codingNotVisited || state?.codingNotVisited || 0,
+    codingNotAnswered:
+      savedTestResult.codingNotAnswered || state?.codingNotAnswered || 0,
+    codingNotVisited:
+      savedTestResult.codingNotVisited || state?.codingNotVisited || 0,
     codingWrong: savedTestResult.codingWrong || state?.codingWrong || 0,
     marked: savedTestResult.marked || state?.marked || 0,
     mcqAnswered: savedTestResult.mcqAnswered || state?.mcqAnswered || 0,
     mcqCorrect: savedTestResult.mcqCorrect || state?.mcqCorrect || 0,
-    mcqNotAnswered: savedTestResult.mcqNotAnswered || state?.mcqNotAnswered || 0,
+    mcqNotAnswered:
+      savedTestResult.mcqNotAnswered || state?.mcqNotAnswered || 0,
     mcqNotVisited: savedTestResult.mcqNotVisited || state?.mcqNotVisited || 0,
     mcqWrong: savedTestResult.mcqWrong || state?.mcqWrong || 0,
     result_poc_id: savedTestResult.result_poc_id || state?.result_poc_id || "",
     result_score: savedTestResult.result_score || state?.result_score || 0,
-    result_total_score: savedTestResult.result_total_score || state?.result_total_score || 0,
+    result_total_score:
+      savedTestResult.result_total_score || state?.result_total_score || 0,
     studentName: savedTestResult.studentName || state?.studentName || "",
     testLanguage: savedTestResult.testLanguage || state?.testLanguage || "",
     testName: savedTestResult.testName || state?.testName || "",
-    currentCodingIndex: savedTestResult.currentCodingIndex || state?.currentCodingIndex || 0,
+    currentCodingIndex:
+      savedTestResult.currentCodingIndex || state?.currentCodingIndex || 0,
     codingResults: savedTestResult.codingResults || state?.codingResults || [],
-    testInstructions: savedTestResult.testInstructions || state?.testInstructions || [],
+    testInstructions:
+      savedTestResult.testInstructions || state?.testInstructions || [],
   });
 
   // Component state
-  const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
-  const [language, setLanguage] = useState("python");
   const [loading, setLoading] = useState(false);
   const [selectedCode, setSelectedCode] = useState(null);
   const [testCases, setTestCases] = useState([]);
@@ -349,13 +384,562 @@ const CodingPage = () => {
   const resizeObserverRef = useRef(null);
   const autoSaveTimeoutRef = useRef(null);
 
-  // Language templates
-  const templates = {
-    python: `print("Hello World")`,
-    java: `import java.util.*;\npublic class Progman {\n\tpublic static void main(String[] args) {\n\t\tSystem.out.println("Hello World");\n\t}\n}`,
-    c: `#include <stdio.h>\nint main() {\n\tprintf("Hello World");\n\treturn 0;\n}`,
-    cpp: `#include <iostream>\nusing namespace std;\nint main() {\n\tcout << "Hello World";\n\treturn 0;\n}`,
-    javascript: `console.log("Hello World");`,
+  // Define predefined templates with main function outputting "Hello World"
+ const templates = {
+    python: `def main():\n    print("Hello World")\n\nif __name__ == "__main__":\n    main()`,
+    java: `import java.util.*;\npublic class Progman {\n    public static void main(String[] args) {\n        System.out.println("Hello World");\n    }\n}`,
+    c: `#include <stdio.h>\nint main() {\n    printf("Hello World\\n");\n    return 0;\n}`,
+    cpp: `#include <iostream>\nusing namespace std;\nint main() {\n    cout << "Hello World" << endl;\n    return 0;\n}`,
+    javascript: `function main() {\n    console.log("Hello World");\n}\nmain();`,
+  };
+
+  // Initialize language and input state with temporary defaults
+  const [language, setLanguage] = useState("python");
+  const [input, setInput] = useState(templates["python"]);
+
+  // Effect to set language and template when testResult is loaded from localStorage
+  useEffect(() => {
+    if (testResult.testLanguage) {
+      const targetLanguage = testResult.testLanguage.toLowerCase();
+      console.log("Setting language from testResult.testLanguage:", targetLanguage); // Debug log
+      setLanguage(targetLanguage);
+      // Set default template if no codeId or selectedCode
+      if (!codeId || !selectedCode) {
+        setInput(generateTemplate(targetLanguage, [], []));
+      }
+    }
+  }, [testResult.testLanguage, codeId, selectedCode]);
+
+  // Effect to load saved code or generate template based on testResult.testLanguage
+  useEffect(() => {
+    if (codeId && testResult.testLanguage && selectedCode) {
+      const targetLanguage = testResult.testLanguage.toLowerCase();
+      console.log("Loading code for language:", targetLanguage); // Debug log
+      const savedPayload = localStorage.getItem(`code_${codeId}`);
+      if (savedPayload) {
+        try {
+          const parsedPayload = JSON.parse(savedPayload);
+          console.log("Loaded saved payload:", parsedPayload); // Debug log
+          // Enforce testResult.testLanguage
+          setLanguage(targetLanguage);
+          setInput(parsedPayload.code || generateTemplate(targetLanguage, selectedCode.code_tags || [], testCases[0]?.testcase_input || []));
+        } catch (error) {
+          console.error("Error parsing saved payload:", error);
+          setInput(generateTemplate(targetLanguage, selectedCode.code_tags || [], testCases[0]?.testcase_input || []));
+        }
+      } else {
+        console.log("No saved payload, generating template for language:", targetLanguage); // Debug log
+        setInput(generateTemplate(targetLanguage, selectedCode.code_tags || [], testCases[0]?.testcase_input || []));
+      }
+    }
+  }, [codeId, testResult.testLanguage, selectedCode, testCases]);
+
+  // Function to parse parameter names and assign language-specific types
+  const generateTemplate = (language, codeTags, testcaseInput) => {
+    const returnTypeMap = {
+      python: {
+        void: "None",
+        int: "int",
+        string: "str",
+        bool: "bool",
+        array: "list",
+        float: "float",
+      },
+      java: {
+        void: "void",
+        int: "int",
+        string: "String",
+        bool: "boolean",
+        array: "int[]",
+        float: "float",
+      },
+      c: {
+        void: "void",
+        int: "int",
+        string: "char*",
+        bool: "int",
+        array: "int*",
+        float: "float",
+      },
+      cpp: {
+        void: "void",
+        int: "int",
+        string: "string",
+        bool: "bool",
+        array: "vector<int>",
+        float: "float",
+      },
+      javascript: {
+        void: "undefined",
+        int: "number",
+        string: "string",
+        bool: "boolean",
+        array: "Array",
+        float: "number",
+      },
+    };
+
+    try {
+      // Log inputs for debugging
+      console.log("generateTemplate inputs:", {
+        language,
+        codeTags,
+        testcaseInput,
+      });
+
+      // Parse code_tags
+      const tag = codeTags && codeTags[0] ? JSON.parse(codeTags[0]) : {};
+      const {
+        function_name = "solution",
+        parameters = "",
+        return_type = "void",
+      } = tag;
+      const params = parameters
+        .split(",")
+        .filter((p) => p.trim())
+        .map((p) => p.trim());
+      const returnType =
+        returnTypeMap[language][return_type.toLowerCase()] || "void";
+
+      // Parse testcase_input into a map of variable names to values
+      const inputMap = {};
+      if (Array.isArray(testcaseInput)) {
+        testcaseInput.forEach((input) => {
+          if (typeof input === "string") {
+            const match = input.match(/^(\w+)\s*=\s*(.+)$/);
+            if (match) {
+              const [, varName, value] = match;
+              inputMap[varName.toLowerCase()] = value.trim();
+            }
+          }
+        });
+      }
+
+      // Log parsed inputMap for debugging
+      console.log("Parsed inputMap:", inputMap);
+
+      // Generate parameter declarations
+      const paramDeclarations = params
+        .map((param) => {
+          const paramType = getParameterType(param, language);
+          switch (language) {
+            case "python":
+              return `${param}: ${paramType}`;
+            case "java":
+            case "c":
+            case "cpp":
+              return `${paramType} ${param}`;
+            case "javascript":
+              return param;
+            default:
+              return param;
+          }
+        })
+        .join(", ");
+
+      // Match parameters with testcase_input and format values
+      const functionCallArgs = params.map((param) => {
+        const paramLower = param.toLowerCase();
+        // Exact match for variable name in inputMap
+        const matchedVar = Object.keys(inputMap).find(
+          (varName) => varName.toLowerCase() === paramLower
+        );
+        const value = matchedVar ? inputMap[matchedVar] : null;
+        if (value) {
+          return formatValueForLanguage(value, param, language);
+        }
+        // Fallback default values
+        const paramType = getParameterType(param, language);
+        if (
+          paramType.includes("list") ||
+          paramType.includes("Array") ||
+          paramType.includes("vector") ||
+          paramType.includes("int[]") ||
+          paramType.includes("int*")
+        ) {
+          return language === "python" || language === "javascript"
+            ? "[]"
+            : language === "java"
+            ? "new int[]{}"
+            : language === "cpp"
+            ? "{}"
+            : "{0}";
+        }
+        if (
+          paramType.includes("str") ||
+          paramType.includes("String") ||
+          paramType.includes("char*")
+        ) {
+          return language === "python" || language === "javascript"
+            ? '""'
+            : '"\\0"';
+        }
+        if (
+          paramType.includes("int") ||
+          paramType.includes("number") ||
+          paramType.includes("float")
+        ) {
+          return "0";
+        }
+        if (paramType.includes("bool") || paramType.includes("boolean")) {
+          return language === "python" ||
+            language === "cpp" ||
+            language === "javascript"
+            ? "false"
+            : "0";
+        }
+        return "null";
+      });
+
+      const functionCall =
+        functionCallArgs.length > 0
+          ? `${function_name}(${functionCallArgs.join(", ")})`
+          : `${function_name}()`;
+
+      // Generate the code_tags function
+      const codeTagFunction = (() => {
+        switch (language) {
+          case "python":
+            return `def ${function_name}(${paramDeclarations}) -> ${returnType}:\n    # Your code here\n    pass`;
+          case "java":
+            return `    public static ${returnType} ${function_name}(${paramDeclarations}) {\n        // Your code here\n        return${
+              returnType === "void" ? ";" : " null;"
+            } // Default return for non-void\n    }`;
+          case "c":
+            return `${returnType} ${function_name}(${paramDeclarations}) {\n    // Your code here\n    return${
+              returnType === "void" ? ";" : " 0;"
+            } // Default return for non-void\n}`;
+          case "cpp":
+            return `${returnType} ${function_name}(${paramDeclarations}) {\n    // Your code here\n    return${
+              returnType === "void" ? ";" : " 0;"
+            } // Default return for non-void\n}`;
+          case "javascript":
+            return `function ${function_name}(${paramDeclarations}) {\n    // Your code here\n    return${
+              returnType === "void" ? ";" : " null;"
+            } // Default return for non-void\n}`;
+          default:
+            return "";
+        }
+      })();
+
+      // Generate template with main function in the same scope/class
+      switch (language) {
+        case "python":
+          return `${codeTagFunction}\n\ndef main():\n    ${
+            returnType !== "None"
+              ? `result = ${functionCall}\n    print(result)`
+              : functionCall
+          }\n\nif __name__ == "__main__":\n    main()`;
+        case "java":
+          return `public class Solution {\n${codeTagFunction}\n\n    public static void main(String[] args) {\n        ${
+            returnType !== "void"
+              ? `${returnType} result = ${functionCall};\n        System.out.println(result);`
+              : `${functionCall};`
+          }\n    }\n}`;
+        case "c":
+          return `#include <stdio.h>\n\n${codeTagFunction}\n\nint main() {\n    ${
+            returnType !== "void"
+              ? `${returnType} result = ${functionCall};\n    printf("%s\\n", ${
+                  returnType.includes("char*")
+                    ? "result"
+                    : 'result ? "true" : "false"'
+                });`
+              : `${functionCall};`
+          }\n    return 0;\n}`;
+        case "cpp":
+          return `#include <iostream>\n#include <vector>\nusing namespace std;\n\n${codeTagFunction}\n\nint main() {\n    ${
+            returnType !== "void"
+              ? `${returnType} result = ${functionCall};\n    cout << result << endl;`
+              : `${functionCall};`
+          }\n    return 0;\n}`;
+        case "javascript":
+          return `${codeTagFunction}\n\nfunction main() {\n    ${
+            returnType !== "void"
+              ? `const result = ${functionCall};\n    console.log(result);}`
+              : `${functionCall};`
+          }\n\nmain();`;
+        default:
+          return templates[language] || "";
+      }
+    } catch (error) {
+      console.error("Error generating template:", error);
+      return templates[language] || "";
+    }
+  };
+
+  // Helper function to map parameter names to language-specific types
+  const getParameterType = (param, language) => {
+    const typeMap = {
+      python: {
+        array: "list",
+        string: "str",
+        integer: "int",
+        number: "int",
+        bool: "bool",
+        boolean: "bool",
+        float: "float",
+      },
+      java: {
+        array: "int[]",
+        string: "String",
+        integer: "int",
+        number: "int",
+        bool: "boolean",
+        boolean: "boolean",
+        float: "float",
+      },
+      c: {
+        array: "int*",
+        string: "char*",
+        integer: "int",
+        number: "int",
+        bool: "int",
+        boolean: "int",
+        float: "float",
+      },
+      cpp: {
+        array: "vector<int>",
+        string: "string",
+        integer: "int",
+        number: "int",
+        bool: "bool",
+        boolean: "bool",
+        float: "float",
+      },
+      javascript: {
+        array: "Array",
+        string: "string",
+        integer: "number",
+        number: "number",
+        bool: "boolean",
+        boolean: "boolean",
+        float: "number",
+      },
+    };
+
+    const baseType = param
+      .toLowerCase()
+      .replace(/\d+$/, "")
+      .replace(/_\d+$/, "")
+      .replace(/s$/, "");
+
+    if (typeMap[language] && typeMap[language][baseType]) {
+      return typeMap[language][baseType];
+    }
+
+    if (
+      baseType.includes("array") ||
+      baseType.includes("list") ||
+      baseType.includes("arr")
+    ) {
+      return typeMap[language]["array"] || "unknown";
+    }
+    if (
+      baseType.includes("string") ||
+      baseType.includes("str") ||
+      baseType.includes("text")
+    ) {
+      return typeMap[language]["string"] || "unknown";
+    }
+    if (
+      baseType.includes("int") ||
+      baseType.includes("num") ||
+      baseType.includes("number")
+    ) {
+      return typeMap[language]["integer"] || "unknown";
+    }
+    if (baseType.includes("bool")) {
+      return typeMap[language]["bool"] || "unknown";
+    }
+    if (baseType.includes("float")) {
+      return typeMap[language]["float"] || "unknown";
+    }
+
+    const defaultTypes = {
+      python: "Any",
+      java: "Object",
+      c: "void*",
+      cpp: "auto",
+      javascript: "any",
+    };
+
+    return defaultTypes[language] || "unknown";
+  };
+
+  // Helper function to format values based on language and parameter type
+  const formatValueForLanguage = (value, paramName, language) => {
+    const paramType = getParameterType(paramName, language);
+
+    // Handle arrays
+    if (value.startsWith("[") && value.endsWith("]")) {
+      const arrayContent = value
+        .slice(1, -1)
+        .split(",")
+        .map((v) => v.trim())
+        .join(", ");
+      switch (language) {
+        case "python":
+        case "javascript":
+          return `[${arrayContent}]`;
+        case "java":
+          return `new int[]{${arrayContent}}`;
+        case "c":
+        case "cpp":
+          return `{${arrayContent}}`;
+        default:
+          return value;
+      }
+    }
+
+    // Handle strings
+    if (
+      paramType.includes("str") ||
+      paramType.includes("String") ||
+      paramType.includes("char*")
+    ) {
+      if (!value.startsWith('"') && !value.endsWith('"')) {
+        return `"${value}"`;
+      }
+      return value;
+    }
+
+    // Handle booleans
+    if (paramType.includes("bool") || paramType.includes("boolean")) {
+      const boolValue =
+        value.toLowerCase() === "true" || value === "1" ? "true" : "false";
+      return language === "c" ? (boolValue === "true" ? "1" : "0") : boolValue;
+    }
+
+    // Handle numbers (integers or floats)
+    if (
+      paramType.includes("int") ||
+      paramType.includes("number") ||
+      paramType.includes("float")
+    ) {
+      return isNaN(value) ? "0" : value;
+    }
+
+    // Default: return value as-is
+    return value;
+  };
+
+  // Fallback function for error cases
+  const generateFallbackTemplate = (
+    language,
+    codeTags,
+    testcaseInput,
+    returnTypeMap
+  ) => {
+    const tag = codeTags && codeTags[0] ? JSON.parse(codeTags[0]) : {};
+    const {
+      function_name = "prime_number",
+      parameters = "",
+      return_type = "void",
+      is_main = true,
+    } = tag;
+    const params = parameters
+      .split(",")
+      .filter((p) => p.trim())
+      .map((p) => p.trim());
+    const returnType = returnTypeMap[language]?.[return_type] || "void";
+
+    const paramDeclarations = params
+      .map((param, index) => {
+        const paramType = getParameterType(param, language);
+        switch (language) {
+          case "python":
+            return `${param}: ${paramType}`;
+          case "java":
+          case "c":
+          case "cpp":
+            return `${paramType} ${param}${
+              params.indexOf(param, index) > index ? index : ""
+            }`;
+          case "javascript":
+            return `${param}${
+              params.indexOf(param, index) > index ? index : ""
+            }`;
+          default:
+            return param;
+        }
+      })
+      .join(", ");
+
+    // Use default values for fallback
+    const defaultArguments = params.map((param) => {
+      if (param.includes("array")) return "[]";
+      if (param.includes("string")) return '""';
+      return "0";
+    });
+
+    const functionCall =
+      defaultArguments.length > 0
+        ? `${function_name}(${defaultArguments.join(", ")})`
+        : `${function_name}()`;
+
+    const fallbackCodeTagFunction = (() => {
+      switch (language) {
+        case "python":
+          return `def ${function_name}(${paramDeclarations}) -> ${returnType}:\n    # Your code here\n    pass`;
+        case "java":
+          return `public class Solution {\n    public static ${returnType} ${function_name}(${paramDeclarations}) {\n        // Your code here\n        return${
+            returnType === "void" ? ";" : " null;"
+          } // Default return for non-void\n    }\n}`;
+        case "c":
+          return `#include <stdio.h>\n${returnType} ${function_name}(${paramDeclarations}) {\n    // Your code here\n    return${
+            returnType === "void" ? ";" : " 0;"
+          } // Default return for non-void\n}`;
+        case "cpp":
+          return `#include <iostream>\n#include <vector>\nusing namespace std;\n${returnType} ${function_name}(${paramDeclarations}) {\n    // Your code here\n    return${
+            returnType === "void" ? ";" : " 0;"
+          } // Default return for non-void\n}`;
+        case "javascript":
+          return `function ${function_name}(${paramDeclarations}) {\n    // Your code here\n    return${
+            returnType === "void" ? ";" : " null;"
+          } // Default return for non-void\n}`;
+        default:
+          return "";
+      }
+    })();
+
+    if (is_main) {
+      switch (language) {
+        case "python":
+          return `${fallbackCodeTagFunction}\n\ndef main():\n    print("Hello World")\n    ${
+            returnType !== "None"
+              ? `result = ${functionCall}\n    print(result)`
+              : functionCall
+          }\n\nif __name__ == "__main__":\n    main()`;
+        case "java":
+          return `import java.util.*;\n${fallbackCodeTagFunction}\npublic class Progman {\n    public static void main(String[] args) {\n        System.out.println("Hello World");\n        ${
+            returnType !== "void"
+              ? `${returnType} result = Solution.${functionCall};\n        System.out.println(result);`
+              : `Solution.${functionCall};`
+          }\n    }\n}`;
+        case "c":
+          return `#include <stdio.h>\n${fallbackCodeTagFunction}\nint main() {\n    printf("Hello World\\n");\n    ${
+            returnType !== "void"
+              ? `${returnType} result = ${functionCall};\n    printf("Result: %s\\n", result);`
+              : `${functionCall};`
+          }\n    return 0;\n}`;
+        case "cpp":
+          return `#include <iostream>\n#include <vector>\nusing namespace std;\n${fallbackCodeTagFunction}\nint main() {\n    cout << "Hello World" << endl;\n    ${
+            returnType !== "void"
+              ? `${returnType} result = ${functionCall};\n    cout << "Result: " << result << endl;`
+              : `${functionCall};`
+          }\n    return 0;\n}`;
+        case "javascript":
+          return `${fallbackCodeTagFunction}\nfunction main() {\n    console.log("Hello World");\n    ${
+            returnType !== "void"
+              ? `const result = ${functionCall};\n    console.log(result);`
+              : `${functionCall};`
+          }\n}\nmain();}`;
+        default:
+          return templates[language];
+      }
+    } else {
+      return fallbackCodeTagFunction || templates[language];
+    }
   };
 
   // Language icon mapping
@@ -364,7 +948,7 @@ const CodingPage = () => {
     java: <JavaIcon fontSize="small" />,
     cpp: <CppIcon fontSize="small" />,
     c: <CIcon fontSize="small" />,
-     javascript: <JavascriptIcon fontSize="small" />
+    javascript: <JavascriptIcon fontSize="small" />,
   };
 
   // Language display names
@@ -387,7 +971,7 @@ const CodingPage = () => {
     "Malpractice Warning: Rapid code input or suspicious keyboard shortcuts (e.g., Ctrl+V, Alt+/) will be flagged as potential malpractice.",
     "Submit your test only when you are ready to finalize all answers. Once submitted, no further changes can be made.",
     "Ensure you are in full-screen mode during the test to maintain a secure testing environment.",
-    "Contact the test administrator for any technical issues or clarifications during the test."
+    "Contact the test administrator for any technical issues or clarifications during the test.",
   ];
 
   // Prevent browser back/forward navigation
@@ -400,7 +984,9 @@ const CodingPage = () => {
     const handlePopState = (event) => {
       event.preventDefault();
       if (!hasSubmitted) {
-        setSnackbarMessage("Malpractice detected: Attempted navigation. Test submitted automatically.");
+        setSnackbarMessage(
+          "Malpractice detected: Attempted navigation. Test submitted automatically."
+        );
         setSnackbarSeverity("error");
         setSnackbarOpen(true);
         handleFinalSubmit(true);
@@ -429,9 +1015,13 @@ const CodingPage = () => {
             ...prev,
             studentName: user.user.full_name || prev.studentName,
             result_user_id: user.user.user_id || prev.result_user_id,
-            result_poc_id: user.user.mod_poc_id?.mod_poc_id || prev.result_poc_id,
+            result_poc_id:
+              user.user.mod_poc_id?.mod_poc_id || prev.result_poc_id,
           };
-          localStorage.setItem("test_result", JSON.stringify(updatedTestResult));
+          localStorage.setItem(
+            "test_result",
+            JSON.stringify(updatedTestResult)
+          );
           return updatedTestResult;
         });
       } catch (error) {
@@ -447,34 +1037,38 @@ const CodingPage = () => {
     }
   }, []);
 
-useEffect(() => {
-  if (codeId) {
-    const savedPayload = localStorage.getItem(`code_${codeId}`);
-    if (savedPayload) {
-      try {
-        const parsedPayload = JSON.parse(savedPayload);
-        const savedLanguage = Object.keys(languageApiMap).find(
-          (key) => languageApiMap[key] === parsedPayload.language
-        ) || "python";
-        console.log("Loading saved language:", savedLanguage); // Debug log
-        // Only update language if it hasn't been set by user interaction
-        setLanguage((currentLanguage) => {
-          if (currentLanguage === "python" || !currentLanguage) {
-            return savedLanguage;
-          }
-          return currentLanguage;
-        });
-        setInput(parsedPayload.code || templates[savedLanguage]);
-      } catch (error) {
-        console.error("Error parsing saved payload:", error);
+  useEffect(() => {
+    if (codeId) {
+      const savedPayload = localStorage.getItem(`code_${codeId}`);
+      if (savedPayload) {
+        try {
+          const parsedPayload = JSON.parse(savedPayload);
+          const savedLanguage =
+            Object.keys(languageApiMap).find(
+              (key) => languageApiMap[key] === parsedPayload.language
+            ) || "python";
+          console.log("Loading saved language:", savedLanguage); // Debug log
+          // Only update language if it hasn't been set by user interaction
+          setLanguage((currentLanguage) => {
+            if (currentLanguage === "python" || !currentLanguage) {
+              return savedLanguage;
+            }
+            return currentLanguage;
+          });
+          setInput(parsedPayload.code || templates[savedLanguage]);
+        } catch (error) {
+          console.error("Error parsing saved payload:", error);
+          setInput(templates[language]);
+        }
+      } else {
+        console.log(
+          "No saved payload, using default template for language:",
+          language
+        ); // Debug log
         setInput(templates[language]);
       }
-    } else {
-      console.log("No saved payload, using default template for language:", language); // Debug log
-      setInput(templates[language]);
     }
-  }
-}, [codeId]); // Remove `language` from dependencies
+  }, [codeId]); // Remove `language` from dependencies
 
   // Fetch test data
   useEffect(() => {
@@ -496,10 +1090,15 @@ useEffect(() => {
             codingIds: res.test_coding_id || prev.codingIds,
             testName: res.test_name || prev.testName,
             testLanguage: res.test_language || prev.testLanguage,
-            result_total_score: (res.test_mcq_id?.length || 0) + (res.test_coding_id?.length || 0) * 10,
+            result_total_score:
+              (res.test_mcq_id?.length || 0) +
+              (res.test_coding_id?.length || 0) * 10,
             testInstructions: res.test_instructions || defaultInstructions, // Use defaultInstructions if none provided
           };
-          localStorage.setItem("test_result", JSON.stringify(updatedTestResult));
+          localStorage.setItem(
+            "test_result",
+            JSON.stringify(updatedTestResult)
+          );
           return updatedTestResult;
         });
         setTestCases([]);
@@ -557,12 +1156,20 @@ useEffect(() => {
 
     return () => {
       document.removeEventListener("fullscreenchange", handleFullScreenChange);
-      document.removeEventListener("webkitfullscreenchange", handleFullScreenChange);
-      document.removeEventListener("mozfullscreenchange", handleFullScreenChange);
-      document.removeEventListener("MSFullscreenChange", handleFullScreenChange);
+      document.removeEventListener(
+        "webkitfullscreenchange",
+        handleFullScreenChange
+      );
+      document.removeEventListener(
+        "mozfullscreenchange",
+        handleFullScreenChange
+      );
+      document.removeEventListener(
+        "MSFullscreenChange",
+        handleFullScreenChange
+      );
     };
   }, [isFullScreen, hasSubmitted]);
-
 
   // Malpractice detection
   useEffect(() => {
@@ -598,19 +1205,19 @@ useEffect(() => {
 
     const handleKeyDown = (e) => {
       // Block Windows key (left: 91, right: 92)
-      if (e.keyCode === 91 || e.keyCode === 92) {
-        e.preventDefault();
-        handleMalpractice("Windows key usage");
-      }
+      // if (e.keyCode === 91 || e.keyCode === 92) {
+      //   e.preventDefault();
+      //   handleMalpractice("Windows key usage");
+      // }
       // Block screenshot shortcuts
       if (e.key === "PrintScreen" || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "s")) {
         e.preventDefault();
         handleMalpractice("Screenshot attempt");
       }
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "v") {
-        e.preventDefault();
-        handleMalpractice("Clipboard shortcut attempt (Win+V or Cmd+V)");
-      }
+      // if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "v") {
+      //   e.preventDefault();
+      //   handleMalpractice("Clipboard shortcut attempt (Win+V or Cmd+V)");
+      // }
       if ((e.altKey && e.key === "/") || (e.ctrlKey && e.key.toLowerCase() === "i")) {
         e.preventDefault();
         handleMalpractice("Suspected AI tool shortcut");
@@ -630,9 +1237,9 @@ useEffect(() => {
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
     document.addEventListener("contextmenu", handleContextMenu);
-    // document.addEventListener("copy", handleCopy);
-    // document.addEventListener("paste", handlePaste);
-    // document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("copy", handleCopy);
+    document.addEventListener("paste", handlePaste);
+    document.addEventListener("keydown", handleKeyDown);
     const editorElement = document.querySelector(".monaco-editor .inputarea");
     if (editorElement) {
       editorElement.addEventListener("input", handleEditorInput);
@@ -641,9 +1248,9 @@ useEffect(() => {
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       document.removeEventListener("contextmenu", handleContextMenu);
-      // document.removeEventListener("copy", handleCopy);
-      // document.removeEventListener("paste", handlePaste);
-      // document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("copy", handleCopy);
+      document.removeEventListener("paste", handlePaste);
+      document.removeEventListener("keydown", handleKeyDown);
       if (editorElement) {
         editorElement.removeEventListener("input", handleEditorInput);
       }
@@ -681,7 +1288,9 @@ useEffect(() => {
   };
 
   // Debounced auto-save
-  const debouncedSave = useCallback(debounce(saveSubmissionPayload, 1000), [saveSubmissionPayload]);
+  const debouncedSave = useCallback(debounce(saveSubmissionPayload, 1000), [
+    saveSubmissionPayload,
+  ]);
 
   // Auto-save on input or language change
   useEffect(() => {
@@ -761,7 +1370,8 @@ useEffect(() => {
     if (isDraggingRef.current && dividerRef.current) {
       const container = dividerRef.current.parentElement;
       const containerRect = container.getBoundingClientRect();
-      const newWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+      const newWidth =
+        ((e.clientX - containerRect.left) / containerRect.width) * 100;
       setEditorWidth(Math.max(30, Math.min(80, newWidth)));
     }
   }, []);
@@ -791,7 +1401,8 @@ useEffect(() => {
     if (isDraggingRef.current && outputDividerRef.current) {
       const container = outputDividerRef.current.parentElement;
       const containerRect = container.getBoundingClientRect();
-      const newHeight = ((containerRect.bottom - e.clientY) / containerRect.height) * 100;
+      const newHeight =
+        ((containerRect.bottom - e.clientY) / containerRect.height) * 100;
       setOutputHeight(Math.max(20, Math.min(50, newHeight)));
     }
   }, []);
@@ -827,7 +1438,9 @@ useEffect(() => {
     localStorage.setItem("themeMode", newMode);
     setTimeout(() => {
       if (editorRef.current) {
-        editorRef.current.updateOptions({ theme: newMode === "dark" ? "vs-dark" : "vs" });
+        editorRef.current.updateOptions({
+          theme: newMode === "dark" ? "vs-dark" : "vs",
+        });
       }
     }, 10);
   };
@@ -852,52 +1465,6 @@ useEffect(() => {
     setInput(value || "");
   };
 
-const handleLanguageChange = (event) => {
-  const newLanguage = event.target.value;
-  console.log("Language change triggered. New language:", newLanguage); // Debug log
-
-  // Update language state
-  setLanguage((prevLanguage) => {
-    console.log("Previous language:", prevLanguage, "New language:", newLanguage); // Debug log
-    return newLanguage;
-  });
-
-  // Load saved code for the new language, if it exists
-  const savedPayload = localStorage.getItem(`code_${codeId}`);
-  let newCode = templates[newLanguage];
-
-  if (savedPayload) {
-    try {
-      const parsedPayload = JSON.parse(savedPayload);
-      console.log("Saved payload found:", parsedPayload); // Debug log
-      if (parsedPayload.language === languageApiMap[newLanguage]) {
-        newCode = parsedPayload.code || templates[newLanguage];
-        console.log("Using saved code for language:", newLanguage); // Debug log
-      }
-    } catch (error) {
-      console.error("Error parsing saved payload:", error);
-    }
-  } else {
-    console.log("No saved payload, using template for:", newLanguage); // Debug log
-  }
-
-  // Update editor content
-  setInput(newCode);
-  console.log("Editor input set to:", newCode); // Debug log
-
-  // Update editor language model
-  if (editorRef.current && editorRef.current.getModel()) {
-    window.monaco.editor.setModelLanguage(editorRef.current.getModel(), newLanguage);
-    console.log("Editor language model updated to:", newLanguage); // Debug log
-  } else {
-    console.warn("Editor or model not available during language change"); // Debug log
-  }
-
-  // Save the new language and code
-  saveSubmissionPayload();
-  console.log("Submission payload saved for language:", newLanguage); // Debug log
-
-};
   // Reset editor to template
   const resetEditor = () => {
     setResetDialogOpen(true);
@@ -942,38 +1509,48 @@ const handleLanguageChange = (event) => {
   };
 
   // Fetch code and test cases
+
+  // Update fetchCodeAndTestCases to use dynamic template
   const fetchCodeAndTestCases = async (id) => {
     try {
       setLoading(true);
       const code = await fetchCodeById(id);
       setSelectedCode(code);
 
-      if (!code.code_test_cases_id || code.code_test_cases_id.length === 0) {
+      let testcaseInput = [];
+      if (code.code_test_cases_id && code.code_test_cases_id.length > 0) {
+        const testCasePromises = code.code_test_cases_id.map(
+          async (testcase_id) => {
+            try {
+              return await fetchTestCaseById(testcase_id);
+            } catch (err) {
+              console.error(`Error fetching test case ${testcase_id}:`, err);
+              return null;
+            }
+          }
+        );
+        const responses = await Promise.all(testCasePromises);
+        const validTestCases = responses.filter(
+          (tc) => tc && tc.testcase_input && tc.testcase_output
+        );
+        setTestCases(validTestCases);
+        if (validTestCases.length > 0) {
+          testcaseInput = validTestCases[0].testcase_input; // Use first test case input
+        }
+        if (validTestCases.length === 0) {
+          setTestCases([{ testcase_input: "", testcase_output: "" }]);
+          setSnackbarMessage("No valid test cases retrieved.");
+          setSnackbarSeverity("warning");
+          setSnackbarOpen(true);
+        }
+      } else {
         setTestCases([]);
         setSnackbarMessage("No test cases found for this problem.");
         setSnackbarSeverity("warning");
         setSnackbarOpen(true);
-        return;
       }
 
-      const testCasePromises = code.code_test_cases_id.map(async (testcase_id) => {
-        try {
-          return await fetchTestCaseById(testcase_id);
-        } catch (err) {
-          console.error(`Error fetching test case ${testcase_id}:`, err);
-          return null;
-        }
-      });
-      const responses = await Promise.all(testCasePromises);
-      const validTestCases = responses.filter((tc) => tc && tc.testcase_input && tc.testcase_output);
-      setTestCases(validTestCases);
-
-      if (validTestCases.length === 0) {
-        setTestCases([{ testcase_input: "", testcase_output: "" }]);
-        setSnackbarMessage("No valid test cases retrieved.");
-        setSnackbarSeverity("warning");
-        setSnackbarOpen(true);
-      }
+      setInput(generateTemplate(language, code.code_tags || [], testcaseInput));
     } catch (err) {
       console.error("Fetch error:", err);
       setTestCases([{ testcase_input: "", testcase_output: "" }]);
@@ -986,6 +1563,9 @@ const handleLanguageChange = (event) => {
       setLoading(false);
     }
   };
+
+  // Update handleLanguageChange to use dynamic template
+
 
   // Fetch code on mount or codeId change
   useEffect(() => {
@@ -1001,447 +1581,624 @@ const handleLanguageChange = (event) => {
     }
   }, [codeId]);
 
-const compileAndEvaluate = async (currentCodeId, codeInput, codeLanguage, codeTestCases) => {
-  setShowOutput(true);
-  setOutputMinimized(false);
-  setLoading(true);
-  setOpenProgressDialog(true);
-  setOutput("Running code against test cases...\n");
+  const compileAndEvaluate = async (
+    currentCodeId,
+    codeInput,
+    codeLanguage,
+    codeTestCases
+  ) => {
+    setShowOutput(true);
+    setOutputMinimized(false);
+    setLoading(true);
+    setOpenProgressDialog(true);
+    setOutput("Running code against test cases...\n");
 
-  try {
-    // Validate and format test cases
-    const formattedTestCases = codeTestCases
-      .filter(tc => tc?.testcase_input != null && tc?.testcase_output != null)
-      .map(testCase => ({
-        input: Array.isArray(testCase.testcase_input)
-          ? testCase.testcase_input.join("\n")
-          : testCase.testcase_input || "",
-        expectedOutput: Array.isArray(testCase.testcase_output)
-          ? testCase.testcase_output.join("\n")
-          : testCase.testcase_output || "",
-      }));
-
-    // Ensure at least one test case
-    if (formattedTestCases.length === 0) {
-      console.warn(`⚠️ No valid test cases for ${currentCodeId}, using default empty test case`);
-      formattedTestCases.push({ input: "", expectedOutput: "" });
-    }
-
-    const submissionPayload = {
-      language: languageApiMap[codeLanguage] || codeLanguage,
-      code: codeInput || templates[codeLanguage] || "",
-      testCases: formattedTestCases,
-    };
-
-    // Save payload to localStorage
-    localStorage.setItem(`code_${currentCodeId}`, JSON.stringify(submissionPayload));
-    console.log(`💾 Saved code payload for ${currentCodeId}:`, {
-      codeLength: submissionPayload.code.length,
-      language: submissionPayload.language,
-      testCases: submissionPayload.testCases.length,
-    });
-
-    // Compile code
-    const { results } = await compileCode(submissionPayload);
-    const formattedOutput = results.map(
-      (res, index) =>
-        `Test Case #${index + 1}:\nInput:\n${res.input}\nExpected Output:\n${res.expectedOutput}\nActual Output:\n${res.actualOutput}\nPassed: ${res.passed ? "✅" : "❌"}\n`
-    ).join("\n");
-    setOutput(formattedOutput);
-
-    // Calculate score
-    const allPassed = results.length > 0 && results.every(res => res.passed);
-    const codingScore = allPassed ? 10 : 0;
-
-    const newCodingResult = { codeId: currentCodeId, score: codingScore, total: 10 };
-    console.log(`📊 New coding result for ${currentCodeId}:`, newCodingResult);
-
-    // Get current test result
-    let currentTestResult = testResult;
     try {
-      const storedResult = localStorage.getItem("test_result");
-      if (storedResult) {
-        currentTestResult = JSON.parse(storedResult);
-      }
-    } catch (error) {
-      console.error("Error parsing stored test result:", error);
-    }
-
-    // Initialize codingResults if undefined
-    currentTestResult.codingResults = currentTestResult.codingResults || [];
-
-    // Update coding results
-    const existingIndex = currentTestResult.codingResults.findIndex(result => result.codeId === currentCodeId);
-    let updatedCodingResults = [...currentTestResult.codingResults];
-    if (existingIndex !== -1) {
-      updatedCodingResults[existingIndex] = newCodingResult;
-      console.log(`🔄 Updated existing result for ${currentCodeId} at index ${existingIndex}`);
-    } else {
-      updatedCodingResults.push(newCodingResult);
-      console.log(`➕ Added new result for ${currentCodeId}. Total results: ${updatedCodingResults.length}`);
-    }
-
-    // Ensure codingIds is initialized
-    const effectiveCodingIds = fetchedTestCodingIds.length > 0 ? fetchedTestCodingIds : (currentTestResult.codingIds || []);
-
-    // Update test result
-    const updatedTestResult = {
-      ...currentTestResult,
-      codingResults: updatedCodingResults,
-      result_user_id: userId || currentTestResult.result_user_id || "",
-      result_test_id: testId || currentTestResult.result_test_id || "",
-      result_score: (currentTestResult.mcqCorrect || 0) + updatedCodingResults.reduce((sum, result) => sum + result.score, 0),
-      result_total_score: currentTestResult.result_total_score || effectiveCodingIds.length * 10,
-      result_poc_id: pocId || currentTestResult.result_poc_id || "",
-      codingAnswered: updatedCodingResults.length,
-      codingNotAnswered: effectiveCodingIds.length - updatedCodingResults.length,
-      codingNotVisited : Math.max(0, effectiveCodingIds.length - updatedCodingResults.length),
-      codingCorrect: updatedCodingResults.filter(r => r.score > 0).length,
-      codingWrong: updatedCodingResults.filter(r => r.score === 0).length,
-      studentName: studentName || currentTestResult.studentName || "",
-    };
-
-    // Save and verify localStorage
-    localStorage.setItem("test_result", JSON.stringify(updatedTestResult));
-    const verifyResult = JSON.parse(localStorage.getItem("test_result") || "{}");
-    if (verifyResult.codingResults?.length !== updatedCodingResults.length) {
-      throw new Error(`Verification failed: Expected ${updatedCodingResults.length} results, got ${verifyResult.codingResults?.length || 0}`);
-    }
-    console.log(`✅ Successfully saved test result with ${verifyResult.codingResults.length} coding results`);
-
-    setTestResult(updatedTestResult);
-    setSnackbarMessage("Code compiled and evaluated successfully!");
-    setSnackbarSeverity("success");
-    return { success: true, testResult: updatedTestResult };
-  } catch (error) {
-    console.error("Compile error:", error);
-    setOutput(`Error running code: ${error.message}`);
-    setSnackbarMessage("Error during code compilation.");
-    setSnackbarSeverity("warning");
-    return { success: false, error: error.message };
-  } finally {
-    setLoading(false);
-    setOpenProgressDialog(false);
-    setSnackbarOpen(true);
-  }
-};
-
-// Handle code run
-const handleRun = async e => {
-  e.preventDefault();
-  return (await compileAndEvaluate(codeId, input, language, testCases)).success;
-};
-
-// Compile all programs
-const compileAllPrograms = async () => {
-  const effectiveCodingIds = fetchedTestCodingIds.length > 0 ? fetchedTestCodingIds : (testResult.codingIds || []);
-  setLoading(true);
-  setOpenProgressDialog(true);
-  setOutput("Processing results...\nCompiling all programs...\n");
-
-  console.log(`🚀 Starting compilation for ${effectiveCodingIds.length} coding problems:`, effectiveCodingIds);
-
-  let compilationErrors = 0;
-  let processedResults = [];
-
-  try {
-    for (const [index, id] of effectiveCodingIds.entries()) {
-      console.log(`\n🔄 Processing program ${index + 1}/${effectiveCodingIds.length} - ID: ${id}`);
-      setOutput(prev => `${prev}\n📝 Processing program ${index + 1}/${effectiveCodingIds.length} (ID: ${id})...`);
-
-      // Initialize defaults
-      let codeInput = templates[language] || "";
-      let codeLanguage = language;
-      let codeTestCases = [{ testcase_input: "", testcase_output: "" }];
-
-      // Load saved payload
-      const savedPayload = localStorage.getItem(`code_${id}`);
-      if (savedPayload) {
-        try {
-          const parsedPayload = JSON.parse(savedPayload);
-          codeInput = parsedPayload.code || templates[language] || "";
-          codeLanguage = Object.keys(languageApiMap).find(key => languageApiMap[key] === parsedPayload.language) || language;
-          console.log(`📂 Found saved payload for ${id}:`, {
-            codeLength: codeInput.length,
-            language: codeLanguage,
-          });
-          setOutput(prev => `${prev}\n   ✅ Using saved code (${codeInput.length} chars)`);
-        } catch (error) {
-          console.error(`❌ Error parsing saved payload for ${id}:`, error);
-          setOutput(prev => `${prev}\n   ⚠️ Error parsing saved code, using default`);
-        }
-      } else {
-        console.log(`⚠️ No saved payload for ${id}, using default template`);
-        setOutput(prev => `${prev}\n   ⚠️ No saved code found, using default template`);
-        localStorage.setItem(`code_${id}`, JSON.stringify({
-          language: languageApiMap[language] || language,
-          code: templates[language] || "",
-          testCases: [{ input: "", expectedOutput: "" }],
+      // Validate and format test cases
+      const formattedTestCases = codeTestCases
+        .filter(
+          (tc) => tc?.testcase_input != null && tc?.testcase_output != null
+        )
+        .map((testCase) => ({
+          input: Array.isArray(testCase.testcase_input)
+            ? testCase.testcase_input.join("\n")
+            : testCase.testcase_input || "",
+          expectedOutput: Array.isArray(testCase.testcase_output)
+            ? testCase.testcase_output.join("\n")
+            : testCase.testcase_output || "",
         }));
+
+      // Ensure at least one test case
+      if (formattedTestCases.length === 0) {
+        console.warn(
+          `⚠️ No valid test cases for ${currentCodeId}, using default empty test case`
+        );
+        formattedTestCases.push({ input: "", expectedOutput: "" });
       }
 
-      // Fetch test cases
-      try {
-        const code = await fetchCodeById(id);
-        if (code?.code_test_cases_id?.length > 0) {
-          const testCasePromises = code.code_test_cases_id.map(async testcase_id => {
-            try {
-              const testCase = await fetchTestCaseById(testcase_id);
-              return testCase?.testcase_input && testCase?.testcase_output ? testCase : null;
-            } catch (err) {
-              console.error(`Error fetching test case ${testcase_id}:`, err);
-              return null;
-            }
-          });
-          const responses = await Promise.all(testCasePromises);
-          codeTestCases = responses.filter(tc => tc !== null);
-          console.log(`📋 Found ${codeTestCases.length} test cases for ${id}`);
-          setOutput(prev => `${prev}\n   📋 Found ${codeTestCases.length} test cases`);
-        } else {
-          console.warn(`⚠️ No test cases for ${id}, using default`);
-          setOutput(prev => `${prev}\n   ⚠️ No test cases found, using default`);
-        }
-      } catch (err) {
-        console.error(`Error fetching code ${id}:`, err);
-        setOutput(prev => `${prev}\n   ⚠️ Error fetching test cases, using default`);
-      }
+      const submissionPayload = {
+        language: languageApiMap[codeLanguage] || codeLanguage,
+        code: codeInput || templates[codeLanguage] || "",
+        testCases: formattedTestCases,
+      };
 
-      // Compile and evaluate
-      setOutput(prev => `${prev}\n   ⚙️ Compiling...`);
-      const compilationResult = await compileAndEvaluate(id, codeInput, codeLanguage, codeTestCases);
-
-      if (!compilationResult.success) {
-        compilationErrors++;
-        console.error(`❌ Compilation failed for ${id}:`, compilationResult.error);
-        setOutput(prev => `${prev}\n   ❌ Compilation failed: ${compilationResult.error}`);
-      } else {
-        processedResults.push(compilationResult);
-        console.log(`✅ Successfully compiled ${id} with score:`, compilationResult.testResult.codingResults.find(r => r.codeId === id)?.score || 0);
-        setOutput(prev => `${prev}\n   ✅ Compilation successful`);
-      }
-    }
-
-    // Final verification
-    console.log(`\n🔍 Final verification started`);
-    setOutput(prev => `${prev}\n\n🔄 Finalizing all results...`);
-
-    let finalTestResult = testResult;
-    try {
-      const storedResult = localStorage.getItem("test_result");
-      if (storedResult) {
-        finalTestResult = JSON.parse(storedResult);
-      }
-    } catch (error) {
-      console.error("❌ Error getting final test result:", error);
-    }
-
-    // Ensure all coding IDs have results
-    finalTestResult.codingResults = finalTestResult.codingResults || [];
-    const missingIds = effectiveCodingIds.filter(id => !finalTestResult.codingResults.some(result => result.codeId === id));
-    for (const missingId of missingIds) {
-      console.log(`🔧 Processing missing ID: ${missingId}`);
-      setOutput(prev => `${prev}\n🔧 Processing missing result for ${missingId}...`);
-
-      const savedCode = localStorage.getItem(`code_${missingId}`);
-      let score = 0;
-      if (savedCode) {
-        try {
-          const parsedCode = JSON.parse(savedCode);
-          if (parsedCode.code && parsedCode.code !== templates[language] && parsedCode.code.trim().length > (templates[language]?.length || 0)) {
-            score = 5; // Partial credit for attempted code
-            console.log(`💡 Giving partial credit (${score}) for attempted solution`);
-          }
-        } catch (error) {
-          console.error(`Error parsing saved code for ${missingId}:`, error);
-        }
-      }
-
-      finalTestResult.codingResults.push({
-        codeId: missingId,
-        score,
-        total: 10,
+      // Save payload to localStorage
+      localStorage.setItem(
+        `code_${currentCodeId}`,
+        JSON.stringify(submissionPayload)
+      );
+      console.log(`💾 Saved code payload for ${currentCodeId}:`, {
+        codeLength: submissionPayload.code.length,
+        language: submissionPayload.language,
+        testCases: submissionPayload.testCases.length,
       });
-      console.log(`➕ Added missing result:`, { codeId: missingId, score, total: 10 });
-    }
 
-    // Update counts
-   finalTestResult.codingAnswered = finalTestResult.codingResults.length;
-finalTestResult.codingCorrect = finalTestResult.codingResults.filter(r => r.score > 0).length;
-finalTestResult.codingWrong = finalTestResult.codingResults.filter(r => r.score === 0).length;
-finalTestResult.codingNotAnswered = Math.max(0, effectiveCodingIds.length - finalTestResult.codingAnswered);
-finalTestResult.codingNotVisited = Math.max(0, effectiveCodingIds.length - finalTestResult.codingAnswered);
-finalTestResult.result_score = (finalTestResult.mcqCorrect || 0) + finalTestResult.codingResults.reduce((sum, result) => sum + result.score, 0);
+      // Compile code
+      const { results } = await compileCode(submissionPayload);
+      const formattedOutput = results
+        .map(
+          (res, index) =>
+            `Test Case #${index + 1}:\nInput:\n${
+              res.input
+            }\nExpected Output:\n${res.expectedOutput}\nActual Output:\n${
+              res.actualOutput
+            }\nPassed: ${res.passed ? "✅" : "❌"}\n`
+        )
+        .join("\n");
+      setOutput(formattedOutput);
 
-    // Save updated result
-    localStorage.setItem("test_result", JSON.stringify(finalTestResult));
-    setTestResult(finalTestResult);
+      // Calculate score
+      const allPassed =
+        results.length > 0 && results.every((res) => res.passed);
+      const codingScore = allPassed ? 10 : 0;
 
-    console.log(`✅ Compilation completed with ${compilationErrors} error(s)`, {
-      codingResults: finalTestResult.codingResults.length,
-      totalScore: finalTestResult.result_score,
-    });
-    setOutput(prev => `${prev}\n✅ Compilation completed with ${compilationErrors} error(s)`);
-    setOutput(prev => `${prev}\n📈 Final coding results: ${finalTestResult.codingResults.length}/${effectiveCodingIds.length} programs processed`);
-    setOutput(prev => `${prev}\n🏆 Total score: ${finalTestResult.result_score}/${finalTestResult.result_total_score}`);
+      const newCodingResult = {
+        codeId: currentCodeId,
+        score: codingScore,
+        total: 10,
+      };
+      console.log(
+        `📊 New coding result for ${currentCodeId}:`,
+        newCodingResult
+      );
 
-    setSnackbarMessage(`Compilation completed. ${finalTestResult.codingResults.length}/${effectiveCodingIds.length} programs processed.`);
-    setSnackbarSeverity(compilationErrors > 0 ? "warning" : "success");
+      // Get current test result
+      let currentTestResult = testResult;
+      try {
+        const storedResult = localStorage.getItem("test_result");
+        if (storedResult) {
+          currentTestResult = JSON.parse(storedResult);
+        }
+      } catch (error) {
+        console.error("Error parsing stored test result:", error);
+      }
 
-    return {
-      success: true,
-      errors: compilationErrors,
-      processedCount: finalTestResult.codingResults.length,
-      expectedCount: effectiveCodingIds.length,
-      finalResult: finalTestResult,
-    };
-  } catch (error) {
-    console.error("❌ Error compiling all programs:", error);
-    setOutput(prev => `${prev}\n❌ Error compiling programs: ${error.message}`);
-    setSnackbarMessage("Error compiling all programs.");
-    setSnackbarSeverity("error");
-    return { success: false, error: error.message };
-  } finally {
-    setLoading(false);
-    setOpenProgressDialog(false);
-    setSnackbarOpen(true);
-  }
-};
+      // Initialize codingResults if undefined
+      currentTestResult.codingResults = currentTestResult.codingResults || [];
 
-// Handle final submission
-const handleFinalSubmit = async (isMalpractice = false) => {
-  if (hasSubmitted) {
-    console.log(`⏹️ Submission already completed, ignoring duplicate call`);
-    return;
-  }
+      // Update coding results
+      const existingIndex = currentTestResult.codingResults.findIndex(
+        (result) => result.codeId === currentCodeId
+      );
+      let updatedCodingResults = [...currentTestResult.codingResults];
+      if (existingIndex !== -1) {
+        updatedCodingResults[existingIndex] = newCodingResult;
+        console.log(
+          `🔄 Updated existing result for ${currentCodeId} at index ${existingIndex}`
+        );
+      } else {
+        updatedCodingResults.push(newCodingResult);
+        console.log(
+          `➕ Added new result for ${currentCodeId}. Total results: ${updatedCodingResults.length}`
+        );
+      }
 
-  console.log(`🚀 Starting final submission process (malpractice: ${isMalpractice})`);
-  setLoading(true);
-  setOpenProgressDialog(true);
-  setOutput("🚀 Starting final submission process...\n");
+      // Ensure codingIds is initialized
+      const effectiveCodingIds =
+        fetchedTestCodingIds.length > 0
+          ? fetchedTestCodingIds
+          : currentTestResult.codingIds || [];
 
-  try {
-    // Step 1: Compile all programs
-    setOutput(prev => `${prev}\n📝 Step 1: Compiling all programs...`);
-    console.log(`📝 Step 1: Starting compilation process`);
+      // Update test result
+      const updatedTestResult = {
+        ...currentTestResult,
+        codingResults: updatedCodingResults,
+        result_user_id: userId || currentTestResult.result_user_id || "",
+        result_test_id: testId || currentTestResult.result_test_id || "",
+        result_score:
+          (currentTestResult.mcqCorrect || 0) +
+          updatedCodingResults.reduce((sum, result) => sum + result.score, 0),
+        result_total_score:
+          currentTestResult.result_total_score ||
+          effectiveCodingIds.length * 10,
+        result_poc_id: pocId || currentTestResult.result_poc_id || "",
+        codingAnswered: updatedCodingResults.length,
+        codingNotAnswered:
+          effectiveCodingIds.length - updatedCodingResults.length,
+        codingNotVisited: Math.max(
+          0,
+          effectiveCodingIds.length - updatedCodingResults.length
+        ),
+        codingCorrect: updatedCodingResults.filter((r) => r.score > 0).length,
+        codingWrong: updatedCodingResults.filter((r) => r.score === 0).length,
+        studentName: studentName || currentTestResult.studentName || "",
+      };
 
-    const compilationResult = await compileAllPrograms();
-    if (!compilationResult.success) {
-      throw new Error(`Compilation failed: ${compilationResult.error}`);
-    }
+      // Save and verify localStorage
+      localStorage.setItem("test_result", JSON.stringify(updatedTestResult));
+      const verifyResult = JSON.parse(
+        localStorage.getItem("test_result") || "{}"
+      );
+      if (verifyResult.codingResults?.length !== updatedCodingResults.length) {
+        throw new Error(
+          `Verification failed: Expected ${
+            updatedCodingResults.length
+          } results, got ${verifyResult.codingResults?.length || 0}`
+        );
+      }
+      console.log(
+        `✅ Successfully saved test result with ${verifyResult.codingResults.length} coding results`
+      );
 
-    console.log(`✅ Compilation completed:`, {
-      success: compilationResult.success,
-      errors: compilationResult.errors,
-      processed: compilationResult.processedCount,
-      expected: compilationResult.expectedCount,
-    });
-
-    // Step 2: Show confirmation dialog if not malpractice
-    if (!isMalpractice) {
-      console.log(`💬 Showing confirmation dialog`);
-      setSubmitConfirmDialogOpen(true);
+      setTestResult(updatedTestResult);
+      setSnackbarMessage("Code compiled and evaluated successfully!");
+      setSnackbarSeverity("success");
+      return { success: true, testResult: updatedTestResult };
+    } catch (error) {
+      console.error("Compile error:", error);
+      setOutput(`Error running code: ${error.message}`);
+      setSnackbarMessage("Error during code compilation.");
+      setSnackbarSeverity("warning");
+      return { success: false, error: error.message };
+    } finally {
       setLoading(false);
       setOpenProgressDialog(false);
+      setSnackbarOpen(true);
+    }
+  };
+
+  // Handle code run
+  const handleRun = async (e) => {
+    e.preventDefault();
+    return (await compileAndEvaluate(codeId, input, language, testCases))
+      .success;
+  };
+
+  // Compile all programs
+  const compileAllPrograms = async () => {
+    const effectiveCodingIds =
+      fetchedTestCodingIds.length > 0
+        ? fetchedTestCodingIds
+        : testResult.codingIds || [];
+    setLoading(true);
+    setOpenProgressDialog(true);
+    setOutput("Processing results...\nCompiling all programs...\n");
+
+    console.log(
+      `🚀 Starting compilation for ${effectiveCodingIds.length} coding problems:`,
+      effectiveCodingIds
+    );
+
+    let compilationErrors = 0;
+    let processedResults = [];
+
+    try {
+      for (const [index, id] of effectiveCodingIds.entries()) {
+        console.log(
+          `\n🔄 Processing program ${index + 1}/${
+            effectiveCodingIds.length
+          } - ID: ${id}`
+        );
+        setOutput(
+          (prev) =>
+            `${prev}\n📝 Processing program ${index + 1}/${
+              effectiveCodingIds.length
+            } (ID: ${id})...`
+        );
+
+        // Initialize defaults
+        let codeInput = templates[language] || "";
+        let codeLanguage = language;
+        let codeTestCases = [{ testcase_input: "", testcase_output: "" }];
+
+        // Load saved payload
+        const savedPayload = localStorage.getItem(`code_${id}`);
+        if (savedPayload) {
+          try {
+            const parsedPayload = JSON.parse(savedPayload);
+            codeInput = parsedPayload.code || templates[language] || "";
+            codeLanguage =
+              Object.keys(languageApiMap).find(
+                (key) => languageApiMap[key] === parsedPayload.language
+              ) || language;
+            console.log(`📂 Found saved payload for ${id}:`, {
+              codeLength: codeInput.length,
+              language: codeLanguage,
+            });
+            setOutput(
+              (prev) =>
+                `${prev}\n   ✅ Using saved code (${codeInput.length} chars)`
+            );
+          } catch (error) {
+            console.error(`❌ Error parsing saved payload for ${id}:`, error);
+            setOutput(
+              (prev) => `${prev}\n   ⚠️ Error parsing saved code, using default`
+            );
+          }
+        } else {
+          console.log(`⚠️ No saved payload for ${id}, using default template`);
+          setOutput(
+            (prev) =>
+              `${prev}\n   ⚠️ No saved code found, using default template`
+          );
+          localStorage.setItem(
+            `code_${id}`,
+            JSON.stringify({
+              language: languageApiMap[language] || language,
+              code: templates[language] || "",
+              testCases: [{ input: "", expectedOutput: "" }],
+            })
+          );
+        }
+
+        // Fetch test cases
+        try {
+          const code = await fetchCodeById(id);
+          if (code?.code_test_cases_id?.length > 0) {
+            const testCasePromises = code.code_test_cases_id.map(
+              async (testcase_id) => {
+                try {
+                  const testCase = await fetchTestCaseById(testcase_id);
+                  return testCase?.testcase_input && testCase?.testcase_output
+                    ? testCase
+                    : null;
+                } catch (err) {
+                  console.error(
+                    `Error fetching test case ${testcase_id}:`,
+                    err
+                  );
+                  return null;
+                }
+              }
+            );
+            const responses = await Promise.all(testCasePromises);
+            codeTestCases = responses.filter((tc) => tc !== null);
+            console.log(
+              `📋 Found ${codeTestCases.length} test cases for ${id}`
+            );
+            setOutput(
+              (prev) =>
+                `${prev}\n   📋 Found ${codeTestCases.length} test cases`
+            );
+          } else {
+            console.warn(`⚠️ No test cases for ${id}, using default`);
+            setOutput(
+              (prev) => `${prev}\n   ⚠️ No test cases found, using default`
+            );
+          }
+        } catch (err) {
+          console.error(`Error fetching code ${id}:`, err);
+          setOutput(
+            (prev) => `${prev}\n   ⚠️ Error fetching test cases, using default`
+          );
+        }
+
+        // Compile and evaluate
+        setOutput((prev) => `${prev}\n   ⚙️ Compiling...`);
+        const compilationResult = await compileAndEvaluate(
+          id,
+          codeInput,
+          codeLanguage,
+          codeTestCases
+        );
+
+        if (!compilationResult.success) {
+          compilationErrors++;
+          console.error(
+            `❌ Compilation failed for ${id}:`,
+            compilationResult.error
+          );
+          setOutput(
+            (prev) =>
+              `${prev}\n   ❌ Compilation failed: ${compilationResult.error}`
+          );
+        } else {
+          processedResults.push(compilationResult);
+          console.log(
+            `✅ Successfully compiled ${id} with score:`,
+            compilationResult.testResult.codingResults.find(
+              (r) => r.codeId === id
+            )?.score || 0
+          );
+          setOutput((prev) => `${prev}\n   ✅ Compilation successful`);
+        }
+      }
+
+      // Final verification
+      console.log(`\n🔍 Final verification started`);
+      setOutput((prev) => `${prev}\n\n🔄 Finalizing all results...`);
+
+      let finalTestResult = testResult;
+      try {
+        const storedResult = localStorage.getItem("test_result");
+        if (storedResult) {
+          finalTestResult = JSON.parse(storedResult);
+        }
+      } catch (error) {
+        console.error("❌ Error getting final test result:", error);
+      }
+
+      // Ensure all coding IDs have results
+      finalTestResult.codingResults = finalTestResult.codingResults || [];
+      const missingIds = effectiveCodingIds.filter(
+        (id) =>
+          !finalTestResult.codingResults.some((result) => result.codeId === id)
+      );
+      for (const missingId of missingIds) {
+        console.log(`🔧 Processing missing ID: ${missingId}`);
+        setOutput(
+          (prev) => `${prev}\n🔧 Processing missing result for ${missingId}...`
+        );
+
+        const savedCode = localStorage.getItem(`code_${missingId}`);
+        let score = 0;
+        if (savedCode) {
+          try {
+            const parsedCode = JSON.parse(savedCode);
+            if (
+              parsedCode.code &&
+              parsedCode.code !== templates[language] &&
+              parsedCode.code.trim().length > (templates[language]?.length || 0)
+            ) {
+              score = 5; // Partial credit for attempted code
+              console.log(
+                `💡 Giving partial credit (${score}) for attempted solution`
+              );
+            }
+          } catch (error) {
+            console.error(`Error parsing saved code for ${missingId}:`, error);
+          }
+        }
+
+        finalTestResult.codingResults.push({
+          codeId: missingId,
+          score,
+          total: 10,
+        });
+        console.log(`➕ Added missing result:`, {
+          codeId: missingId,
+          score,
+          total: 10,
+        });
+      }
+
+      // Update counts
+      finalTestResult.codingAnswered = finalTestResult.codingResults.length;
+      finalTestResult.codingCorrect = finalTestResult.codingResults.filter(
+        (r) => r.score > 0
+      ).length;
+      finalTestResult.codingWrong = finalTestResult.codingResults.filter(
+        (r) => r.score === 0
+      ).length;
+      finalTestResult.codingNotAnswered = Math.max(
+        0,
+        effectiveCodingIds.length - finalTestResult.codingAnswered
+      );
+      finalTestResult.codingNotVisited = Math.max(
+        0,
+        effectiveCodingIds.length - finalTestResult.codingAnswered
+      );
+      finalTestResult.result_score =
+        (finalTestResult.mcqCorrect || 0) +
+        finalTestResult.codingResults.reduce(
+          (sum, result) => sum + result.score,
+          0
+        );
+
+      // Save updated result
+      localStorage.setItem("test_result", JSON.stringify(finalTestResult));
+      setTestResult(finalTestResult);
+
+      console.log(
+        `✅ Compilation completed with ${compilationErrors} error(s)`,
+        {
+          codingResults: finalTestResult.codingResults.length,
+          totalScore: finalTestResult.result_score,
+        }
+      );
+      setOutput(
+        (prev) =>
+          `${prev}\n✅ Compilation completed with ${compilationErrors} error(s)`
+      );
+      setOutput(
+        (prev) =>
+          `${prev}\n📈 Final coding results: ${finalTestResult.codingResults.length}/${effectiveCodingIds.length} programs processed`
+      );
+      setOutput(
+        (prev) =>
+          `${prev}\n🏆 Total score: ${finalTestResult.result_score}/${finalTestResult.result_total_score}`
+      );
+
+      setSnackbarMessage(
+        `Compilation completed. ${finalTestResult.codingResults.length}/${effectiveCodingIds.length} programs processed.`
+      );
+      setSnackbarSeverity(compilationErrors > 0 ? "warning" : "success");
+
+      return {
+        success: true,
+        errors: compilationErrors,
+        processedCount: finalTestResult.codingResults.length,
+        expectedCount: effectiveCodingIds.length,
+        finalResult: finalTestResult,
+      };
+    } catch (error) {
+      console.error("❌ Error compiling all programs:", error);
+      setOutput(
+        (prev) => `${prev}\n❌ Error compiling programs: ${error.message}`
+      );
+      setSnackbarMessage("Error compiling all programs.");
+      setSnackbarSeverity("error");
+      return { success: false, error: error.message };
+    } finally {
+      setLoading(false);
+      setOpenProgressDialog(false);
+      setSnackbarOpen(true);
+    }
+  };
+
+  // Handle final submission
+  const handleFinalSubmit = async (isMalpractice = false) => {
+    if (hasSubmitted) {
+      console.log(`⏹️ Submission already completed, ignoring duplicate call`);
       return;
     }
 
-    // Step 3: Prepare submission data
-    setOutput(prev => `${prev}\n📤 Step 2: Preparing final submission...`);
-    console.log(`📤 Step 3: Preparing submission data`);
+    console.log(
+      `🚀 Starting final submission process (malpractice: ${isMalpractice})`
+    );
+    setLoading(true);
+    setOpenProgressDialog(true);
+    setOutput("🚀 Starting final submission process...\n");
 
-    let finalTestResult = compilationResult.finalResult;
     try {
-      const storedTestResult = localStorage.getItem("test_result");
-      if (storedTestResult) {
-        finalTestResult = JSON.parse(storedTestResult);
+      // Step 1: Compile all programs
+      setOutput((prev) => `${prev}\n📝 Step 1: Compiling all programs...`);
+      console.log(`📝 Step 1: Starting compilation process`);
+
+      const compilationResult = await compileAllPrograms();
+      if (!compilationResult.success) {
+        throw new Error(`Compilation failed: ${compilationResult.error}`);
       }
-    } catch (error) {
-      console.error("❌ Error retrieving final test result:", error);
-    }
 
-    const resultData = {
-      result_user_id: finalTestResult.result_user_id || userId || "",
-      result_test_id: finalTestResult.result_test_id || testId || "",
-      result_poc_id: finalTestResult.result_poc_id || pocId || "",
-      result_score: finalTestResult.result_score || 0,
-      result_total_score: finalTestResult.result_total_score || 0,
-      codingAnswered: finalTestResult.codingAnswered || 0,
-      codingCorrect: finalTestResult.codingCorrect || 0,
-      codingIds: finalTestResult.codingIds || [],
-      codingNotAnswered: finalTestResult.codingNotAnswered || 0,
-      codingNotVisited: finalTestResult.codingNotVisited || 0,
-      codingWrong: finalTestResult.codingWrong || 0,
-      marked: finalTestResult.marked || 0,
-      mcqAnswered: finalTestResult.mcqAnswered || 0,
-      mcqCorrect: finalTestResult.mcqCorrect || 0,
-      mcqNotAnswered: finalTestResult.mcqNotAnswered || 0,
-      mcqNotVisited: finalTestResult.mcqNotVisited || 0,
-      mcqWrong: finalTestResult.mcqWrong || 0,
-      studentName: finalTestResult.studentName || studentName || "",
-      testLanguage: finalTestResult.testLanguage || "",
-      testName: finalTestResult.testName || "",
-      codingResults: finalTestResult.codingResults || [],
-    };
+      console.log(`✅ Compilation completed:`, {
+        success: compilationResult.success,
+        errors: compilationResult.errors,
+        processed: compilationResult.processedCount,
+        expected: compilationResult.expectedCount,
+      });
 
-    // Log submission data
-    console.log(`📋 Final submission data:`, {
-      codingResults: resultData.codingResults.length,
-      totalScore: resultData.result_score,
-      codingIds: resultData.codingIds.length,
-    });
-    setOutput(prev => `${prev}\n📋 Final submission data:`);
-    setOutput(prev => `${prev}\n   - Coding Problems: ${resultData.codingIds.length}`);
-    setOutput(prev => `${prev}\n   - Coding Results: ${resultData.codingResults.length}`);
-    setOutput(prev => `${prev}\n   - Total Score: ${resultData.result_score}/${resultData.result_total_score}`);
+      // Step 2: Show confirmation dialog if not malpractice
+      if (!isMalpractice) {
+        console.log(`💬 Showing confirmation dialog`);
+        setSubmitConfirmDialogOpen(true);
+        setLoading(false);
+        setOpenProgressDialog(false);
+        return;
+      }
 
-    // Step 4: Submit test
-    setOutput(prev => `${prev}\n🚀 Step 3: Submitting test...`);
-    console.log(`🚀 Submitting test result to server`);
-    await submitTestResult(resultData);
-    console.log(`✅ Test submitted successfully`);
+      // Step 3: Prepare submission data
+      setOutput((prev) => `${prev}\n📤 Step 2: Preparing final submission...`);
+      console.log(`📤 Step 3: Preparing submission data`);
 
-    // Step 5: Cleanup
-    setOutput(prev => `${prev}\n🧹 Step 4: Cleaning up...`);
-    console.log(`🧹 Cleaning up localStorage`);
-
-    const effectiveCodingIds = fetchedTestCodingIds.length > 0 ? fetchedTestCodingIds : (testResult.codingIds || []);
-    effectiveCodingIds.forEach(id => {
+      let finalTestResult = compilationResult.finalResult;
       try {
-        localStorage.removeItem(`code_${id}`);
-        console.log(`🗑️ Removed code_${id} from localStorage`);
+        const storedTestResult = localStorage.getItem("test_result");
+        if (storedTestResult) {
+          finalTestResult = JSON.parse(storedTestResult);
+        }
       } catch (error) {
-        console.error(`❌ Error removing code_${id}:`, error);
+        console.error("❌ Error retrieving final test result:", error);
       }
-    });
 
-    // Success
-    setHasSubmitted(true);
-    setOutput(prev => `${prev}\n🎉 Test submitted successfully!`);
-    console.log(`🎉 Final submission completed successfully`);
+      const resultData = {
+        result_user_id: finalTestResult.result_user_id || userId || "",
+        result_test_id: finalTestResult.result_test_id || testId || "",
+        result_poc_id: finalTestResult.result_poc_id || pocId || "",
+        result_score: finalTestResult.result_score || 0,
+        result_total_score: finalTestResult.result_total_score || 0,
+        codingAnswered: finalTestResult.codingAnswered || 0,
+        codingCorrect: finalTestResult.codingCorrect || 0,
+        codingIds: finalTestResult.codingIds || [],
+        codingNotAnswered: finalTestResult.codingNotAnswered || 0,
+        codingNotVisited: finalTestResult.codingNotVisited || 0,
+        codingWrong: finalTestResult.codingWrong || 0,
+        marked: finalTestResult.marked || 0,
+        mcqAnswered: finalTestResult.mcqAnswered || 0,
+        mcqCorrect: finalTestResult.mcqCorrect || 0,
+        mcqNotAnswered: finalTestResult.mcqNotAnswered || 0,
+        mcqNotVisited: finalTestResult.mcqNotVisited || 0,
+        mcqWrong: finalTestResult.mcqWrong || 0,
+        studentName: finalTestResult.studentName || studentName || "",
+        testLanguage: finalTestResult.testLanguage || "",
+        testName: finalTestResult.testName || "",
+        codingResults: finalTestResult.codingResults || [],
+      };
 
-    setSnackbarMessage("Test submitted successfully!");
-    setSnackbarSeverity("success");
-    setSnackbarOpen(true);
+      // Log submission data
+      console.log(`📋 Final submission data:`, {
+        codingResults: resultData.codingResults.length,
+        totalScore: resultData.result_score,
+        codingIds: resultData.codingIds.length,
+      });
+      setOutput((prev) => `${prev}\n📋 Final submission data:`);
+      setOutput(
+        (prev) =>
+          `${prev}\n   - Coding Problems: ${resultData.codingIds.length}`
+      );
+      setOutput(
+        (prev) =>
+          `${prev}\n   - Coding Results: ${resultData.codingResults.length}`
+      );
+      setOutput(
+        (prev) =>
+          `${prev}\n   - Total Score: ${resultData.result_score}/${resultData.result_total_score}`
+      );
 
-    // Navigate to results
-    navigate("/test-result", { state: { resultData } });
-  } catch (error) {
-    console.error("💥 Final submit error:", error);
-    setOutput(prev => `${prev}\n💥 Error submitting test: ${error.message}`);
-    setSnackbarMessage(`Error during test submission: ${error.message}`);
-    setSnackbarSeverity("error");
-  } finally {
-    setLoading(false);
-    setOpenProgressDialog(false);
-    setSnackbarOpen(true);
-  }
-};
+      // Step 4: Submit test
+      setOutput((prev) => `${prev}\n🚀 Step 3: Submitting test...`);
+      console.log(`🚀 Submitting test result to server`);
+      await submitTestResult(resultData);
+      console.log(`✅ Test submitted successfully`);
+
+      // Step 5: Cleanup
+      setOutput((prev) => `${prev}\n🧹 Step 4: Cleaning up...`);
+      console.log(`🧹 Cleaning up localStorage`);
+
+      const effectiveCodingIds =
+        fetchedTestCodingIds.length > 0
+          ? fetchedTestCodingIds
+          : testResult.codingIds || [];
+      effectiveCodingIds.forEach((id) => {
+        try {
+          localStorage.removeItem(`code_${id}`);
+          console.log(`🗑️ Removed code_${id} from localStorage`);
+        } catch (error) {
+          console.error(`❌ Error removing code_${id}:`, error);
+        }
+      });
+
+      // Success
+      setHasSubmitted(true);
+      setOutput((prev) => `${prev}\n🎉 Test submitted successfully!`);
+      console.log(`🎉 Final submission completed successfully`);
+
+      setSnackbarMessage("Test submitted successfully!");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+
+      // Navigate to results
+      navigate("/test-result", { state: { resultData } });
+    } catch (error) {
+      console.error("💥 Final submit error:", error);
+      setOutput(
+        (prev) => `${prev}\n💥 Error submitting test: ${error.message}`
+      );
+      setSnackbarMessage(`Error during test submission: ${error.message}`);
+      setSnackbarSeverity("error");
+    } finally {
+      setLoading(false);
+      setOpenProgressDialog(false);
+      setSnackbarOpen(true);
+    }
+  };
   // Confirm final submission
   const confirmFinalSubmit = async () => {
     setSubmitConfirmDialogOpen(false);
     setLoading(true);
     setOpenProgressDialog(true);
-    setOutput("Processing results...\nSubmitting test for final evaluation...\n");
+    setOutput(
+      "Processing results...\nSubmitting test for final evaluation...\n"
+    );
 
     try {
       const resultData = {
@@ -1470,7 +2227,10 @@ const handleFinalSubmit = async (isMalpractice = false) => {
 
       await submitTestResult(resultData);
 
-      const effectiveCodingIds = fetchedTestCodingIds.length > 0 ? fetchedTestCodingIds : testResult.codingIds;
+      const effectiveCodingIds =
+        fetchedTestCodingIds.length > 0
+          ? fetchedTestCodingIds
+          : testResult.codingIds;
       effectiveCodingIds.forEach((id) => localStorage.removeItem(`code_${id}`));
 
       setHasSubmitted(true);
@@ -1505,7 +2265,10 @@ const handleFinalSubmit = async (isMalpractice = false) => {
     saveSubmissionPayload();
     await compileAndEvaluate(codeId, input, language, testCases);
 
-    const effectiveCodingIds = fetchedTestCodingIds.length > 0 ? fetchedTestCodingIds : testResult.codingIds;
+    const effectiveCodingIds =
+      fetchedTestCodingIds.length > 0
+        ? fetchedTestCodingIds
+        : testResult.codingIds;
     if (testResult.currentCodingIndex > 0) {
       const prevCodeId = effectiveCodingIds[testResult.currentCodingIndex - 1];
       setTestResult((prev) => {
@@ -1534,7 +2297,10 @@ const handleFinalSubmit = async (isMalpractice = false) => {
     saveSubmissionPayload();
     await compileAndEvaluate(codeId, input, language, testCases);
 
-    const effectiveCodingIds = fetchedTestCodingIds.length > 0 ? fetchedTestCodingIds : testResult.codingIds;
+    const effectiveCodingIds =
+      fetchedTestCodingIds.length > 0
+        ? fetchedTestCodingIds
+        : testResult.codingIds;
     if (testResult.currentCodingIndex < effectiveCodingIds.length - 1) {
       const nextCodeId = effectiveCodingIds[testResult.currentCodingIndex + 1];
       setTestResult((prev) => {
@@ -1562,51 +2328,79 @@ const handleFinalSubmit = async (isMalpractice = false) => {
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
   };
 
   // Determine effective coding IDs
-  const effectiveCodingIds = fetchedTestCodingIds.length > 0 ? fetchedTestCodingIds : testResult.codingIds;
+  const effectiveCodingIds =
+    fetchedTestCodingIds.length > 0
+      ? fetchedTestCodingIds
+      : testResult.codingIds;
   const isFirstProgram = testResult.currentCodingIndex === 0;
-  const isLastProgram = testResult.currentCodingIndex >= effectiveCodingIds.length - 1;
+  const isLastProgram =
+    testResult.currentCodingIndex >= effectiveCodingIds.length - 1;
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Dialog open={openProgressDialog} PaperProps={{ sx: { borderRadius: 3, bgcolor: "background.paper" } }}>
-        <DialogContent sx={{ display: "flex", alignItems: "center", gap: 2, p: 4 }}>
+      <Dialog
+        open={openProgressDialog}
+        PaperProps={{ sx: { borderRadius: 3, bgcolor: "background.paper" } }}
+      >
+        <DialogContent
+          sx={{ display: "flex", alignItems: "center", gap: 2, p: 4 }}
+        >
           <CircularProgress sx={{ color: "#0c83c8" }} />
           <Typography
             variant="h6"
             color="text.primary"
-            sx={{ fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important" }}
+            sx={{
+              fontFamily:
+                "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+            }}
           >
             Processing your code...
           </Typography>
         </DialogContent>
       </Dialog>
-      <Dialog open={submitConfirmDialogOpen} PaperProps={{ sx: { borderRadius: 3, bgcolor: "background.paper" } }}>
+      <Dialog
+        open={submitConfirmDialogOpen}
+        PaperProps={{ sx: { borderRadius: 3, bgcolor: "background.paper" } }}
+      >
         <DialogContent sx={{ p: 4 }}>
           <Typography
             variant="h6"
             color="text.primary"
-            sx={{ fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important", mb: 2 }}
+            sx={{
+              fontFamily:
+                "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+              mb: 2,
+            }}
           >
             Are you sure you want to submit the test?
           </Typography>
           <Typography
             variant="body2"
             color="text.secondary"
-            sx={{ fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important" }}
+            sx={{
+              fontFamily:
+                "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+            }}
           >
-            This action will finalize your test and you won't be able to make further changes.
+            This action will finalize your test and you won't be able to make
+            further changes.
           </Typography>
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
           <Button
             onClick={cancelFinalSubmit}
             variant="outlined"
-            sx={{ fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important" }}
+            sx={{
+              fontFamily:
+                "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+            }}
           >
             Continue Coding
           </Button>
@@ -1614,18 +2408,29 @@ const handleFinalSubmit = async (isMalpractice = false) => {
             onClick={confirmFinalSubmit}
             variant="contained"
             color="error"
-            sx={{ fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important" }}
+            sx={{
+              fontFamily:
+                "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+            }}
           >
             Submit Test
           </Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={instructionsOpen} onClose={() => setInstructionsOpen(false)} PaperProps={{ sx: { borderRadius: 3, bgcolor: "background.paper" } }}>
+      <Dialog
+        open={instructionsOpen}
+        onClose={() => setInstructionsOpen(false)}
+        PaperProps={{ sx: { borderRadius: 3, bgcolor: "background.paper" } }}
+      >
         <DialogContent sx={{ p: 4 }}>
           <Typography
             variant="h6"
             color="text.primary"
-            sx={{ fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important", mb: 2 }}
+            sx={{
+              fontFamily:
+                "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+              mb: 2,
+            }}
           >
             Test Instructions
           </Typography>
@@ -1637,7 +2442,10 @@ const handleFinalSubmit = async (isMalpractice = false) => {
                     <Typography
                       variant="body2"
                       color="text.secondary"
-                      sx={{ fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important" }}
+                      sx={{
+                        fontFamily:
+                          "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+                      }}
                     >
                       {`${index + 1}. ${instruction}`}
                     </Typography>
@@ -1652,7 +2460,10 @@ const handleFinalSubmit = async (isMalpractice = false) => {
             onClick={() => setInstructionsOpen(false)}
             variant="contained"
             color="primary"
-            sx={{ fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important" }}
+            sx={{
+              fontFamily:
+                "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+            }}
           >
             Close
           </Button>
@@ -1699,7 +2510,10 @@ const handleFinalSubmit = async (isMalpractice = false) => {
                 color="inherit"
                 size="small"
                 onClick={confirmResetEditor}
-                sx={{ fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important" }}
+                sx={{
+                  fontFamily:
+                    "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+                }}
               >
                 Reset
               </Button>
@@ -1707,7 +2521,10 @@ const handleFinalSubmit = async (isMalpractice = false) => {
                 color="inherit"
                 size="small"
                 onClick={cancelResetEditor}
-                sx={{ fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important" }}
+                sx={{
+                  fontFamily:
+                    "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+                }}
               >
                 Cancel
               </Button>
@@ -1739,7 +2556,9 @@ const handleFinalSubmit = async (isMalpractice = false) => {
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", minWidth: 0 }}>
-            <CodeIcon sx={{ color: "#0c83c8", mr: 1, fontSize: { xs: 20, sm: 28 } }} />
+            <CodeIcon
+              sx={{ color: "#0c83c8", mr: 1, fontSize: { xs: 20, sm: 28 } }}
+            />
             <Typography
               variant="h5"
               color="text.primary"
@@ -1749,36 +2568,79 @@ const handleFinalSubmit = async (isMalpractice = false) => {
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
-                fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+                fontFamily:
+                  "'Inter', 'Helvetica', 'Arial', sans-serif !important",
               }}
             >
-              {testResult.testName} - Coding Program {testResult.currentCodingIndex + 1} of {effectiveCodingIds.length || 1}
+              {testResult.testName} - Coding Program{" "}
+              {testResult.currentCodingIndex + 1} of{" "}
+              {effectiveCodingIds.length || 1}
             </Typography>
             <Tooltip title="View Instructions">
-              <IconButton size="small" onClick={() => setInstructionsOpen(true)} sx={{ ml: 1 }}>
+              <IconButton
+                size="small"
+                onClick={() => setInstructionsOpen(true)}
+                sx={{ ml: 1 }}
+              >
                 <InfoIcon fontSize="small" />
               </IconButton>
             </Tooltip>
           </Box>
-          <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.5, sm: 1 }, flexShrink: 0 }}>
-            <Box sx={{ display: "flex", alignItems: "center", bgcolor: alpha(theme.palette.primary.main, 0.1), p: 1, borderRadius: 1 }}>
-              <Typography variant="subtitle1" sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}>
-                 Time Left: {formatTime(timer)}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: { xs: 0.5, sm: 1 },
+              flexShrink: 0,
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                bgcolor: alpha(theme.palette.primary.main, 0.1),
+                p: 1,
+                borderRadius: 1,
+              }}
+            >
+              <Typography
+                variant="subtitle1"
+                sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+              >
+                Time Left: {formatTime(timer)}
               </Typography>
             </Box>
-                        <Box sx={{ display: "flex", alignItems: "center", bgcolor: alpha(theme.palette.primary.main, 0.1), p: 1, borderRadius: 1 }}>
-              <Typography variant="subtitle1" sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}>
-                {studentName || "User"} 
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                bgcolor: alpha(theme.palette.primary.main, 0.1),
+                p: 1,
+                borderRadius: 1,
+              }}
+            >
+              <Typography
+                variant="subtitle1"
+                sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+              >
+                {studentName || "User"}
               </Typography>
             </Box>
-            <FormControl size="small" sx={{ minWidth: { xs: 100, sm: 140 }, mr: { xs: 0.5, sm: 1 } }}>
+            <FormControl
+              size="small"
+              sx={{ minWidth: { xs: 100, sm: 140 }, mr: { xs: 0.5, sm: 1 } }}
+            >
               <Select
                 value={language}
-                onChange={handleLanguageChange}
+                disabled
                 sx={{
                   height: { xs: 32, sm: 40 },
                   fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                  "& .MuiSelect-select": { display: "flex", alignItems: "center", py: 0.5 },
+                  "& .MuiSelect-select": {
+                    display: "flex",
+                    alignItems: "center",
+                    py: 0.5,
+                  },
                 }}
                 renderValue={(selected) => (
                   <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
@@ -1786,7 +2648,8 @@ const handleFinalSubmit = async (isMalpractice = false) => {
                     <Typography
                       sx={{
                         fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                        fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+                        fontFamily:
+                          "'Inter', 'Helvetica', 'Arial', sans-serif !important",
                       }}
                     >
                       {languageNames[selected]}
@@ -1806,14 +2669,21 @@ const handleFinalSubmit = async (isMalpractice = false) => {
                 <MenuItem value="c">
                   <CIcon sx={{ mr: 1, fontSize: "small" }} /> C
                 </MenuItem>
-                                <MenuItem value="javascript">
-                  <JavascriptIcon sx={{ mr: 1, fontSize: "small" }} /> JavaScript
+                <MenuItem value="javascript">
+                  <JavascriptIcon sx={{ mr: 1, fontSize: "small" }} />{" "}
+                  JavaScript
                 </MenuItem>
               </Select>
             </FormControl>
             <FormGroup>
               <FormControlLabel
-                control={<MaterialUISwitch sx={{ m: { xs: 0.5, sm: 1 } }} checked={mode === "dark"} onChange={toggleTheme} />}
+                control={
+                  <MaterialUISwitch
+                    sx={{ m: { xs: 0.5, sm: 1 } }}
+                    checked={mode === "dark"}
+                    onChange={toggleTheme}
+                  />
+                }
                 label=""
               />
             </FormGroup>
@@ -1829,7 +2699,11 @@ const handleFinalSubmit = async (isMalpractice = false) => {
         >
           <Box
             sx={{
-              width: isMobile ? "100%" : testCasesCollapsed ? "90%" : `${editorWidth}%`,
+              width: isMobile
+                ? "100%"
+                : testCasesCollapsed
+                ? "90%"
+                : `${editorWidth}%`,
               height: isMobile ? "50%" : "auto",
               display: "flex",
               flexDirection: "column",
@@ -1853,12 +2727,20 @@ const handleFinalSubmit = async (isMalpractice = false) => {
                 fontWeight="medium"
                 sx={{
                   fontSize: { xs: "0.85rem", sm: "1rem" },
-                  fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+                  fontFamily:
+                    "'Inter', 'Helvetica', 'Arial', sans-serif !important",
                 }}
               >
                 Code Editor
               </Typography>
-              <Box sx={{ display: "flex", gap: { xs: 0.5, sm: 1 }, alignItems: "center", flexShrink: 0 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: { xs: 0.5, sm: 1 },
+                  alignItems: "center",
+                  flexShrink: 0,
+                }}
+              >
                 <Tooltip title="Reset Code">
                   <IconButton size="small" onClick={resetEditor}>
                     <RefreshIcon fontSize="small" />
@@ -1874,12 +2756,19 @@ const handleFinalSubmit = async (isMalpractice = false) => {
                   color="primary"
                   onClick={handleRun}
                   disabled={loading}
-                  startIcon={loading ? <CircularProgress size={12} color="inherit" /> : <PlayArrowIcon />}
+                  startIcon={
+                    loading ? (
+                      <CircularProgress size={12} color="inherit" />
+                    ) : (
+                      <PlayArrowIcon />
+                    )
+                  }
                   size="small"
                   sx={{
                     fontSize: { xs: "0.65rem", sm: "0.75rem" },
                     px: { xs: 1, sm: 2 },
-                    fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+                    fontFamily:
+                      "'Inter', 'Helvetica', 'Arial', sans-serif !important",
                   }}
                 >
                   Run
@@ -1956,13 +2845,16 @@ const handleFinalSubmit = async (isMalpractice = false) => {
               }}
             >
               <Box sx={{ display: "flex", alignItems: "center" }}>
-                <FormatListNumberedIcon sx={{ mr: 1, fontSize: { xs: 16, sm: 20 }, color: "#fc7a46" }} />
+                <FormatListNumberedIcon
+                  sx={{ mr: 1, fontSize: { xs: 16, sm: 20 }, color: "#fc7a46" }}
+                />
                 <Typography
                   variant="subtitle1"
                   fontWeight="medium"
                   sx={{
                     fontSize: { xs: "0.85rem", sm: "1rem" },
-                    fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+                    fontFamily:
+                      "'Inter', 'Helvetica', 'Arial', sans-serif !important",
                   }}
                 >
                   Problem & Test Cases
@@ -1972,27 +2864,53 @@ const handleFinalSubmit = async (isMalpractice = false) => {
                     label={testCases.length}
                     size="small"
                     color="secondary"
-                    sx={{ ml: 1, height: { xs: 18, sm: 20 }, fontSize: { xs: "0.65rem", sm: "0.75rem" } }}
+                    sx={{
+                      ml: 1,
+                      height: { xs: 18, sm: 20 },
+                      fontSize: { xs: "0.65rem", sm: "0.75rem" },
+                    }}
                   />
                 )}
               </Box>
-              <Box sx={{ display: "flex", alignItems: "center", gap: { xs: 0.5, sm: 1 } }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: { xs: 0.5, sm: 1 },
+                }}
+              >
                 {isMobile ? (
                   <IconButton
                     size="small"
                     onClick={() => setShowTestCases(!showTestCases)}
-                    aria-label={showTestCases ? "Collapse test cases" : "Expand test cases"}
+                    aria-label={
+                      showTestCases
+                        ? "Collapse test cases"
+                        : "Expand test cases"
+                    }
                   >
-                    {showTestCases ? <KeyboardArrowUpIcon fontSize="small" /> : <KeyboardArrowDownIcon fontSize="small" />}
+                    {showTestCases ? (
+                      <KeyboardArrowUpIcon fontSize="small" />
+                    ) : (
+                      <KeyboardArrowDownIcon fontSize="small" />
+                    )}
                   </IconButton>
                 ) : (
                   <Tooltip title={testCasesCollapsed ? "Expand" : "Collapse"}>
                     <IconButton
                       size="small"
                       onClick={toggleTestCases}
-                      aria-label={testCasesCollapsed ? "Expand test cases" : "Collapse test cases"}
+                      aria-label={
+                        testCasesCollapsed
+                          ? "Expand test cases"
+                          : "Collapse test cases"
+                      }
                     >
-                      {testCasesCollapsed ? <KeyboardArrowLeftIcon fontSize="small" /> : <KeyboardArrowRightIcon fontSize="small" />}
+                      {testCasesCollapsed ? (
+                        <KeyboardArrowLeftIcon fontSize="small" />
+                      ) : (
+                        <KeyboardArrowRightIcon fontSize="small" />
+                      )}
                     </IconButton>
                   </Tooltip>
                 )}
@@ -2014,30 +2932,47 @@ const handleFinalSubmit = async (isMalpractice = false) => {
                   sx={{
                     color: "text.secondary",
                     fontSize: "0.75rem",
-                    fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+                    fontFamily:
+                      "'Inter', 'Helvetica', 'Arial', sans-serif !important",
                   }}
                 >
-                  {testCases.length} test case{testCases.length !== 1 ? "s" : ""} available
+                  {testCases.length} test case
+                  {testCases.length !== 1 ? "s" : ""} available
                 </Typography>
               </Box>
             )}
             {!testCasesCollapsed && showTestCases && (
               <Box sx={{ flex: 1, overflow: "auto", p: 1 }}>
                 {loading ? (
-                  <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "100%",
+                    }}
+                  >
                     <CircularProgress sx={{ color: "#0c83c8" }} />
                   </Box>
                 ) : selectedCode ? (
                   <>
                     <Card sx={{ mb: 1 }}>
                       <CardContent sx={{ p: 1 }}>
-                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 0.5 }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            mb: 0.5,
+                          }}
+                        >
                           <Typography
                             variant="subtitle1"
                             fontWeight="medium"
                             sx={{
                               fontSize: { xs: "0.85rem", sm: "1rem" },
-                              fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+                              fontFamily:
+                                "'Inter', 'Helvetica', 'Arial', sans-serif !important",
                             }}
                           >
                             {selectedCode.code_title || "Problem"}
@@ -2063,7 +2998,8 @@ const handleFinalSubmit = async (isMalpractice = false) => {
                         <Typography
                           variant="body2"
                           sx={{
-                            fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+                            fontFamily:
+                              "'Inter', 'Helvetica', 'Arial', sans-serif !important",
                             color: "text.secondary",
                             whiteSpace: "pre-wrap",
                             fontSize: { xs: "0.7rem", sm: "0.8rem" },
@@ -2078,13 +3014,21 @@ const handleFinalSubmit = async (isMalpractice = false) => {
                         {testCases.map((tc, i) => (
                           <Card key={i} sx={{ position: "relative" }}>
                             <CardContent sx={{ p: 1 }}>
-                              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 0.5 }}>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                  mb: 0.5,
+                                }}
+                              >
                                 <Typography
                                   variant="subtitle2"
                                   fontWeight="medium"
                                   sx={{
                                     fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                                    fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+                                    fontFamily:
+                                      "'Inter', 'Helvetica', 'Arial', sans-serif !important",
                                   }}
                                 >
                                   Test Case #{i + 1}
@@ -2098,7 +3042,10 @@ const handleFinalSubmit = async (isMalpractice = false) => {
                                     color: "text.secondary",
                                     mb: 0.5,
                                     p: 1,
-                                    bgcolor: alpha(theme.palette.background.default, 0.7),
+                                    bgcolor: alpha(
+                                      theme.palette.background.default,
+                                      0.7
+                                    ),
                                     borderRadius: 1,
                                     whiteSpace: "pre-wrap",
                                     wordBreak: "break-word",
@@ -2118,7 +3065,10 @@ const handleFinalSubmit = async (isMalpractice = false) => {
                                     fontFamily: "'Fira Code', monospace",
                                     color: "text.secondary",
                                     p: 1,
-                                    bgcolor: alpha(theme.palette.background.default, 0.7),
+                                    bgcolor: alpha(
+                                      theme.palette.background.default,
+                                      0.7
+                                    ),
                                     borderRadius: 1,
                                     whiteSpace: "pre-wrap",
                                     wordBreak: "break-word",
@@ -2128,8 +3078,9 @@ const handleFinalSubmit = async (isMalpractice = false) => {
                                   <strong>Expected Output:</strong>
                                   <br />
                                   {Array.isArray(tc.testcase_output)
-                                                                       ? tc.testcase_output.join("\n")
-                                    : tc.testcase_output || "No output provided"}
+                                    ? tc.testcase_output.join("\n")
+                                    : tc.testcase_output ||
+                                      "No output provided"}
                                 </Typography>
                               )}
                             </CardContent>
@@ -2141,7 +3092,8 @@ const handleFinalSubmit = async (isMalpractice = false) => {
                         variant="body2"
                         sx={{
                           color: "text.secondary",
-                          fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+                          fontFamily:
+                            "'Inter', 'Helvetica', 'Arial', sans-serif !important",
                           fontSize: { xs: "0.7rem", sm: "0.8rem" },
                           p: 1,
                         }}
@@ -2155,7 +3107,8 @@ const handleFinalSubmit = async (isMalpractice = false) => {
                     variant="body2"
                     sx={{
                       color: "text.secondary",
-                      fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+                      fontFamily:
+                        "'Inter', 'Helvetica', 'Arial', sans-serif !important",
                       fontSize: { xs: "0.7rem", sm: "0.8rem" },
                       p: 1,
                     }}
@@ -2200,13 +3153,16 @@ const handleFinalSubmit = async (isMalpractice = false) => {
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <TerminalIcon sx={{ mr: 1, fontSize: { xs: 16, sm: 20 }, color: "#0c83c8" }} />
+              <TerminalIcon
+                sx={{ mr: 1, fontSize: { xs: 16, sm: 20 }, color: "#0c83c8" }}
+              />
               <Typography
                 variant="subtitle1"
                 fontWeight="medium"
                 sx={{
                   fontSize: { xs: "0.85rem", sm: "1rem" },
-                  fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+                  fontFamily:
+                    "'Inter', 'Helvetica', 'Arial', sans-serif !important",
                 }}
               >
                 Output Console
@@ -2217,7 +3173,11 @@ const handleFinalSubmit = async (isMalpractice = false) => {
               onClick={toggleOutput}
               aria-label={outputMinimized ? "Expand output" : "Minimize output"}
             >
-              {outputMinimized ? <KeyboardArrowDownIcon fontSize="small" /> : <KeyboardArrowUpIcon fontSize="small" />}
+              {outputMinimized ? (
+                <KeyboardArrowDownIcon fontSize="small" />
+              ) : (
+                <KeyboardArrowUpIcon fontSize="small" />
+              )}
             </IconButton>
           </Box>
           {!outputMinimized && showOutput && (
@@ -2261,7 +3221,8 @@ const handleFinalSubmit = async (isMalpractice = false) => {
               size="small"
               sx={{
                 fontSize: { xs: "0.65rem", sm: "0.75rem" },
-                fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+                fontFamily:
+                  "'Inter', 'Helvetica', 'Arial', sans-serif !important",
               }}
             >
               Previous
@@ -2275,7 +3236,8 @@ const handleFinalSubmit = async (isMalpractice = false) => {
               size="small"
               sx={{
                 fontSize: { xs: "0.65rem", sm: "0.75rem" },
-                fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+                fontFamily:
+                  "'Inter', 'Helvetica', 'Arial', sans-serif !important",
               }}
             >
               Next
@@ -2290,7 +3252,8 @@ const handleFinalSubmit = async (isMalpractice = false) => {
             size="small"
             sx={{
               fontSize: { xs: "0.65rem", sm: "0.75rem" },
-              fontFamily: "'Inter', 'Helvetica', 'Arial', sans-serif !important",
+              fontFamily:
+                "'Inter', 'Helvetica', 'Arial', sans-serif !important",
             }}
           >
             Submit Test
@@ -2305,11 +3268,10 @@ const handleFinalSubmit = async (isMalpractice = false) => {
             right: 16,
             zIndex: 1300,
           }}
-        >
-        </Box>
+        ></Box>
       )}
     </ThemeProvider>
   );
 };
 
-export default CodingPage;  
+export default CodingPage;
