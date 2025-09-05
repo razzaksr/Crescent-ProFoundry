@@ -5,25 +5,29 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const poc = require("./controllers/pocController");
 const expert = require("./controllers/expertController");
-const consul = require("./middleware/consul");
+const authenticateJWT = require("./middleware/auth");
 
 const app = express();
 
+// Root route (no JWT required)
 app.get('/', (req, res) => {
   res.send('Express Poc running');
 });
 
-const PORT = process.env.PORT ;
+// Health check route (no JWT required)
+app.get('/health', (req, res) => {
+  res.json({ status: 'Express Poc is healthy' });
+});
+
+const PORT = process.env.PORT || 3002;
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
-// Called Services
-
-app.use("/poc", poc);
-app.use("/expert", expert);
-
+// Routes
+app.use("/poc", authenticateJWT, poc);
+app.use("/expert", authenticateJWT, expert);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

@@ -13,7 +13,7 @@ router.post('/', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // 🔐 Authenticate user
+    //  Authenticate user
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ msg: 'User not found' });
@@ -24,7 +24,7 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ msg: 'Invalid credentials' });
     }
 
-    // 🎟️ Create JWT
+    //  Create JWT
     const token = jwt.sign(
       {
         userId: user.user_id,

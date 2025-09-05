@@ -7,30 +7,30 @@ const MCQ = require("./controllers/mcqController");
 const Test = require("./controllers/testController");
 const TestCase = require("./controllers/testcaseController");
 const Coding = require("./controllers/codeController");
-const consul = require("./middleware/consul");
+const authenticateJWT = require("./middleware/auth");
 
 const app = express();
 
 app.get('/', (req, res) => {
-    res.send('Express Test running');
+  res.send('Express Test running');
 });
 
+app.get('/health', (req, res) => {
+  res.json({ status: 'Express Test is healthy' });
+});
 
-const port = process.env.PORT;
+const PORT = process.env.PORT || 3004;
 
-//  Middleware
+// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 
+// Routes
+app.use("/mcq", authenticateJWT, MCQ);
+app.use("/test", authenticateJWT, Test);
+app.use("/testcase", authenticateJWT, TestCase);
+app.use("/coding", authenticateJWT, Coding);
 
-// API Routes
-app.use("/mcq", MCQ);
-app.use("/test", Test);
-app.use("/testcase", TestCase);
-app.use("/coding", Coding);
-
-
-// Start Server
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

@@ -635,6 +635,126 @@ router.post("/generate-certificates", async (req, res) => {
     }
   });
 
+// CUSTOM CERTFICATE ID GENERATION
+router.post("/assign-custom-certificates", async (req, res) => {
+  try {
+    const { mod_poc_id, certificates } = req.body;
+    const authHeader = req.headers.authorization;
+
+    // Validate input
+    if (!mod_poc_id || !Array.isArray(certificates) || certificates.length === 0) {
+      return res.status(400).json({
+        message: "mod_poc_id and a non-empty certificates array are required",
+      });
+    }
+
+    // Check if each entry has userId and certificateId
+    for (const c of certificates) {
+      if (!c.userId || !c.certificateId) {
+        return res.status(400).json({
+          message: "Each certificate entry must include userId and certificateId",
+        });
+      }
+    }
+
+    // Find the PoC
+    const poc = await Poc.findOne({ mod_poc_id });
+    if (!poc) {
+      return res.status(404).json({ message: "PoC not found" });
+    }
+
+    // Discover the user service via Consul
+    const serviceName = "Express_User";
+    const services = await consul.catalog.service.nodes(serviceName);
+    if (!services || services.length === 0) {
+      return res.status(500).json({ message: "No available service instances found in Consul" });
+    }
+
+    const { Address, ServicePort } = services[0];
+
+    const results = [];
+    const errors = [];
+
+    for (const { userId, certificateId } of certificates) {
+      try {
+        // Check if certificateId already exists in Firestore
+        const certRef = db.collection("certificates").doc(certificateId);
+        const certDoc = await certRef.get();
+        if (certDoc.exists) {
+          errors.push({ userId, certificateId, message: "certificateId already in use" });
+          continue;
+        }
+
+        // Check if user is part of mod_users
+        if (!poc.mod_users.includes(userId)) {
+          errors.push({ userId, certificateId, message: "User not in mod_users" });
+          continue;
+        }
+
+        // Check if user already has a certificate
+        if (poc.certificates.has(userId)) {
+          errors.push({ userId, certificateId, message: "User already has a certificate" });
+          continue;
+        }
+
+        // Fetch user details with Authorization header
+        const targetUrl = `http://${Address}:${ServicePort}/user/get_user_by_id/${userId}`;
+        const response = await axios.get(targetUrl, {
+          headers: {
+            Authorization: authHeader,
+          },
+        });
+
+        const user = response.data;
+        if (!user || !user.full_name) {
+          errors.push({ userId, certificateId, message: "User details not found" });
+          continue;
+        }
+
+        // Save certificate in Firestore
+        await certRef.set({
+          userId,
+          certificateId,
+          mod_poc_id,
+          full_name: user.full_name,
+          rollno: user.rollno,
+          department: user.department,
+          college: user.college,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+
+        // Update PoC with the new certificate mapping
+        poc.certificates.set(userId, certificateId);
+
+        results.push({ userId, certificateId, message: "Certificate issued successfully" });
+      } catch (error) {
+        errors.push({
+          userId,
+          certificateId,
+          message: error.message || "Unexpected error",
+        });
+      }
+    }
+
+    // Save updated PoC
+    await poc.save();
+
+    // Final response
+    return res.status(200).json({
+      message: "Custom‑certificate generation finished",
+      results,
+      errors,
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "Server error",
+      error: error.message,
+    });
+  }
+});
+
+
 // Remove only certificate ID using mod_poc_id
 router.delete("/remove-user/:pocId/:userId", async (req, res) => {
   try {
@@ -740,8 +860,14 @@ router.get("/get_poc_report_by_poc_id/:mod_poc_id", async (req, res) => {
 // GET module by mod_id
 router.get("/get-by-mod-id/:mod_id", async (req, res) => {
   const { mod_id } = req.params;
+  const token = req.headers.authorization; // Get token from incoming request
+
+  if (!token) {
+    return res.status(401).json({ error: 'Access token is missing' });
+  }
 
   try {
+    // Fetch Express_Mod service details from Consul
     const result = await consul.catalog.service.nodes('Express_Mod');
     if (!result || result.length === 0) {
       return res.status(404).json({ error: "Express_Mod service not found in Consul" });
@@ -751,18 +877,45 @@ router.get("/get-by-mod-id/:mod_id", async (req, res) => {
     const serviceAddress = service.Address || 'localhost'; // Fallback to localhost
     const servicePort = service.ServicePort;
 
-    const response = await axios.get(`http://${serviceAddress}:${servicePort}/modules/get_module_by_id/${mod_id}`);
+    // Fetch module data from Express_Mod
+    let response;
+    try {
+      response = await axios.get(`http://${serviceAddress}:${servicePort}/modules/get_module_by_id/${mod_id}`, {
+        headers: { Authorization: token }, // Forward JWT token
+      });
+    } catch (error) {
+      console.error(`Error fetching module by ID ${mod_id}:`, error.message);
+      if (error.response) {
+        // Handle specific HTTP errors from Express_Mod
+        return res.status(error.response.status).json({
+          error: `Failed to fetch module data: ${error.response.data.error || 'Unknown error'}`,
+          details: error.message,
+        });
+      }
+      return res.status(500).json({ error: "Failed to fetch module data", details: error.message });
+    }
+
+    if (!response.data) {
+      return res.status(404).json({ error: `Module with ID ${mod_id} not found` });
+    }
+
     res.json(response.data);
   } catch (err) {
-    console.error("Error fetching module by ID:", err.message);
+    console.error("Error in get-by-mod-id:", err.message);
     res.status(500).json({ error: "Unexpected error", details: err.message });
   }
 });
 
 
+
 // GET expert details using mod_poc_id
 router.get("/get_expert_using_poc/:mod_poc_id", async (req, res) => {
   const { mod_poc_id } = req.params;
+  const token = req.headers.authorization; // Get token from incoming request
+
+  if (!token) {
+    return res.status(401).json({ error: 'Access token is missing' });
+  }
 
   try {
     const result = await consul.catalog.service.nodes('Express_Poc');
@@ -774,10 +927,23 @@ router.get("/get_expert_using_poc/:mod_poc_id", async (req, res) => {
     const serviceAddress = service.Address || 'localhost'; // Fallback to localhost
     const servicePort = service.ServicePort;
 
-    const response = await axios.get(`http://${serviceAddress}:${servicePort}/expert/get_expert_poc_id/${mod_poc_id}`);
+    let response;
+    try {
+      response = await axios.get(`http://${serviceAddress}:${servicePort}/expert/get_expert_poc_id/${mod_poc_id}`, {
+        headers: { Authorization: token }, // Forward token
+      });
+    } catch (error) {
+      console.error(`Error fetching expert by POC ID ${mod_poc_id}:`, error.message);
+      return res.status(500).json({ error: "Failed to fetch expert data", details: error.message });
+    }
+
+    if (!response.data) {
+      return res.status(404).json({ error: `Expert for POC ID ${mod_poc_id} not found` });
+    }
+
     res.json(response.data);
   } catch (err) {
-    console.error("Error fetching module by ID:", err.message);
+    console.error("Error fetching expert by POC ID:", err.message);
     res.status(500).json({ error: "Unexpected error", details: err.message });
   }
 });
@@ -785,6 +951,11 @@ router.get("/get_expert_using_poc/:mod_poc_id", async (req, res) => {
 // GET test name by test_id
 router.get("/get_test_name/:mod_tests", async (req, res) => {
   const { mod_tests } = req.params;
+  const token = req.headers.authorization; // Get token from incoming request
+
+  if (!token) {
+    return res.status(401).json({ error: 'Access token is missing' });
+  }
 
   try {
     const result = await consul.catalog.service.nodes('Express_Test');
@@ -796,15 +967,27 @@ router.get("/get_test_name/:mod_tests", async (req, res) => {
     const serviceAddress = service.Address || 'localhost'; // Fallback to localhost
     const servicePort = service.ServicePort;
 
-    const response = await axios.get(`http://${serviceAddress}:${servicePort}/test/get_by_test_id/${mod_tests}`);
+    let response;
+    try {
+      response = await axios.get(`http://${serviceAddress}:${servicePort}/test/get_by_test_id/${mod_tests}`, {
+        headers: { Authorization: token }, // Forward token
+      });
+    } catch (error) {
+      console.error(`Error fetching test by ID ${mod_tests}:`, error.message);
+      return res.status(500).json({ error: "Failed to fetch test data", details: error.message });
+    }
+
     const { test_name } = response.data;
+    if (!test_name) {
+      return res.status(404).json({ error: `Test with ID ${mod_tests} not found` });
+    }
+
     res.json({ test_name });
   } catch (err) {
     console.error("Error fetching test by ID:", err.message);
     res.status(500).json({ error: "Unexpected error", details: err.message });
   }
 });
-
 
 router.get('/get_poc/:mod_poc_id', async (req, res) => {
   try {
@@ -855,6 +1038,11 @@ const formatExecutionDates = (start, end) => {
 router.put('/generate_report/:mod_poc_id', async (req, res) => {
   const { mod_poc_id } = req.params;
   const { summary, title, background, address, scopeOfTheTraining, totalStrength, company, email, student_ranking } = req.body;
+  const token = req.headers.authorization; // Get token from incoming request
+
+  if (!token) {
+    return res.status(401).json({ error: 'Access token is missing' });
+  }
 
   try {
     // Fetch POC service info
@@ -869,7 +1057,9 @@ router.put('/generate_report/:mod_poc_id', async (req, res) => {
     const pocUrl = `http://${serviceAddress}:${servicePort}/poc/get_poc_by_poc_id/${mod_poc_id}`;
     let pocResponse, poc;
     try {
-      pocResponse = await axios.get(pocUrl);
+      pocResponse = await axios.get(pocUrl, {
+        headers: { Authorization: token }, // Forward token
+      });
       poc = pocResponse.data;
     } catch (error) {
       console.error("Error fetching POC data:", error.message);
@@ -893,7 +1083,9 @@ router.put('/generate_report/:mod_poc_id', async (req, res) => {
     const modUrl = `http://${modServiceAddress}:${modServicePort}/modules/get_module_by_id/${mod_id}`;
     let modResponse, modData;
     try {
-      modResponse = await axios.get(modUrl);
+      modResponse = await axios.get(modUrl, {
+        headers: { Authorization: token }, // Forward token
+      });
       modData = modResponse.data;
     } catch (error) {
       console.error("Error fetching Module data:", error.message);
@@ -902,16 +1094,24 @@ router.put('/generate_report/:mod_poc_id', async (req, res) => {
 
     // Format dates
     const [start, end] = modData.mod_duration.split(" - ");
-    const executiondates = formatExecutionDates(start, end);
-    const startDate = moment(start, "DD/MM/YYYY");
+    const executiondates = formatExecutionDates(start, end); // Assumes function exists
+    const startDate = moment(start, "DD/MM/YYYY"); // Assumes moment is imported
     const endDate = moment(end, "DD/MM/YYYY");
     const durationDays = endDate.diff(startDate, "days") + 1;
     const schedule = `${durationDays} ${durationDays === 1 ? "day" : "days"}`;
 
     // Get Expert details
     const expertUrl = `http://${serviceAddress}:${servicePort}/poc/get_expert_using_poc/${mod_poc_id}`;
-    const expertResponse = await axios.get(expertUrl);
-    const expertData = expertResponse.data;
+    let expertResponse, expertData;
+    try {
+      expertResponse = await axios.get(expertUrl, {
+        headers: { Authorization: token }, // Forward token
+      });
+      expertData = expertResponse.data;
+    } catch (error) {
+      console.error("Error fetching Expert data:", error.message);
+      return res.status(500).json({ error: "Failed to fetch Expert data", details: error.message });
+    }
 
     const expertDetails = {
       name: expertData.mod_expert_name || "N/A",
@@ -938,7 +1138,9 @@ router.put('/generate_report/:mod_poc_id', async (req, res) => {
             continue;
           }
           try {
-            const response = await axios.get(`http://${testServiceAddress}:${testServicePort}/test/get_by_test_id/${testId}`);
+            const response = await axios.get(`http://${testServiceAddress}:${testServicePort}/test/get_by_test_id/${testId}`, {
+              headers: { Authorization: token }, // Forward token
+            });
             if (response.data && response.data.test_name) {
               test_details.push(response.data.test_name);
             }
@@ -1026,6 +1228,7 @@ router.put('/generate_report/:mod_poc_id', async (req, res) => {
 
 
 
+
 // Add this new endpoint to your backend
 router.get('/poc/report/:mod_poc_id', async (req, res) => {
   const { mod_poc_id } = req.params;
@@ -1056,14 +1259,5 @@ router.get('/poc/report/:mod_poc_id', async (req, res) => {
     });
   }
 });
-
-
-
-
-
-
-
-
-
 
 module.exports = router;

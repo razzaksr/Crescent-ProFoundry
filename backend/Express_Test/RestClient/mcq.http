@@ -88,6 +88,7 @@ DELETE http://localhost:8082/mcq/delete_mcq/dcedaa95-7985-476e-9252-8a043efc343a
 ### Submit Result to External Service via Consul
 POST http://localhost:8082/mcq/submit_result
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ODY1MmZjMS1lZTQxLTRmYzItODgyOS05NTA1YTcyNGFjOGUiLCJmdWxsX25hbWUiOiJESEFSVU4gUFJBS0FTSCBKIEEiLCJpYXQiOjE3NTE1MjQ1NTcsImV4cCI6MTc1MTU2MDU1N30.iavhK8pOYDaA_aFhYyVHpuQuYyJvbQmt5JCqE4yZDIs
 
 {
   "result_user_id": "",

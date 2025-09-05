@@ -58,6 +58,7 @@ router.post("/post-result", async (req, res) => {
     res.status(500).json({ message: "Internal Server Error", error: error.message });
   }
 });
+
 // BULK RESULT POST
 
 router.post("/post-bulk-results", async (req, res) => {
@@ -101,7 +102,47 @@ router.post("/post-bulk-results", async (req, res) => {
   }
 });
 
+// Submit test 
+router.post("/submit_result", async (req, res) => {
+  try {
+    const { result_user_id, result_test_id, result_score, result_total_score, result_poc_id, result_id } = req.body;
 
+    // Validate required fields
+    if (!result_user_id || !result_test_id || result_score == null || result_total_score == null || !result_poc_id) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    // Check for duplicate entry
+    const existingResult = await Result.findOne({
+      result_user_id,
+      result_test_id
+    });
+
+    if (existingResult) {
+      return res.status(409).json({ message: "Result already exists for this user and test" });
+    }
+
+    // Use provided result_id or generate a new UUID
+    const final_result_id = result_id || uuidv4();
+
+    // Store in database
+    const newResult = new Result({
+      result_id: final_result_id,
+      result_user_id,
+      result_test_id,
+      result_score,
+      result_total_score,
+      result_poc_id,
+    });
+
+    await newResult.save();
+
+    res.status(201).json({ message: "Result stored successfully", result: newResult });
+  } catch (error) {
+    console.error("Error submitting result:", error.message);
+    res.status(500).json({ message: "Internal Server Error", error: error.message });
+  }
+});
 
 
 
@@ -273,14 +314,32 @@ async function getServiceAddress(serviceName) {
 router.get('/aggregate_scores/:poc_id/:user_id', async (req, res) => {
   try {
     const { poc_id, user_id } = req.params;
+    const token = req.headers.authorization; // Get client-provided token
     console.log(`Processing aggregate_scores for poc_id: ${poc_id}, user_id: ${user_id}`);
+
+    if (!token) {
+      console.log('No authorization token provided');
+      return res.status(401).json({ message: 'Access token is missing' });
+    }
 
     // Fetch Express_Poc service address
     const pocGatewayUrl = await getServiceAddress('Express_Poc');
     console.log(`Express_Poc URL: ${pocGatewayUrl}`);
 
-    const testsResponse = await axios.get(`${pocGatewayUrl}/poc/tests_till_today/${poc_id}`);
-    const testIds = testsResponse.data.tests_till_today.map(test => test.test_id);
+    let testsResponse;
+    try {
+      testsResponse = await axios.get(`${pocGatewayUrl}/poc/tests_till_today/${poc_id}`, {
+        headers: { Authorization: token }, // Forward client token
+      });
+    } catch (error) {
+      console.error(`Error fetching tests for poc_id ${poc_id}:`, error.message);
+      if (error.response) {
+        console.error(`Response Data:`, error.response.data);
+        console.error(`Response Status:`, error.response.status);
+      }
+      throw new Error(`Failed to fetch tests: ${error.message}`);
+    }
+    const testIds = testsResponse.data.tests_till_today?.map(test => test.test_id) || [];
     console.log(`Fetched ${testIds.length} test IDs:`, testIds);
 
     if (!testIds.length) {
@@ -295,14 +354,17 @@ router.get('/aggregate_scores/:poc_id/:user_id', async (req, res) => {
     const testGatewayUrl = await getServiceAddress('Express_Test');
     console.log(`Express_Test URL: ${testGatewayUrl}`);
 
-    // Fetch Express_Report service address (self)
+    // Fetch Express_Report service address
     const resultGatewayUrl = await getServiceAddress('Express_Report');
+    console.log(`Express_Report URL: ${resultGatewayUrl}`);
 
     const results = await Promise.all(
       testIds.map(async (test_id) => {
         let test_total_score = 0;
         try {
-          const testResponse = await axios.get(`${testGatewayUrl}/test/get_by_test_id/${test_id}`);
+          const testResponse = await axios.get(`${testGatewayUrl}/test/get_by_test_id/${test_id}`, {
+            headers: { Authorization: token }, // Forward client token
+          });
           test_total_score = testResponse.data.test_total_score || 0;
         } catch (error) {
           console.error(`Error fetching test ${test_id}:`, error.message);
@@ -316,7 +378,10 @@ router.get('/aggregate_scores/:poc_id/:user_id', async (req, res) => {
         let result_score = 0;
         try {
           const resultResponse = await axios.get(
-            `${resultGatewayUrl}/results/get_result_by_user_id_test_id?result_user_id=${user_id}&result_test_id=${test_id}`
+            `${resultGatewayUrl}/results/get_result_by_user_id_test_id?result_user_id=${user_id}&result_test_id=${test_id}`,
+            {
+              headers: { Authorization: token }, // Forward client token
+            }
           );
           result_score = resultResponse.data[0]?.result_score || 0;
         } catch (error) {
@@ -351,5 +416,6 @@ router.get('/aggregate_scores/:poc_id/:user_id', async (req, res) => {
     res.status(500).json({ message: 'Error aggregating scores', error: error.message });
   }
 });
+
 
 module.exports = router;

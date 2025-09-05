@@ -1,13 +1,23 @@
 import axios from "axios";
 
+const sessionData = JSON.parse(localStorage.getItem("true"));
+const token = sessionData?.token;
+
 const BASE_URL = "http://localhost:8086";
-// const BASE_URL = "https://100.25.243.36";
 
+// Create Axios instance with default Authorization header
+const axiosWithAuth = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    Authorization: token ? `Bearer ${token}` : undefined,
+    "Content-Type": "application/json",
+  },
+});
 
-// Sign-in API call
+// Sign-in API call (no token required)
 export const signIn = async (userData) => {
   try {
-    const response = await axios.post(`${BASE_URL}/user_gateway/user/login`, userData);
+    const response = await axios.post(`${BASE_URL}/login_gateway/login/`, userData);
     return response.data;
   } catch (error) {
     console.error("Login error:", error);
@@ -18,7 +28,7 @@ export const signIn = async (userData) => {
 // Get test data by test ID
 export const getTestById = async (testId) => {
   try {
-    const response = await axios.get(`${BASE_URL}/test_gateway/test/get_by_test_id/${testId}`);
+    const response = await axiosWithAuth.get(`/test_gateway/test/get_by_test_id/${testId}`);
     console.log("Test data fetched:", response.data);
     return response.data;
   } catch (error) {
@@ -27,12 +37,10 @@ export const getTestById = async (testId) => {
   }
 };
 
-
-
 // Get MCQ by ID
 export const getMcqById = async (mcqId) => {
   try {
-    const response = await axios.get(`${BASE_URL}/mcq_gateway/mcq/get_mcq/${mcqId}`);
+    const response = await axiosWithAuth.get(`/mcq_gateway/mcq/get_mcq/${mcqId}`);
     return response.data;
   } catch (error) {
     console.error("Failed to fetch MCQ:", error);
@@ -43,7 +51,7 @@ export const getMcqById = async (mcqId) => {
 // Submit test result
 export const submitTestResult = async (resultData) => {
   try {
-    const response = await axios.post(`${BASE_URL}/mcq_gateway/mcq/submit_result`, resultData);
+    const response = await axiosWithAuth.post(`/results_gateway/results/post-result`, resultData);
     return response.data;
   } catch (error) {
     console.error("Error submitting test:", error);
@@ -54,7 +62,7 @@ export const submitTestResult = async (resultData) => {
 // Fetch user details by user ID
 export const getUserById = async (userId) => {
   try {
-    const response = await axios.get(`${BASE_URL}/user_gateway/user/get_user_by_id/${userId}`);
+    const response = await axiosWithAuth.get(`/user_gateway/user/get_user_by_id/${userId}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching user details:", error);
@@ -65,7 +73,7 @@ export const getUserById = async (userId) => {
 // Fetch user results by user ID
 export const getResultsByUserId = async (userId) => {
   try {
-    const response = await axios.get(`${BASE_URL}/results_gateway/results/get-result-by-user/${userId}`);
+    const response = await axiosWithAuth.get(`/results_gateway/results/get-result-by-user/${userId}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching user results:", error);
@@ -76,7 +84,7 @@ export const getResultsByUserId = async (userId) => {
 // Fetch module details by module ID
 export const getModuleById = async (modId) => {
   try {
-    const response = await axios.get(`${BASE_URL}/modules_gateway/modules/get_module_by_id/${modId}`);
+    const response = await axiosWithAuth.get(`/modules_gateway/modules/get_module_by_id/${modId}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching module details:", error);
@@ -84,10 +92,10 @@ export const getModuleById = async (modId) => {
   }
 };
 
-// Fetch Result by User ID
+// Fetch Result by User ID and POC ID
 export const fetchResultsByUserAndPoc = async (userId, pocId) => {
   try {
-    const response = await axios.get(`${BASE_URL}/results_gateway/results/get_results_by_user_and_poc/${userId}/${pocId}`);
+    const response = await axiosWithAuth.get(`/results_gateway/results/get_results_by_user_and_poc/${userId}/${pocId}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching result data:", error);
@@ -95,9 +103,10 @@ export const fetchResultsByUserAndPoc = async (userId, pocId) => {
   }
 };
 
+// Check if test is taken
 export const checkIfTestTaken = async (userId, testId) => {
   try {
-    const response = await axios.get(`${BASE_URL}/results_gateway/results/get_result_by_user_id_test_id`, {
+    const response = await axiosWithAuth.get(`/results_gateway/results/get_result_by_user_id_test_id`, {
       params: {
         result_user_id: userId,
         result_test_id: testId,
@@ -113,16 +122,18 @@ export const checkIfTestTaken = async (userId, testId) => {
 // Fetch POC name by mod_poc_id
 export const fetchPocNameById = async (mod_poc_id) => {
   try {
-    const response = await axios.get(`${BASE_URL}/poc_gateway/poc/get_poc_name_by_id/${mod_poc_id}`);
-    return response;
+    const response = await axiosWithAuth.get(`/poc_gateway/poc/get_poc_name_by_id/${mod_poc_id}`);
+    return response.data;
   } catch (error) {
+    console.error("Error fetching POC name:", error);
     throw error;
   }
 };
 
+// Fetch module and POC data
 export const fetchModuleAndPoc = async (userId) => {
   try {
-    const response = await axios.get(`${BASE_URL}/poc_gateway/poc/mod_and_poc/${userId}`);
+    const response = await axiosWithAuth.get(`/poc_gateway/poc/mod_and_poc/${userId}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching module data:", error);
@@ -130,19 +141,21 @@ export const fetchModuleAndPoc = async (userId) => {
   }
 };
 
+// Fetch tests for today
 export const fetchTestsToday = async (pocId) => {
   try {
-    const response = await axios.get(`${BASE_URL}/poc_gateway/poc/tests_today/${pocId}`);
+    const response = await axiosWithAuth.get(`/poc_gateway/poc/tests_today/${pocId}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching today's tests:", error);
-    return { tests_today: [] }; // Changed key to match new endpoint
+    return { tests_today: [] };
   }
 };
 
+// Fetch expert name
 export const fetchExpertName = async (modId) => {
   try {
-    const response = await axios.get(`${BASE_URL}/expert_gateway/expert/get_expert_name/${modId}`);
+    const response = await axiosWithAuth.get(`/expert_gateway/expert/get_expert_name/${modId}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching expert name:", error);
@@ -150,12 +163,10 @@ export const fetchExpertName = async (modId) => {
   }
 };
 
-// Fetch course progress (aggregate scores) by POC ID and User ID
+// Fetch course progress (aggregate scores)
 export const fetchAggregateScores = async (pocId, userId) => {
   try {
-    const response = await axios.get(
-      `${BASE_URL}/results_gateway/results/aggregate_scores/${pocId}/${userId}`
-    );
+    const response = await axiosWithAuth.get(`/results_gateway/results/aggregate_scores/${pocId}/${userId}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching course progress:", error);
@@ -163,9 +174,10 @@ export const fetchAggregateScores = async (pocId, userId) => {
   }
 };
 
+// Fetch module name
 export const fetchModuleName = async (modId) => {
   try {
-    const response = await axios.get(`${BASE_URL}/modules_gateway/modules/get_module_name_by_id/${modId}`);
+    const response = await axiosWithAuth.get(`/modules_gateway/modules/get_module_name_by_id/${modId}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching module name:", error);
@@ -173,68 +185,68 @@ export const fetchModuleName = async (modId) => {
   }
 };
 
-  export const fetchOrgName = async (modId) => {
-    try {
-      const response = await axios.get(`${BASE_URL}/organization_gateway/organization/get_org_name_by_id/${modId}`);
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching organisation name:", error);
-      throw error;
-    }
-  };
+// Fetch organization name
+export const fetchOrgName = async (modId) => {
+  try {
+    const response = await axiosWithAuth.get(`/organization_gateway/organization/get_org_name_by_id/${modId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching organisation name:", error);
+    throw error;
+  }
+};
 
+// Fetch POC by ID
+export const fetchPocById = async (pocId) => {
+  try {
+    const response = await axiosWithAuth.get(`/poc_gateway/poc/get_poc_by_poc_id/${pocId}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching POC ${pocId}:`, error);
+    throw error.response?.data?.message || error.message;
+  }
+};
 
+// Fetch POC certificate status
+export const fetchPocCertStatus = async (pocId) => {
+  try {
+    const response = await axiosWithAuth.get(`/poc_gateway/poc/get_poc_cert_status/${pocId}`);
+    return response.data.cert_status;
+  } catch (error) {
+    console.error("Error fetching POC certificate status:", error);
+    throw error.response?.data?.message || error.message;
+  }
+};
 
-  // FETCH POC BY ID 
-
-  export const fetchPocById = async (pocId) => {
-    try {
-      const response = await axios.get(`${BASE_URL}/poc_gateway/poc/get_poc_by_poc_id/${pocId}`);
-      return response.data;
-    } catch (error) {
-      console.error(`Error fetching POC ${pocId}:`, error);
-      throw error.response?.data?.message || error.message;
-    }
-  };
-
-  // FETCH CERTIFICATE STATUS BYY POC ID
-  export const fetchPocCertStatus = async (pocId) => {
-    try {
-      const response = await axios.get(`${BASE_URL}/poc_gateway/poc/get_poc_cert_status/${pocId}`);
-      return response.data.cert_status;
-    } catch (error) {
-      console.error("Error fetching POC certificate status:", error);
-      throw error.response?.data?.message || error.message;
-    }
-  };
-  
-// FETCH ALL POC
-
+// Fetch all POCs
 export const fetchAllPocs = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/poc_gateway/poc/read_all_poc`);
-    return response;
+    const response = await axiosWithAuth.get(`/poc_gateway/poc/read_all_poc`);
+    return response.data;
   } catch (error) {
+    console.error("Error fetching all POCs:", error);
     throw new Error('Failed to fetch POCs');
   }
 };
 
-// FETCH ALL USER 
+// Fetch all users
 export const fetchAllUsers = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/user_gateway/user/read_all_users`);
-    return response;
+    const response = await axiosWithAuth.get(`/user_gateway/user/read_all_users`);
+    return response.data;
   } catch (error) {
+    console.error("Error fetching all users:", error);
     throw new Error('Failed to fetch users');
   }
 };
 
-// FETCH ALL MODULES
+// Fetch all modules
 export const fetchAllModules = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/modules_gateway/modules/get_all_module`);
-    return response;
+    const response = await axiosWithAuth.get(`/modules_gateway/modules/get_all_module`);
+    return response.data;
   } catch (error) {
+    console.error("Error fetching all modules:", error);
     throw new Error('Failed to fetch modules');
   }
 };
@@ -242,8 +254,10 @@ export const fetchAllModules = async () => {
 // Update module
 export const updateModule = async (payload) => {
   try {
-    return await axios.put(`${BASE_URL}/modules_gateway/modules//update_module `, payload);
+    const response = await axiosWithAuth.put(`/modules_gateway/modules/update_module`, payload);
+    return response.data;
   } catch (error) {
+    console.error("Error updating module:", error);
     throw new Error(error.response?.data?.error || error.message);
   }
 };
@@ -251,107 +265,120 @@ export const updateModule = async (payload) => {
 // Delete module
 export const deleteModule = async (mod_id) => {
   try {
-    return await axios.delete(`${BASE_URL}/modules_gateway/modules/delete_module/${mod_id}`);
+    const response = await axiosWithAuth.delete(`/modules_gateway/modules/delete_module/${mod_id}`);
+    return response.data;
   } catch (error) {
+    console.error("Error deleting module:", error);
     throw new Error(error.response?.data?.error || error.message);
   }
 };
 
-// FETCH ALL ORGANISATIONS
+// Fetch all organizations
 export const fetchAllOrganizations = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/organization_gateway/organization/get_all_org`);
-    return response;
+    const response = await axiosWithAuth.get(`/organization_gateway/organization/get_all_org`);
+    return response.data;
   } catch (error) {
+    console.error("Error fetching all organizations:", error);
     throw new Error('Failed to fetch organizations');
   }
 };
 
-// FETCH ALL EXPERTS
+// Fetch all experts
 export const fetchAllExperts = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/expert_gateway/expert/read_all_experts`);
-    return response;
+    const response = await axiosWithAuth.get(`/expert_gateway/expert/read_all_experts`);
+    return response.data;
   } catch (error) {
+    console.error("Error fetching all experts:", error);
     throw new Error('Failed to fetch experts');
   }
 };
 
-// FETCH ALL MCQ
+// Fetch all MCQs
 export const fetchAllMcqs = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/mcq_gateway/mcq/get_all_mcqs`);
-    return response;
+    const response = await axiosWithAuth.get(`/mcq_gateway/mcq/get_all_mcqs`);
+    return response.data;
   } catch (error) {
+    console.error("Error fetching all MCQs:", error);
     throw new Error('Failed to fetch MCQs');
   }
 };
 
-// FETCH ALL TESTS
+// Fetch all tests
 export const fetchAllTests = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/test_gateway/test/all`);
-    return response;
+    const response = await axiosWithAuth.get(`/test_gateway/test/all`);
+    return response.data;
   } catch (error) {
+    console.error("Error fetching all tests:", error);
     throw new Error('Failed to fetch tests');
   }
 };
 
-// FETCH CODE BY CODE ID 
+// Fetch code by code ID
 export const fetchCodeById = async (id) => {
   try {
-    const response = await axios.get(`${BASE_URL}/coding_gateway/coding/get_code_by_id/${id}`);
+    const response = await axiosWithAuth.get(`/coding_gateway/coding/get_code_by_id/${id}`);
     if (!response.data.success) {
       throw new Error(response.data.msg || "Failed to fetch code");
     }
     return response.data.data;
   } catch (error) {
+    console.error("Error fetching code:", error);
     throw new Error(`Error fetching code: ${error.message}`);
   }
 };
 
+// Fetch test case by ID
 export const fetchTestCaseById = async (testcase_id) => {
   try {
-    const response = await axios.get(`${BASE_URL}/testcase_gateway/testcase/get_testCase_id/${testcase_id}`);
+    const response = await axiosWithAuth.get(`/testcase_gateway/testcase/get_testCase_id/${testcase_id}`);
     return response.data;
   } catch (error) {
+    console.error("Error fetching test case:", error);
     throw new Error(`Error fetching test case: ${error.message}`);
   }
 };
 
+// Compile code
 export const compileCode = async (payload) => {
   try {
-    const response = await axios.post(`${BASE_URL}/coding_gateway/coding/compiler`, payload);
+    const response = await axiosWithAuth.post(`/coding_gateway/coding/compiler`, payload);
     return response.data;
   } catch (error) {
+    console.error("Error compiling code:", error);
     throw new Error(`Error compiling code: ${error.message}`);
   }
 };
 
+// Generate certificate
 export const generateCertificate = async (mod_poc_id, newUserId) => {
   try {
-    const response = await axios.post(`${BASE_URL}/poc_gateway/poc/add-certificate`, {
+    const response = await axiosWithAuth.post(`/poc_gateway/poc/add-certificate`, {
       mod_poc_id,
       newUserId,
     });
     return response.data;
   } catch (error) {
+    console.error("Error generating certificate:", error);
     throw error.response ? error.response.data : error;
   }
 };
 
+// Get certificate
 export const getCertificate = async (mod_poc_id, userId) => {
   try {
-    const response = await axios.get(
-      `${BASE_URL}/poc_gateway/poc/get-certificate/${mod_poc_id}/${userId}`
-    );
+    const response = await axiosWithAuth.get(`/poc_gateway/poc/get-certificate/${mod_poc_id}/${userId}`);
     return response.data;
   } catch (error) {
+    console.error("Error fetching certificate:", error);
     throw error.response ? error.response.data : error;
   }
 };
 
-// Fetch or generate certificate ID
+// Fetch or generate certificates
 export const fetchOrGenerateCertificates = async (pocId, userIds) => {
   try {
     // Validate inputs
@@ -365,17 +392,17 @@ export const fetchOrGenerateCertificates = async (pocId, userIds) => {
     }
 
     // Log the request URL and body for debugging
-    const requestUrl = `${BASE_URL}/poc_gateway/poc/generate-certificates`;
-    console.log(`Sending request to: ${requestUrl} with body:`, { mod_poc_id: pocId, userIds: userIdsArray });
+    const requestUrl = `/poc_gateway/poc/generate-certificates`;
+    console.log(`Sending request to: ${BASE_URL}${requestUrl} with body:`, { mod_poc_id: pocId, userIds: userIdsArray });
 
     // Send request to POST /generate-certificates
-    const response = await axios.post(requestUrl, {
+    const response = await axiosWithAuth.post(requestUrl, {
       mod_poc_id: pocId,
-      userIds: userIdsArray, // Always send as array
+      userIds: userIdsArray,
     });
 
     const data = response.data;
-    console.log(`Raw response from ${requestUrl}:`, data); // Debug raw response
+    console.log(`Raw response from ${requestUrl}:`, data);
 
     let results, errors;
 
@@ -400,7 +427,7 @@ export const fetchOrGenerateCertificates = async (pocId, userIds) => {
       throw new Error("Invalid response format from generate-certificates: results or errors not arrays");
     }
 
-    // Single user case (string input)
+    // Single user case
     if (isSingleUser) {
       if (errors.length > 0) {
         throw new Error(errors[0].message || `Failed to fetch/generate certificate for user ${userIds}`);
@@ -408,10 +435,10 @@ export const fetchOrGenerateCertificates = async (pocId, userIds) => {
       if (results.length === 0) {
         throw new Error(`No certificate generated for user ${userIds}`);
       }
-      return results[0].certificateId; // Return single certificateId
+      return results[0].certificateId;
     }
 
-    // Bulk user case (array input)
+    // Bulk user case
     return { results, errors };
   } catch (error) {
     const errorMessage = error.response?.status === 404
@@ -425,9 +452,10 @@ export const fetchOrGenerateCertificates = async (pocId, userIds) => {
 // Add a new module
 export const addModule = async (moduleData) => {
   try {
-    const response = await axios.post(`${BASE_URL}/modules_gateway/modules/add_module`, moduleData);
+    const response = await axiosWithAuth.post(`/modules_gateway/modules/add_module`, moduleData);
     return response.data;
   } catch (error) {
+    console.error("Error adding module:", error);
     throw error;
   }
 };
@@ -435,111 +463,99 @@ export const addModule = async (moduleData) => {
 // Add a new POC
 export const addPOC = async (pocData) => {
   try {
-    const response = await axios.post(`${BASE_URL}/poc_gateway/poc/add_poc`, pocData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await axiosWithAuth.post(`/poc_gateway/poc/add_poc`, pocData);
     return response.data;
-  } catch (err) {
-    throw err.response?.data || { message: "Failed to add POC" };
+  } catch (error) {
+    console.error("Error adding POC:", error);
+    throw error.response?.data || { message: "Failed to add POC" };
   }
 };
 
 // Add a new expert
 export const addExpert = async (expertData) => {
   try {
-    const response = await axios.post(`${BASE_URL}/expert_gateway/expert/add_expert`, expertData, {
-      headers: { "Content-Type": "application/json" },
-    });
+    const response = await axiosWithAuth.post(`/expert_gateway/expert/add_expert`, expertData);
     return response.data;
-  } catch (err) {
-    throw err.response?.data || { error: "Failed to add expert" };
+  } catch (error) {
+    console.error("Error adding expert:", error);
+    throw error.response?.data || { error: "Failed to add expert" };
   }
 };
 
-// Add a new Coding problem
-
+// Add a new coding problem
 export const createCodeProblem = async (payload) => {
   try {
-    const response = await axios.post(`${BASE_URL}/coding_gateway/coding/add_code`, payload, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const response = await axiosWithAuth.post(`/coding_gateway/coding/add_code`, payload);
     return response.data;
-  } catch (err) {
-    throw err.response?.data || { message: 'Failed to add code problem' };
+  } catch (error) {
+    console.error("Error adding code problem:", error);
+    throw error.response?.data || { message: "Failed to add code problem" };
   }
 };
 
-
-// Add a new Testcase
+// Add a new test case
 export const createTestCase = async (payload) => {
   try {
-    const response = await axios.post(`${BASE_URL}/testcase_gateway/testcase/create_testCase`, payload, {
-      headers: { "Content-Type": "application/json" },
-    });
+    const response = await axiosWithAuth.post(`/testcase_gateway/testcase/create_testCase`, payload);
     return response.data;
   } catch (error) {
-    const message =
-      error.response?.data?.error || error.message || "Unknown error occurred";
-    throw new Error(message);
+    console.error("Error creating test case:", error);
+    throw new Error(error.response?.data?.error || error.message || "Unknown error occurred");
   }
 };
 
-// Get all Code
+// Get all codes
 export const fetchAllCodes = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/coding_gateway/coding/get_allCodes`);
+    const response = await axiosWithAuth.get(`/coding_gateway/coding/get_allCodes`);
     return response.data;
   } catch (error) {
-    console.error("Fetch codes error:", error);
+    console.error("Error fetching codes:", error);
     throw error;
   }
 };
 
-// Update test API call
+// Update test
 export const updateTest = async (testData) => {
   try {
-    const response = await axios.put(`${BASE_URL}/testcase_gateway/test/update`, testData);
+    const response = await axiosWithAuth.put(`/testcase_gateway/test/update`, testData);
     return response.data;
   } catch (error) {
-    console.error("Update test error:", error);
+    console.error("Error updating test:", error);
     throw error;
   }
 };
 
-// Update code API call
-
+// Update code
 export const updateCode = async (payload) => {
   try {
-    const response = await axios.put(`${BASE_URL}/coding_gateway/coding/update_code`, payload);
+    const response = await axiosWithAuth.put(`/coding_gateway/coding/update_code`, payload);
     return response.data;
   } catch (error) {
-    console.error('Error updating code:', error);
+    console.error("Error updating code:", error);
     throw error;
   }
 };
 
-// fetch all test cases
+// Fetch all test cases
 export const fetchAllTestCases = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/testcase_gateway/testcase/get_all_testCases`);
-    return response;
+    const response = await axiosWithAuth.get(`/testcase_gateway/testcase/get_all_testCases`);
+    return response.data;
   } catch (error) {
-    throw new Error(
-      error.response?.data?.error || error.message || "Failed to fetch test cases"
-    );
+    console.error("Error fetching test cases:", error);
+    throw new Error(error.response?.data?.error || error.message || "Failed to fetch test cases");
   }
 };
 
-// Create test API call
+// Create test
 export const createTest = async (testData) => {
   try {
-    console.log('Sending test data:', testData);
-    const response = await axios.post(`${BASE_URL}/testcase_gateway/test/create`, testData);
+    console.log("Sending test data:", testData);
+    const response = await axiosWithAuth.post(`/testcase_gateway/test/create`, testData);
     return response.data;
   } catch (error) {
-    console.error("Create test error:", error);
+    console.error("Error creating test:", error);
     throw error.response?.data?.error || error.message;
   }
 };
@@ -547,15 +563,11 @@ export const createTest = async (testData) => {
 // Add users
 export const addUser = async (userData) => {
   try {
-    const response = await axios.post(`${BASE_URL}/user_gateway/user/add_user`, userData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    console.log("addUser response:", response);
-    return response;
+    const response = await axiosWithAuth.post(`/user_gateway/user/add_user`, userData);
+    console.log("addUser response:", response.data);
+    return response.data;
   } catch (error) {
-    console.error("addUser error:", error.response || error.message);
+    console.error("Error adding user:", error);
     throw error;
   }
 };
@@ -563,133 +575,114 @@ export const addUser = async (userData) => {
 // Bulk add users
 export const bulkAddUsers = async (users) => {
   try {
-    const response = await axios.post(`${BASE_URL}/user_gateway/user/bulk_add_users`, users, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    console.log("bulkAddUsers response:", response);
-    return response;
-  } catch (error) {
-    console.error("bulkAddUsers error:", error.response || error.message);
-    throw error;
-  }
-};
-
-// ADD MCQ
-export const addMcq = async (mcqData) => {
-  try {
-    const response = await axios.post(`${BASE_URL}/mcq_gateway/mcq/add_mcq`, mcqData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    console.log("addMcq response:", response);
-    return response;
-  } catch (error) {
-    console.error("addMcq error:", error.response || error.message);
-    throw error;
-  }
-};
-// Update Poc
-
-export const updatePoc = async (updateData) => {
-  try {
-    const response = await axios.put(`${BASE_URL}/poc_gateway/poc/update_poc`, updateData);
-    return response;
-  } catch (error) {
-    console.error('Error updating POC:', error);
-    throw error;
-  }
-};
-// export const updatePoc = async (data) => {
-//   try {
-//     console.log('Sending update POC request:', data);
-//     const response = await axios.put(`${BASE_URL}/poc_gateway/poc/update_poc`, data);
-//     console.log('Update POC response:', response.data);
-//     return response.data;
-//   } catch (error) {
-//     console.error('Error updating POC:', error);
-//     throw error;
-//   }
-// };
-
-// Update Test
-export const updateTestPoc = async (data) => {
-  try {
-    const response = await axios.put(`${BASE_URL}/poc_gateway/poc/update_test`, data);
+    const response = await axiosWithAuth.post(`/user_gateway/user/bulk_add_users`, users);
+    console.log("bulkAddUsers response:", response.data);
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.message || 'Failed to update tests');
+    console.error("Error adding bulk users:", error);
+    throw error;
+  }
+};
+
+// Add MCQ
+export const addMcq = async (mcqData) => {
+  try {
+    const response = await axiosWithAuth.post(`/mcq_gateway/mcq/add_mcq`, mcqData);
+    console.log("addMcq response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding MCQ:", error);
+    throw error;
+  }
+};
+
+// Update POC
+export const updatePoc = async (updateData) => {
+  try {
+    const response = await axiosWithAuth.put(`/poc_gateway/poc/update_poc`, updateData);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating POC:", error);
+    throw error;
+  }
+};
+
+// Update test POC
+export const updateTestPoc = async (data) => {
+  try {
+    const response = await axiosWithAuth.put(`/poc_gateway/poc/update_test`, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating test POC:", error);
+    throw new Error(error.response?.data?.message || "Failed to update tests");
   }
 };
 
 // Update expert
 export const updateExpert = async (updateData) => {
   try {
-    const response = await axios.put(`${BASE_URL}/expert_gateway/expert/update_expert`, updateData);
-    return response;
+    const response = await axiosWithAuth.put(`/expert_gateway/expert/update_expert`, updateData);
+    return response.data;
   } catch (error) {
-    console.error('Error updating expert:', error);
+    console.error("Error updating expert:", error);
     throw error;
   }
 };
-
 
 // Update organization
 export const updateOrganization = async (updateData) => {
   try {
-    const response = await axios.put(`${BASE_URL}/organization_gateway/organization/update_org_by_id`, updateData);
-    return response;
+    const response = await axiosWithAuth.put(`/organization_gateway/organization/update_org_by_id`, updateData);
+    return response.data;
   } catch (error) {
-    console.error('Error updating organization:', error);
+    console.error("Error updating organization:", error);
     throw error;
   }
 };
 
-// Create Organiztion 
+// Create organization
 export const createOrg = async (orgData) => {
   try {
-    const response = await axios.post(`${BASE_URL}/organization_gateway/organization/create_org`, orgData);
+    const response = await axiosWithAuth.post(`/organization_gateway/organization/create_org`, orgData);
     return response.data;
   } catch (error) {
-    console.error('Error creating organization:', error);
-    throw error.response?.data?.message || 'Failed to create organization';
+    console.error("Error creating organization:", error);
+    throw error.response?.data?.message || "Failed to create organization";
   }
 };
 
 // Fetch all student data
 export const fetchStudents = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/individual_gateway/individual/get-all-individual`);
+    const response = await axiosWithAuth.get(`/individual_gateway/individual/get-all-individual`);
     return response.data;
-  } catch (err) {
+  } catch (error) {
+    console.error("Error fetching student data:", error);
     throw new Error("Failed to fetch student data");
   }
 };
 
-// Send student rankings to the server
+// Send student rankings
 export const sendStudentRankings = async (pocId, studentNames) => {
   try {
-    const response = await axios.put(
-      `${BASE_URL}/poc_gateway/poc/generate_report/${pocId}`,
-      { student_ranking: studentNames }
-    );
+    const response = await axiosWithAuth.put(`/poc_gateway/poc/generate_report/${pocId}`, { student_ranking: studentNames });
     return response.data;
   } catch (error) {
+    console.error("Error sending student rankings:", error);
     throw new Error("Error sending student rankings");
   }
 };
 
-// Fetch attendance data by module ID and POC ID
+// Fetch attendance data
 export const fetchAttendanceData = async (module_id, module_poc_id) => {
   try {
-    const response = await axios.post(`${BASE_URL}/attendance_gateway/attendance/get-by-module-id-and-module-poc-id`, {
+    const response = await axiosWithAuth.post(`/attendance_gateway/attendance/get-by-module-id-and-module-poc-id`, {
       module_id,
-      module_poc_id
+      module_poc_id,
     });
     return response.data;
   } catch (error) {
+    console.error("Error fetching attendance data:", error);
     throw new Error("Failed to fetch attendance data");
   }
 };
@@ -697,9 +690,10 @@ export const fetchAttendanceData = async (module_id, module_poc_id) => {
 // Fetch POC report by POC ID
 export const fetchPocReportById = async (mod_poc_id) => {
   try {
-    const response = await axios.get(`${BASE_URL}/poc_gateway/poc/get_poc_report_by_poc_id/${mod_poc_id}`);
+    const response = await axiosWithAuth.get(`/poc_gateway/poc/get_poc_report_by_poc_id/${mod_poc_id}`);
     return response.data;
   } catch (error) {
+    console.error("Error fetching report details:", error);
     throw new Error("Failed to fetch report details");
   }
 };
@@ -707,11 +701,10 @@ export const fetchPocReportById = async (mod_poc_id) => {
 // Generate/update report by POC ID
 export const generateReport = async (mod_poc_id, reportData) => {
   try {
-    const response = await axios.put(`${BASE_URL}/poc_gateway/poc/generate_report/${mod_poc_id}`, reportData);
+    const response = await axiosWithAuth.put(`/poc_gateway/poc/generate_report/${mod_poc_id}`, reportData);
     return response.data;
   } catch (error) {
+    console.error("Error generating report:", error);
     throw new Error(error.response?.data?.error || "Something went wrong during submission");
   }
 };
-
-

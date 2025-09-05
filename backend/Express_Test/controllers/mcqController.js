@@ -200,80 +200,80 @@ router.get('/mcq/ids', async (req, res) => {
 });
 
 
-router.post("/post_data_analytics", async (req, res) => {
-  try {
-    let {
-      user_id,
-      module_poc_name,
-      module_poc_id,
-      module_name,
-      module_id,
-      result_mcq_score,
-      result_coding_score,
-      result_test_id,
-      date
-    } = req.body;
+// router.post("/post_data_analytics", async (req, res) => {
+//   try {
+//     let {
+//       user_id,
+//       module_poc_name,
+//       module_poc_id,
+//       module_name,
+//       module_id,
+//       result_mcq_score,
+//       result_coding_score,
+//       result_test_id,
+//       date
+//     } = req.body;
 
-    // Convert scores to numbers to avoid string issues
-    result_mcq_score = Number(result_mcq_score);
-    result_coding_score = Number(result_coding_score);
+//     // Convert scores to numbers to avoid string issues
+//     result_mcq_score = Number(result_mcq_score);
+//     result_coding_score = Number(result_coding_score);
 
-    const scored_mark = result_mcq_score + result_coding_score;
-    const total_mark = 100;
+//     const scored_mark = result_mcq_score + result_coding_score;
+//     const total_mark = 100;
 
-    // 🧭 Find the service from Consul
-    const serviceName = "Express_Report";
-    const services = await consul.catalog.service.nodes(serviceName);
+//     // 🧭 Find the service from Consul
+//     const serviceName = "Express_Report";
+//     const services = await consul.catalog.service.nodes(serviceName);
 
-    if (!services || services.length === 0) {
-      return res.status(500).json({ message: "No available service instances found in Consul" });
-    }
+//     if (!services || services.length === 0) {
+//       return res.status(500).json({ message: "No available service instances found in Consul" });
+//     }
 
-    const { Address, ServicePort } = services[0]; // Use Address directly
+//     const { Address, ServicePort } = services[0]; // Use Address directly
 
-    if (!Address || !ServicePort) {
-      return res.status(500).json({ message: "Invalid service details from Consul" });
-    }
+//     if (!Address || !ServicePort) {
+//       return res.status(500).json({ message: "Invalid service details from Consul" });
+//     }
 
-    const targetUrl = `http://${Address}:${ServicePort}/individual/post-individual`;
+//     const targetUrl = `http://${Address}:${ServicePort}/individual/post-individual`;
 
-    // Send FLAT body, not an array
-    const payload = {
-      user_id,
-      module_poc_name,
-      module_poc_id,
-      module_name,
-      module_id,
-      result_test_id,
-      date,
-      result_mcq_score,
-      result_coding_score,
-      scored_mark,
-      total_mark
-    };
+//     // Send FLAT body, not an array
+//     const payload = {
+//       user_id,
+//       module_poc_name,
+//       module_poc_id,
+//       module_name,
+//       module_id,
+//       result_test_id,
+//       date,
+//       result_mcq_score,
+//       result_coding_score,
+//       scored_mark,
+//       total_mark
+//     };
 
-    const response = await axios.post(targetUrl, payload);
+//     const response = await axios.post(targetUrl, payload);
 
-    res.status(200).json({
-      message: "✅ Result sent successfully to Express_Report",
-      response: response.data
-    });
+//     res.status(200).json({
+//       message: "✅ Result sent successfully to Express_Report",
+//       response: response.data
+//     });
 
-  } catch (error) {
-    console.error("❌ Error sending result to Express_Report:", error.message);
+//   } catch (error) {
+//     console.error("❌ Error sending result to Express_Report:", error.message);
 
-    if (error.response) {
-      console.error("⚠️ Response Data:", error.response.data);
-      console.error("⚠️ Response Status:", error.response.status);
-    }
+//     if (error.response) {
+//       console.error("⚠️ Response Data:", error.response.data);
+//       console.error("⚠️ Response Status:", error.response.status);
+//     }
 
-    res.status(500).json({
-      message: "Error sending result",
-      error: error.message,
-      details: error.response?.data || {}
-    });
-  }
-});
+//     res.status(500).json({
+//       message: "Error sending result",
+//       error: error.message,
+//       details: error.response?.data || {}
+//     });
+//   }
+// });
 
 // GET MCQ IDs by tag
 // GET MCQ IDs by multiple tags

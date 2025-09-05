@@ -21,25 +21,33 @@ GET http://localhost:8083/certificates/certificate-with-result/d3617fee-b7b0-41e
 ### get all certificate with result details
 
 GET http://localhost:8083/certificates/all-certificates-with-results
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ODY1MmZjMS1lZTQxLTRmYzItODgyOS05NTA1YTcyNGFjOGUiLCJmdWxsX25hbWUiOiJESEFSVU4gUFJBS0FTSCBKIEEiLCJpYXQiOjE3NTE1MjQ1NTcsImV4cCI6MTc1MTU2MDU1N30.iavhK8pOYDaA_aFhYyVHpuQuYyJvbQmt5JCqE4yZDIs
+
 ###
 
 
 ### get certificate_mod_id with mod_id
 
-GET http://localhost:8083/certificates/certificate_mod_id_with_module_id/9e840808-63a2-4a55-9758-a9e3ed160227
+GET http://localhost:8083/certificates/certificate_mod_id_with_module_id/df19aed6-718a-41fd-9a37-391d6f1ca055
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ODY1MmZjMS1lZTQxLTRmYzItODgyOS05NTA1YTcyNGFjOGUiLCJmdWxsX25hbWUiOiJESEFSVU4gUFJBS0FTSCBKIEEiLCJpYXQiOjE3NTE1MjQ1NTcsImV4cCI6MTc1MTU2MDU1N30.iavhK8pOYDaA_aFhYyVHpuQuYyJvbQmt5JCqE4yZDIs
+
 
 ### get all certificates with module details
 GET http://localhost:8083/certificates/all_certificates_with_module
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ODY1MmZjMS1lZTQxLTRmYzItODgyOS05NTA1YTcyNGFjOGUiLCJmdWxsX25hbWUiOiJESEFSVU4gUFJBS0FTSCBKIEEiLCJpYXQiOjE3NTE1MjQ1NTcsImV4cCI6MTc1MTU2MDU1N30.iavhK8pOYDaA_aFhYyVHpuQuYyJvbQmt5JCqE4yZDIs
 ###
 
 ### get all certificates with user details
 GET http://localhost:8083/certificates/all-certificates-with-users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ODY1MmZjMS1lZTQxLTRmYzItODgyOS05NTA1YTcyNGFjOGUiLCJmdWxsX25hbWUiOiJESEFSVU4gUFJBS0FTSCBKIEEiLCJpYXQiOjE3NTE1MjQ1NTcsImV4cCI6MTc1MTU2MDU1N30.iavhK8pOYDaA_aFhYyVHpuQuYyJvbQmt5JCqE4yZDIs
 
 ###
 
 ### get certificate_user_id with user_id
 GET http://localhost:8083/certificates/certificate_id_with_user_id/d1a754a4-81b8-4a31-8091-22d1b8ad8f32
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ODY1MmZjMS1lZTQxLTRmYzItODgyOS05NTA1YTcyNGFjOGUiLCJmdWxsX25hbWUiOiJESEFSVU4gUFJBS0FTSCBKIEEiLCJpYXQiOjE3NTE1MjQ1NTcsImV4cCI6MTc1MTU2MDU1N30.iavhK8pOYDaA_aFhYyVHpuQuYyJvbQmt5JCqE4yZDIs
+
 ###
 PUT http://localhost:8083/certificates/update-certificates
 Content-Type: application/json

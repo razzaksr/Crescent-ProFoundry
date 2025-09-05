@@ -11,6 +11,8 @@ Content-Type: application/json
 
 ### Get all POCs
 GET http://localhost:8084/poc/read_all_poc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ODY1MmZjMS1lZTQxLTRmYzItODgyOS05NTA1YTcyNGFjOGUiLCJmdWxsX25hbWUiOiJESEFSVU4gUFJBS0FTSCBKIEEiLCJpYXQiOjE3NTE0Mzk0MjMsImV4cCI6MTc1MTQ3NTQyM30.kHQ5U01ZErA7xEVsV15nFOs4zTKISz82gp2vWqBySvY
+
 
 ### Get POC by mod_poc_id
 GET http://localhost:8084/poc/get_poc_by_poc_id/43302da3-2f15-45e1-a09f-ff825759e19a
@@ -89,15 +91,18 @@ GET http://localhost:8084/poc/get_all_tests/9ccefe74-f80c-4427-804e-827a61d7619a
 ### Create a Certficcate in poc using user id 
 POST http://localhost:8084/poc/generate-certificates
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ODY1MmZjMS1lZTQxLTRmYzItODgyOS05NTA1YTcyNGFjOGUiLCJmdWxsX25hbWUiOiJESEFSVU4gUFJBS0FTSCBKIEEiLCJpYXQiOjE3NTE2MTM1MzcsImV4cCI6MTc1MTY0OTUzN30.0VbgkvyNZ04YhjZb7zuKzhaHax4LfPllopcHV3a5NU0
+
 
 {
-  "mod_poc_id": "b4021b93-8384-4607-8b59-58c66fdd794d",
-  "userIds": "406907d4-6ce0-46c7-8aea-222ec7193160"
+  "mod_poc_id": "fc9555db-c838-4de3-b39b-97a7261a186b",
+  "userIds": "58652fc1-ee41-4fc2-8829-9505a724ac8e"
 }
 
 ### Create a Certficcate in poc using bulk user id  
 POST http://localhost:8084/poc/generate-certificates
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ODY1MmZjMS1lZTQxLTRmYzItODgyOS05NTA1YTcyNGFjOGUiLCJmdWxsX25hbWUiOiJESEFSVU4gUFJBS0FTSCBKIEEiLCJpYXQiOjE3NTE0NTA0NTMsImV4cCI6MTc1MTQ4NjQ1M30.qOo1AkPLAB4vUD0R24Fi-GVm2tmI1cdbqiHiPPdCsQ4
 
 {
   "mod_poc_id": "b4021b93-8384-4607-8b59-58c66fdd794d",
@@ -107,8 +112,22 @@ Content-Type: application/json
     ]
 }
 
+### Create a Custom Certficate ID  
+POST http://localhost:8084/poc/assign-custom-certificates
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ODY1MmZjMS1lZTQxLTRmYzItODgyOS05NTA1YTcyNGFjOGUiLCJmdWxsX25hbWUiOiJESEFSVU4gUFJBS0FTSCBKIEEiLCJpYXQiOjE3NTE2MTU0MzIsImV4cCI6MTc1MTY1MTQzMn0.0cbiDX9e1byhQTACut3cpG_SnwxCSF59C-S57mKuvvw
+
+{
+  "mod_poc_id": "fc9555db-c838-4de3-b39b-97a7261a186b",
+  "certificates": [
+    { "userId": "122b5490-03d8-47d9-a1be-511ec613b578", "certificateId": "CET/Intern/12345" }
+  ]
+}
+
+
 ### Get Certificate ID for a User
 GET http://localhost:8084/poc/get-certificate/dd13e5af-a777-4ce5-9a3d-8ee1b2502958/528f7cb8-0bfe-4366-a98d-831719ec53e6
+
 
 ### Remove User and Certificate
 DELETE http://localhost:8084/poc/remove-user/dd13e5af-a777-4ce5-9a3d-8ee1b2502958/user123
@@ -127,3 +146,20 @@ GET http://localhost:8084/poc/read_all_poc_name
 
 ### Get POC Name by mod_poc_id
 GET http://localhost:8084/poc/get_poc_name_by_id/6e1f1861-f2b4-43f8-9d59-db1956f32db5
+
+####
+PUT http://localhost:8084/poc/generate_report/fc9555db-c838-4de3-b39b-97a7261a186b
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ODY1MmZjMS1lZTQxLTRmYzItODgyOS05NTA1YTcyNGFjOGUiLCJmdWxsX25hbWUiOiJESEFSVU4gUFJBS0FTSCBKIEEiLCJpYXQiOjE3NTE0NTA0NTMsImV4cCI6MTc1MTQ4NjQ1M30.qOo1AkPLAB4vUD0R24Fi-GVm2tmI1cdbqiHiPPdCsQ4
+
+### 
+
+GET http://localhost:8084/poc/get_test_name/b3715d8e-a5e0-473d-8dc6-752cd452d17e
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ODY1MmZjMS1lZTQxLTRmYzItODgyOS05NTA1YTcyNGFjOGUiLCJmdWxsX25hbWUiOiJESEFSVU4gUFJBS0FTSCBKIEEiLCJpYXQiOjE3NTE0NTA0NTMsImV4cCI6MTc1MTQ4NjQ1M30.qOo1AkPLAB4vUD0R24Fi-GVm2tmI1cdbqiHiPPdCsQ4
+
+### 
+
+GET http://localhost:8084/poc/get_expert_using_poc/fc9555db-c838-4de3-b39b-97a7261a186b
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ODY1MmZjMS1lZTQxLTRmYzItODgyOS05NTA1YTcyNGFjOGUiLCJmdWxsX25hbWUiOiJESEFSVU4gUFJBS0FTSCBKIEEiLCJpYXQiOjE3NTE0NTA0NTMsImV4cCI6MTc1MTQ4NjQ1M30.qOo1AkPLAB4vUD0R24Fi-GVm2tmI1cdbqiHiPPdCsQ4
+
+### 
+GET http://localhost:8084/poc/get-by-mod-id/df19aed6-718a-41fd-9a37-391d6f1ca055

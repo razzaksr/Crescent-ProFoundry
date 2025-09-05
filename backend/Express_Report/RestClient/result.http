@@ -1,10 +1,13 @@
 ### Fetch All Results
 GET http://localhost:8083/results/get-result
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ODY1MmZjMS1lZTQxLTRmYzItODgyOS05NTA1YTcyNGFjOGUiLCJmdWxsX25hbWUiOiJESEFSVU4gUFJBS0FTSCBKIEEiLCJpYXQiOjE3NTE0NTA0NTMsImV4cCI6MTc1MTQ4NjQ1M30.qOo1AkPLAB4vUD0R24Fi-GVm2tmI1cdbqiHiPPdCsQ4
+
 
 ### Add a New Result### Submit a new result
 POST http://localhost:8083/results/post-result
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ODY1MmZjMS1lZTQxLTRmYzItODgyOS05NTA1YTcyNGFjOGUiLCJmdWxsX25hbWUiOiJESEFSVU4gUFJBS0FTSCBKIEEiLCJpYXQiOjE3NTE1MjY2NzksImV4cCI6MTc1MTU2MjY3OX0.sOh5ujJ-srE-EYJi3EczYeh_EIaFWXlyw4sIvaFEZhU
 
 {
 
@@ -44,9 +47,13 @@ Content-Type: application/json
 
 ### Fetch Result BY user ID
 GET http://localhost:8083/results/get_results_by_user_and_poc/58652fc1-ee41-4fc2-8829-9505a724ac8e/6e1f1861-f2b4-43f8-9d59-db1956f32db5
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ODY1MmZjMS1lZTQxLTRmYzItODgyOS05NTA1YTcyNGFjOGUiLCJmdWxsX25hbWUiOiJESEFSVU4gUFJBS0FTSCBKIEEiLCJpYXQiOjE3NTE1MjY2NzksImV4cCI6MTc1MTU2MjY3OX0.sOh5ujJ-srE-EYJi3EczYeh_EIaFWXlyw4sIvaFEZhU
+
 
 ### GET PERCEMTAGE OF TEST
-GET http://localhost:8083/results/aggregate_scores/9ccefe74-f80c-4427-804e-827a61d7619a/fab89ab1-d46f-4b03-827d-ae1388c11991
+GET http://localhost:8083/results/aggregate_scores/fc9555db-c838-4de3-b39b-97a7261a186b/58652fc1-ee41-4fc2-8829-9505a724ac8e
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1ODY1MmZjMS1lZTQxLTRmYzItODgyOS05NTA1YTcyNGFjOGUiLCJmdWxsX25hbWUiOiJESEFSVU4gUFJBS0FTSCBKIEEiLCJpYXQiOjE3NTE0NTA0NTMsImV4cCI6MTc1MTQ4NjQ1M30.qOo1AkPLAB4vUD0R24Fi-GVm2tmI1cdbqiHiPPdCsQ4
+
 
 
 ###########
